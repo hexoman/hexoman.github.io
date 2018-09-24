@@ -70,6 +70,64 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-swift详解链表结构(一)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/25/swift详解链表结构(一)/" class="article-date">
+  <time datetime="2018-09-24T16:00:00.000Z" itemprop="datePublished">2018-09-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/25/swift详解链表结构(一)/">swift详解链表结构(一）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="为什么要使用链表"><a href="#为什么要使用链表" class="headerlink" title="为什么要使用链表"></a>为什么要使用链表</h3><ol>
+<li>数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1)</li>
+<li>可以解决数组无法存储多种数据类型的问题</li>
+</ol>
+<p>关于链表的原理不多做赘述了，分为单向链表和双向链表。 </p>
+<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表创建和插入"><a href="#单链表创建和插入" class="headerlink" title="单链表创建和插入"></a>单链表创建和插入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//单链表节点</span><br><span class="line">class LinkedNode : NSObject &#123;</span><br><span class="line">var data: String?</span><br><span class="line">var nextNode : LinkedNode?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//头部插入</span><br><span class="line">func appendToHead(str:String) &#123;</span><br><span class="line">if (head == nil) &#123;</span><br><span class="line">head = LinkedNode(data: str, next: nil)</span><br><span class="line">tail = head</span><br><span class="line">&#125; else &#123;</span><br><span class="line">let tempHead : LinkedNode! = head</span><br><span class="line">let currentHead = LinkedNode(data: str, next: tempHead)</span><br><span class="line">head = currentHead</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//尾部插入</span><br><span class="line">func appendToTail(str:String) &#123;</span><br><span class="line">if (tail == nil) &#123;</span><br><span class="line">tail = LinkedNode(data: str, next: nil)</span><br><span class="line">head = tail</span><br><span class="line">&#125; else &#123;</span><br><span class="line">let tempTail = tail</span><br><span class="line">let node = LinkedNode(data: str, next: nil)</span><br><span class="line">tempTail?.nextNode = node</span><br><span class="line">tail = node</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用处<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var arr =[&quot;46&quot;,&quot;23&quot;,&quot;45&quot;,&quot;2&quot;,&quot;78&quot;,&quot;32&quot;,&quot;11&quot;,&quot;99&quot;,&quot;156&quot;]</span><br><span class="line">for i in 0..&lt;arr.count &#123;</span><br><span class="line">appendToTail(str: arr[i])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="求单链表中节点的个数"><a href="#求单链表中节点的个数" class="headerlink" title="求单链表中节点的个数"></a>求单链表中节点的个数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">func getLinkNodeCount(nowNode: LinkedNode?) -&gt; Int&#123;</span><br><span class="line">if (nowNode == nil) &#123;</span><br><span class="line">return 0</span><br><span class="line">&#125;</span><br><span class="line">var currNode : LinkedNode? = nowNode</span><br><span class="line">var count : Int = 0</span><br><span class="line">while (currNode != nil) &#123;</span><br><span class="line">count = count + 1</span><br><span class="line">currNode = currNode?.nextNode</span><br><span class="line">&#125;</span><br><span class="line">return count</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="单链表反转"><a href="#单链表反转" class="headerlink" title="单链表反转"></a>单链表反转</h4><p>基本思路是将一个原链表遍历，然后将每一个节点插入新链表最前端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func reverseLinkedNode(nowNode: LinkedNode?) -&gt; LinkedNode&#123;</span><br><span class="line">//如果只有一个节点或者为空，则直接返回</span><br><span class="line">if (nowNode == nil || nowNode?.nextNode == nil) &#123;</span><br><span class="line">return nowNode!</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//创建一个新的链表</span><br><span class="line">var reverseNode : LinkedNode? = LinkedNode(data: &quot;&quot;, next: nil)</span><br><span class="line">var curNode : LinkedNode? = nowNode</span><br><span class="line">//遍历老的链表</span><br><span class="line">while (curNode != nil)&#123;</span><br><span class="line">//插入到新链表第一个</span><br><span class="line">let tmp : LinkedNode? = curNode</span><br><span class="line">curNode = curNode?.nextNode</span><br><span class="line">tmp?.nextNode = reverseNode</span><br><span class="line">reverseNode = tmp;</span><br><span class="line">&#125;</span><br><span class="line">return reverseNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="判断单链表是否有环"><a href="#判断单链表是否有环" class="headerlink" title="判断单链表是否有环"></a>判断单链表是否有环</h4><p>这个解法很有意思，如果用一个指针去遍历带环的链表是无限循环的，所以这里用两个指针遍历，一个一次走一步，一个一次走两步，如果带环，总是有相交的一次。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//判断指针是否有环</span><br><span class="line">func hasCircle(node: LinkedNode?) -&gt; Bool &#123;</span><br><span class="line">var fastNode = node</span><br><span class="line">var slowNode = node</span><br><span class="line">while fastNode != nil &amp;&amp; fastNode?.nextNode != nil &#123;</span><br><span class="line">fastNode = fastNode?.nextNode?.nextNode</span><br><span class="line">slowNode = slowNode?.nextNode</span><br><span class="line">if (fastNode == slowNode) &#123;</span><br><span class="line">return true</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<hr>
+<h4 id="以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。"><a href="#以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。" class="headerlink" title="以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。"></a>以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://larbraryy.github.io/2018/09/25/swift详解链表结构(一)/" data-id="cjmfro9xg0000c7onkjvuqaj1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-swift实现一个二叉树" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/09/22/swift实现一个二叉树/" class="article-date">
@@ -290,7 +348,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li></ul>
     </div>
   </div>
 
@@ -300,7 +358,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a>
+      <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/链表/" style="font-size: 10px;">链表</a>
     </div>
   </div>
 
@@ -320,6 +378,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/09/25/swift详解链表结构(一)/">swift详解链表结构(一）</a>
+          </li>
         
           <li>
             <a href="/2018/09/22/swift实现一个二叉树/">swift实现一个二叉树</a>
