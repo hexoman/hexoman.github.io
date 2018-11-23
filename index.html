@@ -70,6 +70,69 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-ios分类Category底层原理探究" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/22/ios分类Category底层原理探究/" class="article-date">
+  <time datetime="2018-11-22T09:10:27.000Z" itemprop="datePublished">2018-11-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/22/ios分类Category底层原理探究/">iOS分类Category底层原理探究</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="category底层结构"><a href="#category底层结构" class="headerlink" title="category底层结构"></a>category底层结构</h3><h4 id="开始前的准备"><a href="#开始前的准备" class="headerlink" title="开始前的准备"></a>开始前的准备</h4><p>首先介绍一个命令行,OC转为C++代码,可以查看其编译过程:</p>
+<p><code>xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc XXX.m</code></p>
+<p>另外需要准备的可以编译的objc runtime源码，可以在这里下载对应的<a href="https://opensource.apple.com/tarballs/objc4/" target="_blank" rel="noopener">运行时源码</a></p>
+<h4 id="分组的底层结构"><a href="#分组的底层结构" class="headerlink" title="分组的底层结构"></a>分组的底层结构</h4><p>从上述的runtime源码中我们可以找到category_t结构体的实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">struct category_t &#123;</span><br><span class="line">    const char *name;    </span><br><span class="line">    classref_t cls;</span><br><span class="line">    struct method_list_t *instanceMethods; //实例方法</span><br><span class="line">    struct method_list_t *classMethods;   //类方法</span><br><span class="line">    struct protocol_list_t *protocols;   //协议</span><br><span class="line">    struct property_list_t *instanceProperties; //属性</span><br><span class="line">    // Fields below this point are not always present on disk.</span><br><span class="line">    struct property_list_t *_classProperties;</span><br><span class="line"></span><br><span class="line">    method_list_t *methodsForMeta(bool isMeta) &#123;</span><br><span class="line">        if (isMeta) return classMethods;</span><br><span class="line">        else return instanceMethods;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    property_list_t *propertiesForMeta(bool isMeta, struct header_info *hi);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>可以看出分类包含实例方法，类方法，协议和属性的存储方式，但没有成员变量，所以分类不支持添加成员变量。另外分类添加的属性不会生成实例变量，也就不会生成setter和getter方法，所以需要利用关联的方式添加。</p>
+<p>下面需要探究的一个点是如何将category_t的数据存入类对象的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">for (EACH_HEADER) &#123;</span><br><span class="line">        category_t **catlist = </span><br><span class="line">            _getObjc2CategoryList(hi, &amp;count);</span><br><span class="line">        bool hasClassProperties = hi-&gt;info()-&gt;hasCategoryClassProperties();</span><br><span class="line"></span><br><span class="line">        for (i = 0; i &lt; count; i++) &#123;</span><br><span class="line">            category_t *cat = catlist[i];</span><br><span class="line">            Class cls = remapClass(cat-&gt;cls);</span><br><span class="line"></span><br><span class="line">            if (!cls) &#123;</span><br><span class="line">                // Category&apos;s target class is missing (probably weak-linked).</span><br><span class="line">                // Disavow any knowledge of this category.</span><br><span class="line">                catlist[i] = nil;</span><br><span class="line">                if (PrintConnecting) &#123;</span><br><span class="line">                    _objc_inform(&quot;CLASS: IGNORING category \?\?\?(%s) %p with &quot;</span><br><span class="line">                                 &quot;missing weak-linked target class&quot;, </span><br><span class="line">                                 cat-&gt;name, cat);</span><br><span class="line">                &#125;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Process this category. </span><br><span class="line">            // First, register the category with its target class. </span><br><span class="line">            // Then, rebuild the class&apos;s method lists (etc) if </span><br><span class="line">            // the class is realized. </span><br><span class="line">            bool classExists = NO;</span><br><span class="line">            if (cat-&gt;instanceMethods ||  cat-&gt;protocols  </span><br><span class="line">                ||  cat-&gt;instanceProperties) </span><br><span class="line">            &#123;</span><br><span class="line">                addUnattachedCategoryForClass(cat, cls, hi);</span><br><span class="line">                if (cls-&gt;isRealized()) &#123;</span><br><span class="line">                    remethodizeClass(cls);</span><br><span class="line">                    classExists = YES;</span><br><span class="line">                &#125;</span><br><span class="line">                if (PrintConnecting) &#123;</span><br><span class="line">                    _objc_inform(&quot;CLASS: found category -%s(%s) %s&quot;, </span><br><span class="line">                                 cls-&gt;nameForLogging(), cat-&gt;name, </span><br><span class="line">                                 classExists ? &quot;on existing class&quot; : &quot;&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (cat-&gt;classMethods  ||  cat-&gt;protocols  </span><br><span class="line">                ||  (hasClassProperties &amp;&amp; cat-&gt;_classProperties)) </span><br><span class="line">            &#123;</span><br><span class="line">                addUnattachedCategoryForClass(cat, cls-&gt;ISA(), hi);</span><br><span class="line">                if (cls-&gt;ISA()-&gt;isRealized()) &#123;</span><br><span class="line">                    remethodizeClass(cls-&gt;ISA());</span><br><span class="line">                &#125;</span><br><span class="line">                if (PrintConnecting) &#123;</span><br><span class="line">                    _objc_inform(&quot;CLASS: found category +%s(%s)&quot;, </span><br><span class="line">                                 cls-&gt;nameForLogging(), cat-&gt;name);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>该段代码用来查找有无分类，_getObjc2CategoryList获取到分类的列表，遍历获取到方法、协议和属性，调用remethodizeClass(cls)函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">static void remethodizeClass(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    category_list *cats;</span><br><span class="line">    bool isMeta;</span><br><span class="line"></span><br><span class="line">    runtimeLock.assertWriting();</span><br><span class="line"></span><br><span class="line">    isMeta = cls-&gt;isMetaClass();</span><br><span class="line"></span><br><span class="line">    // Re-methodizing: check for more categories</span><br><span class="line">    if ((cats = unattachedCategoriesForClass(cls, false/*not realizing*/))) &#123;</span><br><span class="line">        if (PrintConnecting) &#123;</span><br><span class="line">            _objc_inform(&quot;CLASS: attaching categories to class &apos;%s&apos; %s&quot;, </span><br><span class="line">                         cls-&gt;nameForLogging(), isMeta ? &quot;(meta)&quot; : &quot;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        attachCategories(cls, cats, true /*flush caches*/);        </span><br><span class="line">        free(cats);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>remethodizeClass函数将当前类和分类列表传入attachCategories函数中。继续查看attachCategories实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">attachCategories(Class cls, category_list *cats, bool flush_caches)</span><br><span class="line">&#123;</span><br><span class="line">    if (!cats) return;</span><br><span class="line">    if (PrintReplacedMethods) printReplacements(cls, cats);</span><br><span class="line"></span><br><span class="line">    bool isMeta = cls-&gt;isMetaClass();</span><br><span class="line"></span><br><span class="line">    // 根据每个分类中方法属性协议来分配内存</span><br><span class="line">    method_list_t **mlists = (method_list_t **) </span><br><span class="line">        malloc(cats-&gt;count * sizeof(*mlists));</span><br><span class="line">    property_list_t **proplists = (property_list_t **)</span><br><span class="line">        malloc(cats-&gt;count * sizeof(*proplists));</span><br><span class="line">    protocol_list_t **protolists = (protocol_list_t **)</span><br><span class="line">        malloc(cats-&gt;count * sizeof(*protolists));</span><br><span class="line"></span><br><span class="line">    // Count backwards through cats to get newest categories first</span><br><span class="line">    int mcount = 0;</span><br><span class="line">    int propcount = 0;</span><br><span class="line">    int protocount = 0;</span><br><span class="line">    int i = cats-&gt;count;</span><br><span class="line">    bool fromBundle = NO;</span><br><span class="line">    while (i--) &#123;</span><br><span class="line">        auto&amp; entry = cats-&gt;list[i];</span><br><span class="line"> </span><br><span class="line">        // 遍历所有分类，将属性和协议、方法分别存入数组</span><br><span class="line">        method_list_t *mlist = entry.cat-&gt;methodsForMeta(isMeta);</span><br><span class="line">        if (mlist) &#123;</span><br><span class="line">            mlists[mcount++] = mlist;</span><br><span class="line">            fromBundle |= entry.hi-&gt;isBundle();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        property_list_t *proplist = </span><br><span class="line">            entry.cat-&gt;propertiesForMeta(isMeta, entry.hi);</span><br><span class="line">        if (proplist) &#123;</span><br><span class="line">            proplists[propcount++] = proplist;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        protocol_list_t *protolist = entry.cat-&gt;protocols;</span><br><span class="line">        if (protolist) &#123;</span><br><span class="line">            protolists[protocount++] = protolist;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    auto rw = cls-&gt;data();</span><br><span class="line"></span><br><span class="line">    prepareMethodLists(cls, mlists, mcount, NO, fromBundle);</span><br><span class="line">    rw-&gt;methods.attachLists(mlists, mcount);</span><br><span class="line">    free(mlists);</span><br><span class="line">    if (flush_caches  &amp;&amp;  mcount &gt; 0) flushCaches(cls);</span><br><span class="line"></span><br><span class="line">    rw-&gt;properties.attachLists(proplists, propcount);</span><br><span class="line">    free(proplists);</span><br><span class="line"></span><br><span class="line">    rw-&gt;protocols.attachLists(protolists, protocount);</span><br><span class="line">    free(protolists);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码的是先给各个分类分配内存，分配多少内存是根据分类的属性、协议和方法列表。通过类对象的data()方法，获取到存储类对象方法和属性等数据的class_rw_t结构体rw，再将分类的数据存入rw。这里通过attachList方法做两端数据的合并。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">void attachLists(List* const * addedLists, uint32_t addedCount) &#123;</span><br><span class="line">        if (addedCount == 0) return;</span><br><span class="line"></span><br><span class="line">        if (hasArray()) &#123;</span><br><span class="line">            // many lists -&gt; many lists</span><br><span class="line">            uint32_t oldCount = array()-&gt;count;</span><br><span class="line">            uint32_t newCount = oldCount + addedCount;</span><br><span class="line">            setArray((array_t *)realloc(array(), array_t::byteSize(newCount)));</span><br><span class="line">            array()-&gt;count = newCount;</span><br><span class="line">            memmove(array()-&gt;lists + addedCount, array()-&gt;lists, </span><br><span class="line">                    oldCount * sizeof(array()-&gt;lists[0]));</span><br><span class="line">            memcpy(array()-&gt;lists, addedLists, </span><br><span class="line">                   addedCount * sizeof(array()-&gt;lists[0]));</span><br><span class="line">        &#125;</span><br><span class="line">        else if (!list  &amp;&amp;  addedCount == 1) &#123;</span><br><span class="line">            // 0 lists -&gt; 1 list</span><br><span class="line">            list = addedLists[0];</span><br><span class="line">        &#125; </span><br><span class="line">        else &#123;</span><br><span class="line">            // 1 list -&gt; many lists</span><br><span class="line">            List* oldList = list;</span><br><span class="line">            uint32_t oldCount = oldList ? 1 : 0;</span><br><span class="line">            uint32_t newCount = oldCount + addedCount;</span><br><span class="line">            setArray((array_t *)malloc(array_t::byteSize(newCount)));</span><br><span class="line">            array()-&gt;count = newCount;</span><br><span class="line">            if (oldList) array()-&gt;lists[addedCount] = oldList;</span><br><span class="line">            memcpy(array()-&gt;lists, addedLists, </span><br><span class="line">                   addedCount * sizeof(array()-&gt;lists[0]));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>上述attachLists的作用是将主类和分类的数据合并。这里涉及两个重要的函数。</p>
+<ul>
+<li>memmove：内存移动。</li>
+<li>memmove：内存拷贝。</li>
+</ul>
+<p>经过这两个函数之后，分类的协议属性等放在了类对象存储中本类的前面，这样分类的方法就会优先调用。</p>
+<h3 id="load方法和initialize的优先级"><a href="#load方法和initialize的优先级" class="headerlink" title="load方法和initialize的优先级"></a>load方法和initialize的优先级</h3><p>initialize方法调用的优先级：categoryClass &gt; subClass &gt; parentClass<br>load方法调用的优先级：parentClass &gt; subClass &gt; categoryClass</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://larbraryy.github.io/2018/11/22/ios分类Category底层原理探究/" data-id="cjote7eye00019gzono464b5x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分类/">分类</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-iOS图片加载过程以及优化" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/11/20/iOS图片加载过程以及优化/" class="article-date">
@@ -123,7 +186,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjor0bip60000k5zodx619e9t" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjote7eym00049gzosuez4nsd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图片优化/">图片优化</a></li></ul>
@@ -175,7 +238,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjor0bipk0004k5zopwpdk8pj" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjote7eyx00099gzol7o7hdf3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
@@ -219,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/10/20/常用的几种排序算法/" data-id="cjor0biq9000lk5zol2lb58nj" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/10/20/常用的几种排序算法/" data-id="cjote7ezn000q9gzojqtiraaq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法、排序/">算法、排序</a></li></ul>
@@ -283,7 +346,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/10/10/内存的几大分布区域/" data-id="cjor0bipv000ak5zojehyg1ve" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/10/10/内存的几大分布区域/" data-id="cjote7ezk000l9gzoevqbz40w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存/">内存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布/">分布</a></li></ul>
@@ -330,10 +393,56 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjor0bipt0009k5zos8lb3684" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjote7ez0000a9gzo64xkkteu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-swift详解链表结构(二)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/25/swift详解链表结构(二)/" class="article-date">
+  <time datetime="2018-09-24T16:00:00.000Z" itemprop="datePublished">2018-09-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/25/swift详解链表结构(二)/">swift详解链表结构(二）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上节实现了链表的一些基本操作，这篇继续查找，合并相关的算法。 </p>
+<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表正序寻找第N个节点"><a href="#单链表正序寻找第N个节点" class="headerlink" title="单链表正序寻找第N个节点"></a>单链表正序寻找第N个节点</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">    var firstNode = head</span><br><span class="line">    var index : Int = 1</span><br><span class="line">    while (index &lt; k) &#123;</span><br><span class="line">        firstNode = firstNode?.nextNode</span><br><span class="line">        index = index + 1</span><br><span class="line">    &#125;</span><br><span class="line">    return firstNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="单链表倒序寻找倒数第N个节点"><a href="#单链表倒序寻找倒数第N个节点" class="headerlink" title="单链表倒序寻找倒数第N个节点"></a>单链表倒序寻找倒数第N个节点</h4><h5 id="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"><a href="#这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点" class="headerlink" title="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"></a>这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">       var firstNode = head</span><br><span class="line">       var secondNode = head</span><br><span class="line">       var index : Int = 0</span><br><span class="line">       while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode</span><br><span class="line">            index = index + 1</span><br><span class="line">            if (index &gt;= k) &#123;</span><br><span class="line">                secondNode = secondNode?.nextNode</span><br><span class="line">            &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="单链表倒序寻找中间节点"><a href="#单链表倒序寻找中间节点" class="headerlink" title="单链表倒序寻找中间节点"></a>单链表倒序寻找中间节点</h4><h5 id="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"><a href="#思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点" class="headerlink" title="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"></a>思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findMiddleNode() -&gt;LinkedNode&#123;</span><br><span class="line">        var firstNode = head</span><br><span class="line">        var secondNode = head</span><br><span class="line">        while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode?.nextNode</span><br><span class="line">            secondNode = secondNode?.nextNode</span><br><span class="line">        &#125;</span><br><span class="line">        return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="寻找一个含环链表的入口节点"><a href="#寻找一个含环链表的入口节点" class="headerlink" title="寻找一个含环链表的入口节点"></a>寻找一个含环链表的入口节点</h4><h5 id="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。"><a href="#思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。" class="headerlink" title="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。"></a>思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。</h5>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://larbraryy.github.io/2018/09/25/swift详解链表结构(二)/" data-id="cjote7ez4000e9gzo33i9b0wp" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
 
     </footer>
   </div>
@@ -388,53 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/09/25/swift详解链表结构(一)/" data-id="cjor0biq4000ek5zorscxgxq5" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-swift详解链表结构(二)" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/09/25/swift详解链表结构(二)/" class="article-date">
-  <time datetime="2018-09-24T16:00:00.000Z" itemprop="datePublished">2018-09-25</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/25/swift详解链表结构(二)/">swift详解链表结构(二）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上节实现了链表的一些基本操作，这篇继续查找，合并相关的算法。 </p>
-<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表正序寻找第N个节点"><a href="#单链表正序寻找第N个节点" class="headerlink" title="单链表正序寻找第N个节点"></a>单链表正序寻找第N个节点</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">    var firstNode = head</span><br><span class="line">    var index : Int = 1</span><br><span class="line">    while (index &lt; k) &#123;</span><br><span class="line">        firstNode = firstNode?.nextNode</span><br><span class="line">        index = index + 1</span><br><span class="line">    &#125;</span><br><span class="line">    return firstNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="单链表倒序寻找倒数第N个节点"><a href="#单链表倒序寻找倒数第N个节点" class="headerlink" title="单链表倒序寻找倒数第N个节点"></a>单链表倒序寻找倒数第N个节点</h4><h5 id="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"><a href="#这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点" class="headerlink" title="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"></a>这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">       var firstNode = head</span><br><span class="line">       var secondNode = head</span><br><span class="line">       var index : Int = 0</span><br><span class="line">       while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode</span><br><span class="line">            index = index + 1</span><br><span class="line">            if (index &gt;= k) &#123;</span><br><span class="line">                secondNode = secondNode?.nextNode</span><br><span class="line">            &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h4 id="单链表倒序寻找中间节点"><a href="#单链表倒序寻找中间节点" class="headerlink" title="单链表倒序寻找中间节点"></a>单链表倒序寻找中间节点</h4><h5 id="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"><a href="#思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点" class="headerlink" title="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"></a>思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findMiddleNode() -&gt;LinkedNode&#123;</span><br><span class="line">        var firstNode = head</span><br><span class="line">        var secondNode = head</span><br><span class="line">        while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode?.nextNode</span><br><span class="line">            secondNode = secondNode?.nextNode</span><br><span class="line">        &#125;</span><br><span class="line">        return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h4 id="寻找一个含环链表的入口节点"><a href="#寻找一个含环链表的入口节点" class="headerlink" title="寻找一个含环链表的入口节点"></a>寻找一个含环链表的入口节点</h4><h5 id="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。"><a href="#思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。" class="headerlink" title="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。"></a>思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。</h5>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/09/25/swift详解链表结构(二)/" data-id="cjor0biqa000nk5zo1djrlpx4" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/09/25/swift详解链表结构(一)/" data-id="cjote7ez7000f9gzov235yygc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
@@ -511,7 +574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/09/22/swift实现一个二叉树/" data-id="cjor0bips0006k5zoxiws082k" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/09/22/swift实现一个二叉树/" data-id="cjote7eyv00069gzotqlsle7l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
@@ -556,61 +619,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/09/20/swift实现一个二分法/" data-id="cjor0bipc0001k5zo49b7nb4h" class="article-share-link">Share</a>
+      <a data-url="https://larbraryy.github.io/2018/09/20/swift实现一个二分法/" data-id="cjote7eyq00059gzotoy8rbx8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二分法/">二分法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Hexo常用命令" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/09/20/Hexo常用命令/" class="article-date">
-  <time datetime="2018-09-19T16:00:00.000Z" itemprop="datePublished">2018-09-20</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/工具/">工具</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/20/Hexo常用命令/">Hexo常用命令</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h3><p><code>hexo new &quot;postName&quot;</code> #新建文章</p>
-<p><code>hexo new page &quot;pageName&quot;</code> #新建页面</p>
-<p><code>hexo generate</code> #生成静态页面至public</p>
-<p><code>hexo service</code> #开启预览访问端口</p>
-<p><code>hexo deploy</code> #部署到guthub</p>
-<p><code>hexo help</code> #查看帮助</p>
-<p><code>hexo version</code> #查看hexo版本</p>
-<h3 id="组合命令"><a href="#组合命令" class="headerlink" title="组合命令"></a>组合命令</h3><p><code>hexo s -g</code> #生成本地预览</p>
-<p><code>hexo d -g</code> #生成并上传</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://larbraryy.github.io/2018/09/20/Hexo常用命令/" data-id="cjor0bipo0005k5zo172w8kh8" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/命令行/">命令行</a></li></ul>
 
     </footer>
   </div>
@@ -644,7 +656,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法、排序/">算法、排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分类/">分类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法、排序/">算法、排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -654,7 +666,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/UIImage加载/" style="font-size: 10px;">UIImage加载</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/算法、排序/" style="font-size: 10px;">算法、排序</a> <a href="/tags/链表/" style="font-size: 15px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/UIImage加载/" style="font-size: 10px;">UIImage加载</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/分类/" style="font-size: 10px;">分类</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/算法、排序/" style="font-size: 10px;">算法、排序</a> <a href="/tags/链表/" style="font-size: 15px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -676,6 +688,10 @@
       <ul>
         
           <li>
+            <a href="/2018/11/22/ios分类Category底层原理探究/">iOS分类Category底层原理探究</a>
+          </li>
+        
+          <li>
             <a href="/2018/11/20/iOS图片加载过程以及优化/">iOS图片加载过程以及优化</a>
           </li>
         
@@ -689,10 +705,6 @@
         
           <li>
             <a href="/2018/10/10/内存的几大分布区域/">内存的几大分布区域</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/09/swift实现几种排序算法/">swift实现几种排序算法</a>
           </li>
         
       </ul>
