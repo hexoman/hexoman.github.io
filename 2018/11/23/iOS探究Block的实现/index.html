@@ -5,19 +5,20 @@
   
 
   
-  <title>Tag: 二分法 | larbraryy的博客</title>
+  <title>iOS探究Block的实现 | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="劳于读书，逸于作文">
-<meta name="keywords" content="ios 架构 读书">
-<meta property="og:type" content="website">
-<meta property="og:title" content="larbraryy的博客">
-<meta property="og:url" content="https://larbraryy.github.io/tags/二分法/index.html">
+  <meta name="description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
+<meta name="keywords" content="block">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS探究Block的实现">
+<meta property="og:url" content="https://larbraryy.github.io/2018/11/23/iOS探究Block的实现/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="劳于读书，逸于作文">
+<meta property="og:description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-11-23T14:59:13.767Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="larbraryy的博客">
-<meta name="twitter:description" content="劳于读书，逸于作文">
+<meta name="twitter:title" content="iOS探究Block的实现">
+<meta name="twitter:description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -68,40 +69,72 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/09/20/swift实现一个二分法/" class="archive-article-date">
-  <time datetime="2018-09-19T16:00:00.000Z" itemprop="datePublished">Sep 20</time>
+        <section id="main"><article id="post-iOS探究Block的实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/23/iOS探究Block的实现/" class="article-date">
+  <time datetime="2018-11-23T08:39:29.000Z" itemprop="datePublished">2018-11-23</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/20/swift实现一个二分法/">swift实现一个二分法</a>
+    <h1 class="article-title" itemprop="name">
+      iOS探究Block的实现
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h3><ul>
+<li>NSGlobalBlock 位于text段</li>
+<li>NSStackBlock 位于栈内存</li>
+<li>NSMallocBlock 位于堆内存</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 100;</span><br><span class="line">NSLog(@&quot;位于text段,%@&quot;,^&#123;NSLog(@&quot;&quot;);&#125;);</span><br><span class="line">NSLog(@&quot;位于栈内,%@&quot;,^&#123;NSLog(@&quot;%d&quot;,a);&#125;);</span><br><span class="line">void (^block)(void) = ^&#123;NSLog(@&quot;%d&quot;,a);&#125;;</span><br><span class="line">NSLog(@&quot;位于堆内,%@&quot;,block);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018-11-23 16:48:14.336424+0800 TestRuntime[14636:230602] 位于text段,&lt;__NSGlobalBlock__: 0x100002060&gt;</span><br><span class="line">2018-11-23 16:48:14.336534+0800 TestRuntime[14636:230602] 位于栈内,&lt;__NSStackBlock__: 0x7ffeefbfeb08&gt;</span><br><span class="line">2018-11-23 16:48:14.336641+0800 TestRuntime[14636:230602] 位于堆内,&lt;__NSMallocBlock__: 0x6000000503b0&gt;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>NSGlobalBlock是因为没有引用任何外部变量，block不需要建立局部变量值的快照。</li>
+<li>NSStackBlock使用了局部变量，局部变量的值被copy到栈上，以供block使用。但实际上很多场景都不是NSStackBlock，而是NSMallocBlock。这是因为ARC下编译器在NSStackBlock类型的block传递过程中进行了自动优化，将传递过程将 block拷贝到堆。分析见这篇文章<a href="https://www.jianshu.com/p/03ad4b2ecedf" target="_blank" rel="noopener">ARC下NSStackBlock去哪了。</a></li>
+<li>NSMallocBlock 拷贝block到堆上。</li>
+</ol>
+<h3 id="block的使用"><a href="#block的使用" class="headerlink" title="__block的使用"></a>__block的使用</h3><p>Block内引用外部变量a是只读的，但是如果想在block内部改变a时，需要在定义a的时候使用__block修饰。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__block int a = 100;</span><br><span class="line">testBlock block = ^&#123;</span><br><span class="line">a++;</span><br><span class="line">&#125;;</span><br><span class="line">block();</span><br><span class="line">NSLog(@&quot;%d&quot;,a);</span><br></pre></td></tr></table></figure>
+<p>打印值为101，实际上传入block的是a的指针。</p>
 
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://larbraryy.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjou5jb8m0000roon3i7s2upm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/22/ios分类Category底层原理探究/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iOS分类Category底层原理探究</div>
+    </a>
+  
+</nav>
+
+  
+</article>
 
 </section>
         

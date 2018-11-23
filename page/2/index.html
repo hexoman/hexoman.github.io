@@ -70,6 +70,51 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-swift实现一个二分法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/swift实现一个二分法/" class="article-date">
+  <time datetime="2018-09-19T16:00:00.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/swift实现一个二分法/">swift实现一个二分法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="二分法的原理和用途"><a href="#二分法的原理和用途" class="headerlink" title="二分法的原理和用途"></a>二分法的原理和用途</h2><h4 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h4><p> 在一个排好序的数据结构list中，对于给定的查找目标值target,从序列的中间位置mid开始比较，如果当前位置list[mid]值等于target，则查找成功；如果target小于当前位置list[mid]，则在序列前半段查找list[left,mid-1]；如果target大于当前位置list[mid]，则在序列后半段查找list[mid+1,right]查找，知道找到为止。</p>
+<h4 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h4><p>二分法在计算机语言中运用还是很普遍的，相比线性查找，其速度更快，时间复杂度为O(log(n))</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">let list = [1, 2, 3, 5, 7, 10, 36, 50]</span><br><span class="line">    </span><br><span class="line">    let target = 10</span><br><span class="line">    </span><br><span class="line">    func binarySearch(array: [Int], value: Int) &#123;</span><br><span class="line">        var left = 0</span><br><span class="line">        var right = array.count - 1</span><br><span class="line">        var mid = (left + right) / 2</span><br><span class="line">        while (array[mid] != value &amp;&amp; left &lt; right) &#123;</span><br><span class="line">            if (array[mid] &lt; value) &#123;</span><br><span class="line">                left = mid + 1</span><br><span class="line">            &#125;else if (array[mid] &gt; value) &#123;</span><br><span class="line">                right = mid - 1</span><br><span class="line">            &#125;</span><br><span class="line">            mid = (left + right) / 2</span><br><span class="line">            if (array[right] &lt; value) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125; else if (array[left] &gt; value) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            if (array[mid] == value) &#123;</span><br><span class="line">                NSLog(&quot;找到target位置------&gt;:\(mid)&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        binarySearch(array: list, value: target);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="这是一个基本的算法实现，接下来会结合实际场景具体应用"><a href="#这是一个基本的算法实现，接下来会结合实际场景具体应用" class="headerlink" title="这是一个基本的算法实现，接下来会结合实际场景具体应用"></a>这是一个基本的算法实现，接下来会结合实际场景具体应用</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://larbraryy.github.io/2018/09/20/swift实现一个二分法/" data-id="cjotuiig50006zjzowg79mt8m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二分法/">二分法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Hexo常用命令" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/09/20/Hexo常用命令/" class="article-date">
@@ -173,7 +218,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分类/">分类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法、排序/">算法、排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分类/">分类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法、排序/">算法、排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -183,7 +228,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/UIImage加载/" style="font-size: 10px;">UIImage加载</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/分类/" style="font-size: 10px;">分类</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/算法、排序/" style="font-size: 10px;">算法、排序</a> <a href="/tags/链表/" style="font-size: 15px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/UIImage加载/" style="font-size: 10px;">UIImage加载</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/分类/" style="font-size: 10px;">分类</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/算法、排序/" style="font-size: 10px;">算法、排序</a> <a href="/tags/链表/" style="font-size: 15px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -205,6 +250,10 @@
       <ul>
         
           <li>
+            <a href="/2018/11/23/iOS探究Block的实现/">iOS探究Block的实现</a>
+          </li>
+        
+          <li>
             <a href="/2018/11/22/ios分类Category底层原理探究/">iOS分类Category底层原理探究</a>
           </li>
         
@@ -218,10 +267,6 @@
         
           <li>
             <a href="/2018/10/20/常用的几种排序算法/">常用的几种排序算法</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/10/内存的几大分布区域/">内存的几大分布区域</a>
           </li>
         
       </ul>
