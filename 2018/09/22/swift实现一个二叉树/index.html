@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://hexoman.github.io/2018/09/images/binaryTree1.png">
 <meta property="og:image" content="https://hexoman.github.io/2018/09/images/binaryTree2.png">
 <meta property="og:image" content="https://hexoman.github.io/2018/09/images/binaryTree3.png">
-<meta property="og:updated_time" content="2019-01-17T09:06:55.210Z">
+<meta property="og:updated_time" content="2019-01-17T09:40:24.759Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="swift实现一个二叉树">
 <meta name="twitter:description" content="二叉树的原理和用途为什么要用二叉树 二叉树是一种基本的排序树，用于快速查找。数组搜索比较方便，而插入相对麻烦，链表插入和删除简单，而搜索比较慢，而二叉树是兼顾两者的优点。 二叉树的分类二叉树因为结构的不同主要分为斜树、满二叉树和完全二叉树，当然还有普通的二叉树，比较基本这里不单独做赘述。 斜树只有左子树或者只有右子树  满二叉树所有分支节点都有左子树和右子树，所有叶子结点都在同一层。其有如下特点：">
@@ -109,32 +109,10 @@
 <h4 id="二叉树的创建"><a href="#二叉树的创建" class="headerlink" title="二叉树的创建"></a>二叉树的创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//创建二叉树</span><br><span class="line">    func createBinaryTree(root: inout TreeNode?, listData:[String]) &#123;</span><br><span class="line">        rootindex = rootindex + 1;</span><br><span class="line">        if rootindex &gt;= listData.count &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        let data:String = listData[rootindex] as String</span><br><span class="line">        if data == &quot;#&quot; &#123;</span><br><span class="line">            root = nil;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            root = TreeNode()</span><br><span class="line">            root?.data = data;</span><br><span class="line">            createBinaryTree(root: &amp;root!.leftChild, listData: listData)</span><br><span class="line">            createBinaryTree(root: &amp;root!.rightChild, listData: listData)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>调用处：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let preListData:[String] = [&quot;1&quot;,&quot;2&quot;,&quot;4&quot;,&quot;#&quot;,&quot;#&quot;,&quot;5&quot;,&quot;7&quot;,&quot;#&quot;,&quot;#&quot;,&quot;#&quot;,&quot;3&quot;,&quot;#&quot;,&quot;6&quot;,&quot;#&quot;,&quot;#&quot;];</span><br><span class="line">var preOrderRoot:TreeNode?</span><br><span class="line">createBinaryTree(root: &amp;preOrderRoot, listData: preListData);</span><br></pre></td></tr></table></figure>
-<h4 id="层次遍历"><a href="#层次遍历" class="headerlink" title="层次遍历"></a>层次遍历</h4><pre><code>//二叉树排序
-    func treeLevelOrder(root:TreeNode?) {
-        if root == nil {
-            return
-        }
+<h4 id="前序、中序、后序的递归实现"><a href="#前序、中序、后序的递归实现" class="headerlink" title="前序、中序、后序的递归实现"></a>前序、中序、后序的递归实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//前序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        print(node?.value!);</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//中序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        print(node?.value!);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//后序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">        print(node?.value!);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">#### 求二叉树的深度</span><br><span class="line">思路：分别计算左子树、右子树的深度，最后取最大值+1即是二叉树深度</span><br></pre></td></tr></table></figure>
+<p>func getTresDepth(node: Node?) -&gt;Int{<br>    var leftDepth = 0<br>    var rightDepth = 0<br>    var max = 0<br>    if (node != nil) {<br>        leftDepth = getTresDepth(node: node?.leftNode);<br>        rightDepth = getTresDepth(node: node?.rightNode);<br>        max = leftDepth &gt; rightDepth ? leftDepth : rightDepth;<br>        return (max + 1);<br>    } else {<br>        return 0;<br>    }<br>}</p>
+<p><code>`</code></p>
 
-        var arr:[TreeNode] = []
-        arr.append(root!)
-        while arr.count &gt; 0 {
-            let firstNodel = arr[0]
-            if firstNodel.data != nil {
-                print(&quot;\(firstNodel.data!)\t&quot;, terminator: &quot;&quot;);
-                arr.removeFirst()
-            }
-
-            if firstNodel.leftChild != nil {
-                arr.append(firstNodel.leftChild!)
-            }
-
-            if firstNodel.rightChild != nil {
-                arr.append(firstNodel.rightChild!)
-            }
-        }
-
-    }
-</code></pre>
       
     </div>
     <footer class="article-footer">
