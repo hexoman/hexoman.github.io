@@ -8,14 +8,14 @@
   <title>iOS分类Category底层原理探究 | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="category底层结构开始前的准备首先介绍一个命令行,OC转为C++代码,可以查看其编译过程: xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc XXX.m 另外需要准备的可以编译的objc runtime源码，可以在这里下载对应的运行时源码 分组的底层结构从上述的runtime源码中我们可以找到category_t结构体的实现。 12345">
-<meta name="keywords" content="category,分类">
+<meta name="keywords" content="category">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS分类Category底层原理探究">
-<meta property="og:url" content="https://hexoman.github.io/2018/11/22/ios分类Category底层原理探究/index.html">
+<meta property="og:url" content="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
 <meta property="og:description" content="category底层结构开始前的准备首先介绍一个命令行,OC转为C++代码,可以查看其编译过程: xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc XXX.m 另外需要准备的可以编译的objc runtime源码，可以在这里下载对应的运行时源码 分组的底层结构从上述的runtime源码中我们可以找到category_t结构体的实现。 12345">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2018-11-23T02:13:25.073Z">
+<meta property="og:updated_time" content="2019-01-17T09:05:07.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS分类Category底层原理探究">
 <meta name="twitter:description" content="category底层结构开始前的准备首先介绍一个命令行,OC转为C++代码,可以查看其编译过程: xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc XXX.m 另外需要准备的可以编译的objc runtime源码，可以在这里下载对应的运行时源码 分组的底层结构从上述的runtime源码中我们可以找到category_t结构体的实现。 12345">
@@ -69,9 +69,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-ios分类Category底层原理探究" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-iOS分类Category底层原理探究" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2018/11/22/ios分类Category底层原理探究/" class="article-date">
+    <a href="/2018/11/22/iOS分类Category底层原理探究/" class="article-date">
   <time datetime="2018-11-22T09:10:27.000Z" itemprop="datePublished">2018-11-22</time>
 </a>
     
@@ -120,10 +120,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/22/ios分类Category底层原理探究/" data-id="cjqzwpkrq00261yonzihf6f82" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjr0e65m300004donqhrar4mp" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分类/">分类</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li></ul>
 
     </footer>
   </div>
@@ -169,7 +169,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UIImage加载/">UIImage加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分类/">分类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/命令行/">命令行</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法、排序/">算法、排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -179,7 +179,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/UIImage加载/" style="font-size: 10px;">UIImage加载</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/分类/" style="font-size: 10px;">分类</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a> <a href="/tags/算法、排序/" style="font-size: 10px;">算法、排序</a> <a href="/tags/链表/" style="font-size: 15px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -213,7 +213,7 @@
           </li>
         
           <li>
-            <a href="/2018/11/22/ios分类Category底层原理探究/">iOS分类Category底层原理探究</a>
+            <a href="/2018/11/22/iOS分类Category底层原理探究/">iOS分类Category底层原理探究</a>
           </li>
         
           <li>
