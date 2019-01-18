@@ -107,14 +107,21 @@
 <h3 id="软件设计的23种模式"><a href="#软件设计的23种模式" class="headerlink" title="软件设计的23种模式"></a>软件设计的23种模式</h3><h5 id="1-单例模式-Singleton"><a href="#1-单例模式-Singleton" class="headerlink" title="1.单例模式 (Singleton)"></a>1.单例模式 (Singleton)</h5><p>  只创建一次实例对象，并对外提供一个访问该单例的全局访问点。包括饿汉模式（类一旦加载就创建）和懒汉模式（加载时不创建，使用时创建)</p>
 <h5 id="2-原型模式-Prototype"><a href="#2-原型模式-Prototype" class="headerlink" title="2.原型模式 (Prototype)"></a>2.原型模式 (Prototype)</h5><p>  用一个已经创建的实例作为原型，通过复制该原型对象创建一个类似的新对象，一般使用Clone()方法。</p>
 <h5 id="3-工厂方法模式-FactoryMethod"><a href="#3-工厂方法模式-FactoryMethod" class="headerlink" title="3.工厂方法模式(FactoryMethod)"></a>3.工厂方法模式(FactoryMethod)</h5><p>  定义一个创建产品对象的工厂接口，将产品对象的实际创建工作推迟到具体子工厂类当中。无论增加多少种产品类，都不用修改原来类中代码，增加工厂类就可以实现。</p>
+<h5 id="4-抽象工厂模式-AbstractMethod"><a href="#4-抽象工厂模式-AbstractMethod" class="headerlink" title="4.抽象工厂模式(AbstractMethod)"></a>4.抽象工厂模式(AbstractMethod)</h5><p>  是一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。抽象工厂模式是工厂方法模式的升级版本，工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品</p>
 <hr>
-<h2 id="这里关于简单工厂模式、工厂方法模式、抽象工厂模式的具体区别之后会另外开文章讲解。"><a href="#这里关于简单工厂模式、工厂方法模式、抽象工厂模式的具体区别之后会另外开文章讲解。" class="headerlink" title="  这里关于简单工厂模式、工厂方法模式、抽象工厂模式的具体区别之后会另外开文章讲解。"></a>  这里关于简单工厂模式、工厂方法模式、抽象工厂模式的具体区别之后会另外开文章讲解。</h2><h5 id="4-抽象工厂模式-AbstractMethod"><a href="#4-抽象工厂模式-AbstractMethod" class="headerlink" title="4.抽象工厂模式(AbstractMethod)"></a>4.抽象工厂模式(AbstractMethod)</h5><p>  是一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。抽象工厂模式是工厂方法模式的升级版本，工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品</p>
+<blockquote>
+<h4 id="工厂经历了简单工厂模式、工厂方法模式、抽象工厂模式三个阶段。"><a href="#工厂经历了简单工厂模式、工厂方法模式、抽象工厂模式三个阶段。" class="headerlink" title="工厂经历了简单工厂模式、工厂方法模式、抽象工厂模式三个阶段。"></a>工厂经历了简单工厂模式、工厂方法模式、抽象工厂模式三个阶段。</h4><h4 id="简单工厂模式三个参与者：工厂（Factory-、抽象产品（Abstract-Product-、具体产品（Concrete-Product-每添加一个产品就增加一个子产品类，并在工厂添加对应的生产方法。"><a href="#简单工厂模式三个参与者：工厂（Factory-、抽象产品（Abstract-Product-、具体产品（Concrete-Product-每添加一个产品就增加一个子产品类，并在工厂添加对应的生产方法。" class="headerlink" title="简单工厂模式三个参与者：工厂（Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个产品就增加一个子产品类，并在工厂添加对应的生产方法。"></a>简单工厂模式三个参与者：工厂（Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个产品就增加一个子产品类，并在工厂添加对应的生产方法。</h4><h4 id="工厂方法模式四个参与者：抽象工厂（Abstract-Factory-、具体工厂（Concrete-Factory-抽象产品（Abstract-Product-、具体产品（Concrete-Product-每添加一个新的产品就增加一个具体工厂类来生新产品，这样设计的好处是只需要添加新产品对应的具体工厂，不需要对原来代码改动。易于扩展，设计上也比较符合面向对象设计中的单一职责原则。"><a href="#工厂方法模式四个参与者：抽象工厂（Abstract-Factory-、具体工厂（Concrete-Factory-抽象产品（Abstract-Product-、具体产品（Concrete-Product-每添加一个新的产品就增加一个具体工厂类来生新产品，这样设计的好处是只需要添加新产品对应的具体工厂，不需要对原来代码改动。易于扩展，设计上也比较符合面向对象设计中的单一职责原则。" class="headerlink" title="工厂方法模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个新的产品就增加一个具体工厂类来生新产品，这样设计的好处是只需要添加新产品对应的具体工厂，不需要对原来代码改动。易于扩展，设计上也比较符合面向对象设计中的单一职责原则。"></a>工厂方法模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个新的产品就增加一个具体工厂类来生新产品，这样设计的好处是只需要添加新产品对应的具体工厂，不需要对原来代码改动。易于扩展，设计上也比较符合面向对象设计中的单一职责原则。</h4><h4 id="抽象工厂模式四个参与者：抽象工厂（Abstract-Factory-、具体工厂（Concrete-Factory-、抽象产品（Abstract-Product-、具体产品（Concrete-Product-抽象工厂模式与工厂方法模式的区别是，工厂方法模式每个具体工厂负责一个具体产品的实例创建，抽象工厂模式每个具体工厂负责多个或者一系列具体产品的实例创建。抽象工厂的最大好处在于隐藏真正的具体工厂，让调用者感觉不到内部差异性，屏蔽了内部实现，调用者只关注公有接口。"><a href="#抽象工厂模式四个参与者：抽象工厂（Abstract-Factory-、具体工厂（Concrete-Factory-、抽象产品（Abstract-Product-、具体产品（Concrete-Product-抽象工厂模式与工厂方法模式的区别是，工厂方法模式每个具体工厂负责一个具体产品的实例创建，抽象工厂模式每个具体工厂负责多个或者一系列具体产品的实例创建。抽象工厂的最大好处在于隐藏真正的具体工厂，让调用者感觉不到内部差异性，屏蔽了内部实现，调用者只关注公有接口。" class="headerlink" title="抽象工厂模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),抽象工厂模式与工厂方法模式的区别是，工厂方法模式每个具体工厂负责一个具体产品的实例创建，抽象工厂模式每个具体工厂负责多个或者一系列具体产品的实例创建。抽象工厂的最大好处在于隐藏真正的具体工厂，让调用者感觉不到内部差异性，屏蔽了内部实现，调用者只关注公有接口。"></a>抽象工厂模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),抽象工厂模式与工厂方法模式的区别是，工厂方法模式每个具体工厂负责一个具体产品的实例创建，抽象工厂模式每个具体工厂负责多个或者一系列具体产品的实例创建。抽象工厂的最大好处在于隐藏真正的具体工厂，让调用者感觉不到内部差异性，屏蔽了内部实现，调用者只关注公有接口。</h4></blockquote>
+<hr>
 <h5 id="5-建造者模式-Builder"><a href="#5-建造者模式-Builder" class="headerlink" title="5.建造者模式(Builder)"></a>5.建造者模式(Builder)</h5><p>  将一个复杂对象的构造和表示分离，分解为多个简单对象，然后一步步构建而成。</p>
 <h5 id="6-代理模式-Proxy"><a href="#6-代理模式-Proxy" class="headerlink" title="6.代理模式(Proxy)"></a>6.代理模式(Proxy)</h5><p>  处于某些原因的考虑需要给对象提供一个代理来控制对该对象的访问。代理实际上是一个中间层，可以保护访问目标对象，扩展目标对象的功能，降低系统耦合度。</p>
 <h5 id="7-适配器模式-Adapter"><a href="#7-适配器模式-Adapter" class="headerlink" title="7.适配器模式(Adapter)"></a>7.适配器模式(Adapter)</h5><p>  将目标类的接口转为另一种接口形式，使得目标类的接口可以兼容所有对接类。优点是可以不改变两端接口实现对接，复用目标类。</p>
 <h5 id="8-桥接模式-Bridge"><a href="#8-桥接模式-Bridge" class="headerlink" title="8.桥接模式(Bridge)"></a>8.桥接模式(Bridge)</h5><p>  基于类的最小设计原则，通过使用封装、聚合及继承等行为让不同的类承担不同的职责。它的主要特点是把抽象(Abstraction)与行为实现(Implementation)分离开来，从而可以保持各部分的独立性以及应对他们的功能扩展。</p>
 <hr>
-<h2 id="Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。"><a href="#Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。" class="headerlink" title="  Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。"></a>  Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。</h2><h5 id="9-装饰模式-Decorator"><a href="#9-装饰模式-Decorator" class="headerlink" title="9.装饰模式(Decorator)"></a>9.装饰模式(Decorator)</h5><p>在不改变现有对象结构的情况下，动态地给该对象增加一些职责（即增加其额外功能）的模式。</p>
+<blockquote>
+<p>Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。</p>
+</blockquote>
+<hr>
+<h5 id="9-装饰模式-Decorator"><a href="#9-装饰模式-Decorator" class="headerlink" title="9.装饰模式(Decorator)"></a>9.装饰模式(Decorator)</h5><p>在不改变现有对象结构的情况下，动态地给该对象增加一些职责（即增加其额外功能）的模式。</p>
 <h5 id="10-外观模式-Facade"><a href="#10-外观模式-Facade" class="headerlink" title="10.外观模式(Facade)"></a>10.外观模式(Facade)</h5><p> 为多个复杂的子系统提供一个一致的接口，外部不需要关心内部子系统实现的具体细节，这样设计的目的是降低复杂度，提升可维护性。</p>
 <h5 id="11-享元模式-Flyweight"><a href="#11-享元模式-Flyweight" class="headerlink" title="11.享元模式(Flyweight)"></a>11.享元模式(Flyweight)</h5><p>  用共享来实现大量细粒度对象的复用，通过复用减少大量数据和对象的创建和开销，从而提高系统资源的利用率。</p>
 <h5 id="12-策略模式-Strategy"><a href="#12-策略模式-Strategy" class="headerlink" title="12.策略模式(Strategy)"></a>12.策略模式(Strategy)</h5><p>  定义一系列的算法，并将之封装起来，使它们可以互相替换，算法的变化不影响使用者。</p>
@@ -133,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/14/重读经典之<设计模式>/" data-id="cjr0eb6fa001t87onp4yv75kv" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/14/重读经典之<设计模式>/" data-id="cjr1gh1mm001se7onaesk3rt2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -190,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjr0eb6ej000t87onke9p4c6f" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjr1gh1m3000ue7on9pwfzlyl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -247,7 +254,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjr0eb6dz000487onry5yr1bu" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjr1gh1lm0005e7onokjt39or" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
@@ -310,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjr0eb6f9001s87onoyjjxpoc" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjr1gh1ml001re7on1y0tvofx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li></ul>
@@ -375,7 +382,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjr0eb6dv000187on79cc99ab" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjr1gh1le0001e7ons5kkfsi8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图片优化/">图片优化</a></li></ul>
@@ -427,7 +434,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjr0eb6e0000587onk14qh73s" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjr1gh1m0000ne7onq1dv4rj5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
@@ -476,7 +483,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjr0eb6ei000r87onxdjcdsx0" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjr1gh1lu000ge7on5jqmvfvs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
@@ -540,7 +547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjr0eb6eb000g87on31yxla9u" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjr1gh1m2000re7onvaahun60" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存/">内存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布/">分布</a></li></ul>
@@ -587,7 +594,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjr0eb6e5000a87onrp05g6y3" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjr1gh1lr000ae7onnoe5bqb1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
@@ -599,9 +606,9 @@
 
 
   
-    <article id="post-swift详解链表结构(一)" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-swift详解链表结构(二)" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2018/09/25/swift详解链表结构(一)/" class="article-date">
+    <a href="/2018/09/25/swift详解链表结构(二)/" class="article-date">
   <time datetime="2018-09-24T16:00:00.000Z" itemprop="datePublished">2018-09-25</time>
 </a>
     
@@ -617,7 +624,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/25/swift详解链表结构(一)/">swift详解链表结构(一）</a>
+      <a class="article-title" href="/2018/09/25/swift详解链表结构(二)/">swift详解链表结构(二）</a>
     </h1>
   
 
@@ -625,27 +632,15 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="为什么要使用链表"><a href="#为什么要使用链表" class="headerlink" title="为什么要使用链表"></a>为什么要使用链表</h3><ol>
-<li>数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1)</li>
-<li>可以解决数组无法存储多种数据类型的问题</li>
-</ol>
-<p>关于链表的原理不多做赘述了，分为单向链表和双向链表。 </p>
-<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表创建和插入"><a href="#单链表创建和插入" class="headerlink" title="单链表创建和插入"></a>单链表创建和插入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//单链表节点</span><br><span class="line">class LinkedNode : NSObject &#123;</span><br><span class="line">   var data: String?</span><br><span class="line">   var nextNode : LinkedNode?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//头部插入</span><br><span class="line">func appendToHead(str:String) &#123;</span><br><span class="line">   if (head == nil) &#123;</span><br><span class="line">      head = LinkedNode(data: str, next: nil)</span><br><span class="line">      tail = head</span><br><span class="line">   &#125; else &#123;</span><br><span class="line">     let tempHead : LinkedNode! = head</span><br><span class="line">     let currentHead = LinkedNode(data: str, next: tempHead)</span><br><span class="line">     head = currentHead</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//尾部插入</span><br><span class="line">func appendToTail(str:String) &#123;</span><br><span class="line">	if (tail == nil) &#123;</span><br><span class="line">		tail = LinkedNode(data: str, next: nil)</span><br><span class="line">		head = tail</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		let tempTail = tail</span><br><span class="line">		let node = LinkedNode(data: str, next: nil)</span><br><span class="line">		tempTail?.nextNode = node</span><br><span class="line">		tail = node</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>调用处<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var arr =[&quot;46&quot;,&quot;23&quot;,&quot;45&quot;,&quot;2&quot;,&quot;78&quot;,&quot;32&quot;,&quot;11&quot;,&quot;99&quot;,&quot;156&quot;]</span><br><span class="line">for i in 0..&lt;arr.count &#123;</span><br><span class="line">appendToTail(str: arr[i])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="求单链表中节点的个数"><a href="#求单链表中节点的个数" class="headerlink" title="求单链表中节点的个数"></a>求单链表中节点的个数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">func getLinkNodeCount(nowNode: LinkedNode?) -&gt; Int&#123;</span><br><span class="line">	if (nowNode == nil) &#123;</span><br><span class="line">		return 0</span><br><span class="line">	&#125;</span><br><span class="line">	var currNode : LinkedNode? = nowNode</span><br><span class="line">	var count : Int = 0</span><br><span class="line">	while (currNode != nil) &#123;</span><br><span class="line">		count = count + 1</span><br><span class="line">		currNode = currNode?.nextNode</span><br><span class="line">	&#125;</span><br><span class="line">	return count</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="单链表反转"><a href="#单链表反转" class="headerlink" title="单链表反转"></a>单链表反转</h4><p>基本思路是将一个原链表遍历，然后将每一个节点插入新链表最前端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">	func reverseLinkedNode(nowNode: LinkedNode?) -&gt; LinkedNode&#123;</span><br><span class="line">	//如果只有一个节点或者为空，则直接返回</span><br><span class="line">	if (nowNode == nil || nowNode?.nextNode == nil) &#123;</span><br><span class="line">		return nowNode!</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	//创建一个新的链表</span><br><span class="line">	var reverseNode : LinkedNode? = LinkedNode(data: &quot;&quot;, next: nil)</span><br><span class="line">	var curNode : LinkedNode? = nowNode</span><br><span class="line">	//遍历老的链表</span><br><span class="line">	while (curNode != nil)&#123;</span><br><span class="line">		//插入到新链表第一个</span><br><span class="line">		let tmp : LinkedNode? = curNode</span><br><span class="line">		curNode = curNode?.nextNode</span><br><span class="line">		tmp?.nextNode = reverseNode</span><br><span class="line">		reverseNode = tmp;</span><br><span class="line">	&#125;</span><br><span class="line">	return reverseNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="判断单链表是否有环"><a href="#判断单链表是否有环" class="headerlink" title="判断单链表是否有环"></a>判断单链表是否有环</h4><p>这个解法很有意思，如果用一个指针去遍历带环的链表是无限循环的，所以这里用两个指针遍历，一个一次走一步，一个一次走两步，如果带环，总是有相交的一次。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//判断指针是否有环</span><br><span class="line">func hasCircle(node: LinkedNode?) -&gt; Bool &#123;</span><br><span class="line">var fastNode = node</span><br><span class="line">var slowNode = node</span><br><span class="line">while fastNode != nil &amp;&amp; fastNode?.nextNode != nil &#123;</span><br><span class="line">fastNode = fastNode?.nextNode?.nextNode</span><br><span class="line">slowNode = slowNode?.nextNode</span><br><span class="line">if (fastNode == slowNode) &#123;</span><br><span class="line">return true</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<hr>
-<h4 id="以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。"><a href="#以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。" class="headerlink" title="以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。"></a>以上只是简单实现了下单链表的创建、插入、反转和计算长度等，下一篇主要是链表取值，合并、相交等算法。</h4>
+        <p>上节实现了链表的一些基本操作，这篇继续查找，合并相关的算法。 </p>
+<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表正序寻找第N个节点"><a href="#单链表正序寻找第N个节点" class="headerlink" title="单链表正序寻找第N个节点"></a>单链表正序寻找第N个节点</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">    var firstNode = head</span><br><span class="line">    var index : Int = 1</span><br><span class="line">    while (index &lt; k) &#123;</span><br><span class="line">        firstNode = firstNode?.nextNode</span><br><span class="line">        index = index + 1</span><br><span class="line">    &#125;</span><br><span class="line">    return firstNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="单链表倒序寻找倒数第N个节点"><a href="#单链表倒序寻找倒数第N个节点" class="headerlink" title="单链表倒序寻找倒数第N个节点"></a>单链表倒序寻找倒数第N个节点</h4><h5 id="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"><a href="#这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点" class="headerlink" title="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"></a>这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">       var firstNode = head</span><br><span class="line">       var secondNode = head</span><br><span class="line">       var index : Int = 0</span><br><span class="line">       while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode</span><br><span class="line">            index = index + 1</span><br><span class="line">            if (index &gt;= k) &#123;</span><br><span class="line">                secondNode = secondNode?.nextNode</span><br><span class="line">            &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="单链表倒序寻找中间节点"><a href="#单链表倒序寻找中间节点" class="headerlink" title="单链表倒序寻找中间节点"></a>单链表倒序寻找中间节点</h4><h5 id="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"><a href="#思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点" class="headerlink" title="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"></a>思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findMiddleNode() -&gt;LinkedNode&#123;</span><br><span class="line">        var firstNode = head</span><br><span class="line">        var secondNode = head</span><br><span class="line">        while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode?.nextNode</span><br><span class="line">            secondNode = secondNode?.nextNode</span><br><span class="line">        &#125;</span><br><span class="line">        return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="寻找一个含环链表的入口节点"><a href="#寻找一个含环链表的入口节点" class="headerlink" title="寻找一个含环链表的入口节点"></a>寻找一个含环链表的入口节点</h4><h5 id="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。"><a href="#思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。" class="headerlink" title="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。"></a>思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。</h5>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/09/25/swift详解链表结构(一)/" data-id="cjr0eb6e8000e87onoabpqf8s" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/09/25/swift详解链表结构(二)/" data-id="cjr1gh1lo0006e7ony8sp2j6o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
