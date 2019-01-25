@@ -5,20 +5,20 @@
   
 
   
-  <title>iOS探究Block的实现 | larbraryy的博客</title>
+  <title>iOS编译原理 | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
-<meta name="keywords" content="block">
+  <meta name="description" content="Clang编译到LLVM编译的过程1.预处理头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作 2.词法分析词法分析器读入源文件的字符流，产生词法单元（Token）作为输出 3.语法分析Token流会被解析成一颗抽象语法树（AST） 4.CodeGen遍历语法树，生成LLVM IR代码 5.生成汇编代码LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出 6.汇编器">
+<meta name="keywords" content="编译原理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS探究Block的实现">
-<meta property="og:url" content="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/index.html">
+<meta property="og:title" content="iOS编译原理">
+<meta property="og:url" content="https://hexoman.github.io/2019/01/18/iOS编译过程/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
+<meta property="og:description" content="Clang编译到LLVM编译的过程1.预处理头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作 2.词法分析词法分析器读入源文件的字符流，产生词法单元（Token）作为输出 3.语法分析Token流会被解析成一颗抽象语法树（AST） 4.CodeGen遍历语法树，生成LLVM IR代码 5.生成汇编代码LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出 6.汇编器">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2018-11-23T15:01:41.005Z">
+<meta property="og:updated_time" content="2019-01-22T15:39:16.759Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS探究Block的实现">
-<meta name="twitter:description" content="Block的类型 NSGlobalBlock 位于text段 NSStackBlock 位于栈内存 NSMallocBlock 位于堆内存  12345int a = 100;NSLog(@&amp;quot;位于text段,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot;&amp;quot;);&amp;#125;);NSLog(@&amp;quot;位于栈内,%@&amp;quot;,^&amp;#123;NSLog(@&amp;quot">
+<meta name="twitter:title" content="iOS编译原理">
+<meta name="twitter:description" content="Clang编译到LLVM编译的过程1.预处理头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作 2.词法分析词法分析器读入源文件的字符流，产生词法单元（Token）作为输出 3.语法分析Token流会被解析成一颗抽象语法树（AST） 4.CodeGen遍历语法树，生成LLVM IR代码 5.生成汇编代码LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出 6.汇编器">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -69,10 +69,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-iOS探究Block的实现" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-iOS编译过程" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2018/11/23/iOS探究Block的实现/" class="article-date">
-  <time datetime="2018-11-23T08:39:29.000Z" itemprop="datePublished">2018-11-23</time>
+    <a href="/2019/01/18/iOS编译过程/" class="article-date">
+  <time datetime="2019-01-17T16:00:00.000Z" itemprop="datePublished">2019-01-18</time>
 </a>
     
   <div class="article-category">
@@ -87,7 +87,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      iOS探究Block的实现
+      iOS编译原理
     </h1>
   
 
@@ -95,29 +95,51 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h3><ul>
-<li>NSGlobalBlock 位于text段</li>
-<li>NSStackBlock 位于栈内存</li>
-<li>NSMallocBlock 位于堆内存</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 100;</span><br><span class="line">NSLog(@&quot;位于text段,%@&quot;,^&#123;NSLog(@&quot;&quot;);&#125;);</span><br><span class="line">NSLog(@&quot;位于栈内,%@&quot;,^&#123;NSLog(@&quot;%d&quot;,a);&#125;);</span><br><span class="line">void (^block)(void) = ^&#123;NSLog(@&quot;%d&quot;,a);&#125;;</span><br><span class="line">NSLog(@&quot;位于堆内,%@&quot;,block);</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018-11-23 16:48:14.336424+0800 TestRuntime[14636:230602] 位于text段,&lt;__NSGlobalBlock__: 0x100002060&gt;</span><br><span class="line">2018-11-23 16:48:14.336534+0800 TestRuntime[14636:230602] 位于栈内,&lt;__NSStackBlock__: 0x7ffeefbfeb08&gt;</span><br><span class="line">2018-11-23 16:48:14.336641+0800 TestRuntime[14636:230602] 位于堆内,&lt;__NSMallocBlock__: 0x6000000503b0&gt;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>NSGlobalBlock是因为没有引用任何外部变量，block不需要建立局部变量值的快照。</li>
-<li>NSStackBlock使用了局部变量，局部变量的值被copy到栈上，以供block使用。但实际上很多场景都不是NSStackBlock，而是NSMallocBlock。这是因为ARC下编译器在NSStackBlock类型的block传递过程中进行了自动优化，将传递过程将 block拷贝到堆。分析见这篇文章<a href="https://www.jianshu.com/p/03ad4b2ecedf" target="_blank" rel="noopener">ARC下NSStackBlock去哪了。</a></li>
-<li>NSMallocBlock 拷贝block到堆上。</li>
+        <h3 id="Clang编译到LLVM编译的过程"><a href="#Clang编译到LLVM编译的过程" class="headerlink" title="Clang编译到LLVM编译的过程"></a>Clang编译到LLVM编译的过程</h3><h4 id="1-预处理"><a href="#1-预处理" class="headerlink" title="1.预处理"></a>1.预处理</h4><p>头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作</p>
+<h4 id="2-词法分析"><a href="#2-词法分析" class="headerlink" title="2.词法分析"></a>2.词法分析</h4><p>词法分析器读入源文件的字符流，产生词法单元（Token）作为输出</p>
+<h4 id="3-语法分析"><a href="#3-语法分析" class="headerlink" title="3.语法分析"></a>3.语法分析</h4><p>Token流会被解析成一颗抽象语法树（AST）</p>
+<h4 id="4-CodeGen"><a href="#4-CodeGen" class="headerlink" title="4.CodeGen"></a>4.CodeGen</h4><p>遍历语法树，生成LLVM IR代码</p>
+<h4 id="5-生成汇编代码"><a href="#5-生成汇编代码" class="headerlink" title="5.生成汇编代码"></a>5.生成汇编代码</h4><p>LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出</p>
+<h4 id="6-汇编器"><a href="#6-汇编器" class="headerlink" title="6.汇编器"></a>6.汇编器</h4><p>将汇编代码转为机器语言，最后输出目标文件</p>
+<h4 id="7-链接"><a href="#7-链接" class="headerlink" title="7.链接"></a>7.链接</h4><p>将编译产生的.o文件和dylib、a文件，生成一个mach-o文件</p>
+<h3 id="编译和启动加载的一些概念汇总"><a href="#编译和启动加载的一些概念汇总" class="headerlink" title="编译和启动加载的一些概念汇总"></a>编译和启动加载的一些概念汇总</h3><h4 id="App启动的过程"><a href="#App启动的过程" class="headerlink" title="App启动的过程"></a>App启动的过程</h4><ol>
+<li>解析info.plist，加载相关信息，建立沙盒和权限检查</li>
+<li>Mach-O加载</li>
+<li>调用main(), UIApplicationMain(), applicationWillFinishLaunching</li>
 </ol>
-<h3 id="block的使用"><a href="#block的使用" class="headerlink" title="__block的使用"></a>__block的使用</h3><p>Block内引用外部变量a是只读的，但是如果想在block内部改变a时，需要在定义a的时候使用__block修饰。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__block int a = 100;</span><br><span class="line">testBlock block = ^&#123;</span><br><span class="line">a++;</span><br><span class="line">&#125;;</span><br><span class="line">block();</span><br><span class="line">NSLog(@&quot;%d&quot;,a);</span><br></pre></td></tr></table></figure>
-<p>打印值为101，实际上传入block的是a的指针。</p>
+<h4 id="Mach-O流程（pre-main）"><a href="#Mach-O流程（pre-main）" class="headerlink" title="Mach-O流程（pre-main）"></a>Mach-O流程（pre-main）</h4><ul>
+<li>加载动态库dyld。dyld先读取mach-o的header和load commands，检查其依赖的动态库，递归加载，大多都是系统的动态库，会被缓存到dyld shared cache，提高读取效率。</li>
+<li>Rebase &amp;&amp; Bind。处于安全的考虑，ASLR使得地址随机化，导致起始地址不固定，Rebase修正内部（指向当前mach-o文件）的指针指向， Bind修正外部指针指向<br>，Rebase&amp;&amp;Bind用来指向正确的地址，Objective-C 中有很多数据结构都是靠 Rebasing 和 Binding 来修正（fix-up）的，比如 Class 中指向父类的指针和指向方法的指针。</li>
+<li>ObjC SetUp。读取二进制文件中Data段内容，找到objc相关信息；注册Objc类，ObjC Runtime 需要维护一张映射类名与类的全局表。当加载一个 dylib 时，其定义的所有的类都需要被注册到这个全局表中；读取 protocol 以及 category 的信息，把category的定义插入方法列表 (category registration)；确保 selector 的唯一性 </li>
+<li>Initializers。动态调整，在堆和栈中写入内容。<ul>
+<li>Objc的+load()函数</li>
+<li>C++的构造函数属性函数 形如attribute</li>
+<li>dyld开始将程序二进制文件初始化</li>
+<li>交由ImageLoader读取image，其中包含了我们的类、方法等各种符号</li>
+<li>runtime接手后调用mapimages做解析和处理，接下来loadimages中调用 callloadmethods方法，遍历所有加载进来的Class，按继承层级依次调用Class的+load方法和其 Category的+load方法</li>
+</ul>
+</li>
+</ul>
+<h4 id="ASLR地址空间布局随机化"><a href="#ASLR地址空间布局随机化" class="headerlink" title="ASLR地址空间布局随机化"></a>ASLR地址空间布局随机化</h4><p>如果采用ASLR，进程每次启动，地址空间都会被简单地随机化，防止黑客攻击</p>
+<h4 id="Code-Sign"><a href="#Code-Sign" class="headerlink" title="Code Sign"></a>Code Sign</h4><p>代码签名会直接写入到mach-o的可执行文件里，加密哈希不是针对于整个文件，而是针对于每一个Page的。这就保证了在dyld进行加载的时候，可以对每一个page进行独立的验证。</p>
+<h4 id="mach-o文件的组成"><a href="#mach-o文件的组成" class="headerlink" title="mach-o文件的组成"></a>mach-o文件的组成</h4><ul>
+<li>Header头部：包含可以执行的CPU架构，比如x86、arm64</li>
+<li>Load commands加载命令：包含文件的组织架构和在虚拟内存中的布局方式</li>
+<li>Data数据，包含load commands中需要的各个段(segement）数据，每个Segement都是Page的整数倍。每个 segement 又被划分成一些 section。segment 的名字都是大写的，且空间大小为页的整数。页的大小跟硬件有关，在 arm64 架构一页是 16KB，其余为 4KB。</li>
+</ul>
+<h4 id="Data部分包含三个段"><a href="#Data部分包含三个段" class="headerlink" title="Data部分包含三个段"></a>Data部分包含三个段</h4><ul>
+<li>_TEXT代码段，readonly,包含函数和只读字符串</li>
+<li>_DATA数据段，readwrite,包含可读写全局变量</li>
+<li>_LINKEDIT 包含方法和变量的位置、偏移量</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjrc4wgd90005cgon3dj650ly" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjrc4wgd20001cgonkjxk8a9z" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
 
     </footer>
   </div>
@@ -125,19 +147,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2018/11/29/数据结构：回溯法/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          数据结构：回溯法
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/22/iOS分类Category底层原理探究/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/01/14/重读经典之<设计模式>/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">iOS分类Category底层原理探究</div>
+      <div class="article-nav-title">重读经典之&lt;设计模式&gt;</div>
     </a>
   
 </nav>

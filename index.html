@@ -70,6 +70,85 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-iOS编译过程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/18/iOS编译过程/" class="article-date">
+  <time datetime="2019-01-17T16:00:00.000Z" itemprop="datePublished">2019-01-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Clang编译到LLVM编译的过程"><a href="#Clang编译到LLVM编译的过程" class="headerlink" title="Clang编译到LLVM编译的过程"></a>Clang编译到LLVM编译的过程</h3><h4 id="1-预处理"><a href="#1-预处理" class="headerlink" title="1.预处理"></a>1.预处理</h4><p>头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作</p>
+<h4 id="2-词法分析"><a href="#2-词法分析" class="headerlink" title="2.词法分析"></a>2.词法分析</h4><p>词法分析器读入源文件的字符流，产生词法单元（Token）作为输出</p>
+<h4 id="3-语法分析"><a href="#3-语法分析" class="headerlink" title="3.语法分析"></a>3.语法分析</h4><p>Token流会被解析成一颗抽象语法树（AST）</p>
+<h4 id="4-CodeGen"><a href="#4-CodeGen" class="headerlink" title="4.CodeGen"></a>4.CodeGen</h4><p>遍历语法树，生成LLVM IR代码</p>
+<h4 id="5-生成汇编代码"><a href="#5-生成汇编代码" class="headerlink" title="5.生成汇编代码"></a>5.生成汇编代码</h4><p>LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出</p>
+<h4 id="6-汇编器"><a href="#6-汇编器" class="headerlink" title="6.汇编器"></a>6.汇编器</h4><p>将汇编代码转为机器语言，最后输出目标文件</p>
+<h4 id="7-链接"><a href="#7-链接" class="headerlink" title="7.链接"></a>7.链接</h4><p>将编译产生的.o文件和dylib、a文件，生成一个mach-o文件</p>
+<h3 id="编译和启动加载的一些概念汇总"><a href="#编译和启动加载的一些概念汇总" class="headerlink" title="编译和启动加载的一些概念汇总"></a>编译和启动加载的一些概念汇总</h3><h4 id="App启动的过程"><a href="#App启动的过程" class="headerlink" title="App启动的过程"></a>App启动的过程</h4><ol>
+<li>解析info.plist，加载相关信息，建立沙盒和权限检查</li>
+<li>Mach-O加载</li>
+<li>调用main(), UIApplicationMain(), applicationWillFinishLaunching</li>
+</ol>
+<h4 id="Mach-O流程（pre-main）"><a href="#Mach-O流程（pre-main）" class="headerlink" title="Mach-O流程（pre-main）"></a>Mach-O流程（pre-main）</h4><ul>
+<li>加载动态库dyld。dyld先读取mach-o的header和load commands，检查其依赖的动态库，递归加载，大多都是系统的动态库，会被缓存到dyld shared cache，提高读取效率。</li>
+<li>Rebase &amp;&amp; Bind。处于安全的考虑，ASLR使得地址随机化，导致起始地址不固定，Rebase修正内部（指向当前mach-o文件）的指针指向， Bind修正外部指针指向<br>，Rebase&amp;&amp;Bind用来指向正确的地址，Objective-C 中有很多数据结构都是靠 Rebasing 和 Binding 来修正（fix-up）的，比如 Class 中指向父类的指针和指向方法的指针。</li>
+<li>ObjC SetUp。读取二进制文件中Data段内容，找到objc相关信息；注册Objc类，ObjC Runtime 需要维护一张映射类名与类的全局表。当加载一个 dylib 时，其定义的所有的类都需要被注册到这个全局表中；读取 protocol 以及 category 的信息，把category的定义插入方法列表 (category registration)；确保 selector 的唯一性 </li>
+<li>Initializers。动态调整，在堆和栈中写入内容。<ul>
+<li>Objc的+load()函数</li>
+<li>C++的构造函数属性函数 形如attribute</li>
+<li>dyld开始将程序二进制文件初始化</li>
+<li>交由ImageLoader读取image，其中包含了我们的类、方法等各种符号</li>
+<li>runtime接手后调用mapimages做解析和处理，接下来loadimages中调用 callloadmethods方法，遍历所有加载进来的Class，按继承层级依次调用Class的+load方法和其 Category的+load方法</li>
+</ul>
+</li>
+</ul>
+<h4 id="ASLR地址空间布局随机化"><a href="#ASLR地址空间布局随机化" class="headerlink" title="ASLR地址空间布局随机化"></a>ASLR地址空间布局随机化</h4><p>如果采用ASLR，进程每次启动，地址空间都会被简单地随机化，防止黑客攻击</p>
+<h4 id="Code-Sign"><a href="#Code-Sign" class="headerlink" title="Code Sign"></a>Code Sign</h4><p>代码签名会直接写入到mach-o的可执行文件里，加密哈希不是针对于整个文件，而是针对于每一个Page的。这就保证了在dyld进行加载的时候，可以对每一个page进行独立的验证。</p>
+<h4 id="mach-o文件的组成"><a href="#mach-o文件的组成" class="headerlink" title="mach-o文件的组成"></a>mach-o文件的组成</h4><ul>
+<li>Header头部：包含可以执行的CPU架构，比如x86、arm64</li>
+<li>Load commands加载命令：包含文件的组织架构和在虚拟内存中的布局方式</li>
+<li>Data数据，包含load commands中需要的各个段(segement）数据，每个Segement都是Page的整数倍。每个 segement 又被划分成一些 section。segment 的名字都是大写的，且空间大小为页的整数。页的大小跟硬件有关，在 arm64 架构一页是 16KB，其余为 4KB。</li>
+</ul>
+<h4 id="Data部分包含三个段"><a href="#Data部分包含三个段" class="headerlink" title="Data部分包含三个段"></a>Data部分包含三个段</h4><ul>
+<li>_TEXT代码段，readonly,包含函数和只读字符串</li>
+<li>_DATA数据段，readwrite,包含可读写全局变量</li>
+<li>_LINKEDIT 包含方法和变量的位置、偏移量</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjrc4wgd20001cgonkjxk8a9z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-重读经典之&lt;设计模式&gt;" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/14/重读经典之<设计模式>/" class="article-date">
@@ -146,7 +225,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/14/重读经典之<设计模式>/" data-id="cjr1gh1mm001se7onaesk3rt2" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/14/重读经典之<设计模式>/" data-id="cjrc4wgec001zcgonatuhhoge" class="article-share-link">Share</a>
       
       
     </footer>
@@ -203,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjr1gh1m3000ue7on9pwfzlyl" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjrc4wgds000wcgontu65x5g8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -260,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjr1gh1lm0005e7onokjt39or" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjrc4wgd90005cgon3dj650ly" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
@@ -323,7 +402,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjr1gh1ml001re7on1y0tvofx" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjrc4wgec001ycgonltt3s8lu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li></ul>
@@ -388,7 +467,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjr1gh1le0001e7ons5kkfsi8" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjrc4wgd70004cgon5x46r1ug" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图片优化/">图片优化</a></li></ul>
@@ -440,7 +519,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjr1gh1m0000ne7onq1dv4rj5" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjrc4wgda0006cgonkj3k1kqk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
@@ -489,7 +568,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjr1gh1lu000ge7on5jqmvfvs" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjrc4wgdq000tcgon8t7uv68q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
@@ -553,7 +632,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjr1gh1m2000re7onvaahun60" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjrc4wgdn000ncgonb2hexlo0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存/">内存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布/">分布</a></li></ul>
@@ -600,56 +679,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjr1gh1lr000ae7onnoe5bqb1" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjrc4wgdg000ecgoni6oz4iug" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-swift详解链表结构(二)" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/09/25/swift详解链表结构(二)/" class="article-date">
-  <time datetime="2018-09-24T16:00:00.000Z" itemprop="datePublished">2018-09-25</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/25/swift详解链表结构(二)/">swift详解链表结构(二）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上节实现了链表的一些基本操作，这篇继续查找，合并相关的算法。 </p>
-<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><h4 id="单链表正序寻找第N个节点"><a href="#单链表正序寻找第N个节点" class="headerlink" title="单链表正序寻找第N个节点"></a>单链表正序寻找第N个节点</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">    var firstNode = head</span><br><span class="line">    var index : Int = 1</span><br><span class="line">    while (index &lt; k) &#123;</span><br><span class="line">        firstNode = firstNode?.nextNode</span><br><span class="line">        index = index + 1</span><br><span class="line">    &#125;</span><br><span class="line">    return firstNode!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="单链表倒序寻找倒数第N个节点"><a href="#单链表倒序寻找倒数第N个节点" class="headerlink" title="单链表倒序寻找倒数第N个节点"></a>单链表倒序寻找倒数第N个节点</h4><h5 id="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"><a href="#这个算法的思路是让一个指针先跑，第二个指针后跑，相差k-那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点" class="headerlink" title="这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点"></a>这个算法的思路是让一个指针先跑，第二个指针后跑，相差k,那么第一个指针跑到结尾的时候，第二个指针也恰好跑到n-k的位置，即倒数k的节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func findNode(k:Int) -&gt;LinkedNode&#123;</span><br><span class="line">       var firstNode = head</span><br><span class="line">       var secondNode = head</span><br><span class="line">       var index : Int = 0</span><br><span class="line">       while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode</span><br><span class="line">            index = index + 1</span><br><span class="line">            if (index &gt;= k) &#123;</span><br><span class="line">                secondNode = secondNode?.nextNode</span><br><span class="line">            &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h4 id="单链表倒序寻找中间节点"><a href="#单链表倒序寻找中间节点" class="headerlink" title="单链表倒序寻找中间节点"></a>单链表倒序寻找中间节点</h4><h5 id="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"><a href="#思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点" class="headerlink" title="思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点"></a>思路和上一个差不多，第一个指针每次跑两步，第二个每次跑一步，那么第一个跑到结束的时候，第二个正好是整个链表长度的一半，即中间节点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func findMiddleNode() -&gt;LinkedNode&#123;</span><br><span class="line">        var firstNode = head</span><br><span class="line">        var secondNode = head</span><br><span class="line">        while (firstNode?.nextNode != nil) &#123;</span><br><span class="line">            firstNode = firstNode?.nextNode?.nextNode</span><br><span class="line">            secondNode = secondNode?.nextNode</span><br><span class="line">        &#125;</span><br><span class="line">        return secondNode!</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h4 id="寻找一个含环链表的入口节点"><a href="#寻找一个含环链表的入口节点" class="headerlink" title="寻找一个含环链表的入口节点"></a>寻找一个含环链表的入口节点</h4><h5 id="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。"><a href="#思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow-fast的时候，fast比slow多走n圈（2x-rn-x-x-rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast-slow-，x-y-y-x-n，即此时slow指向环的入口。" class="headerlink" title="思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。"></a>思路是第一个指针fast每次跑两步，第二个slow每次跑一步，那么当slow == fast的时候，fast比slow多走n圈（2x=rn+x,x=rn，所以多走的就是环圈的倍数），假设链表开头到环接口的距离是y，此时让fast回到头节点，那么x-y表示slow指针走过的除链表开头y在环中走过的距离，那么slow再走y步，此时fast结点与slow结点相遇，fast == slow ，x-y+y=x = n，即此时slow指向环的入口。</h5>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/09/25/swift详解链表结构(二)/" data-id="cjr1gh1lo0006e7ony8sp2j6o" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/链表/">链表</a></li></ul>
 
     </footer>
   </div>
@@ -683,7 +716,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -693,7 +726,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -715,6 +748,10 @@
       <ul>
         
           <li>
+            <a href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/14/重读经典之<设计模式>/">重读经典之&lt;设计模式&gt;</a>
           </li>
         
@@ -728,10 +765,6 @@
         
           <li>
             <a href="/2018/11/22/iOS分类Category底层原理探究/">iOS分类Category底层原理探究</a>
-          </li>
-        
-          <li>
-            <a href="/2018/11/20/iOS图片加载过程以及优化/">iOS图片加载过程以及优化</a>
           </li>
         
       </ul>
