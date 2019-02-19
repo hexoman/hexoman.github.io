@@ -70,6 +70,96 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Python爬虫之链家房价篇" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/19/Python爬虫之链家房价篇/" class="article-date">
+  <time datetime="2019-02-18T16:00:00.000Z" itemprop="datePublished">2019-02-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/python/">python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/19/Python爬虫之链家房价篇/">Python爬虫之链家房价篇</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前景回顾"><a href="#前景回顾" class="headerlink" title="前景回顾"></a>前景回顾</h3><p>   最近看房价飞涨就想是不是写个脚本分析下所关注的城市房价数据，爬虫语言的选有多种：Python、javaScript、Java等。因为python最近大热，有盖过Java的趋势，所以初步学习了下python，语法都是现学现用的（发现python语法真的是很飘逸)。</p>
+<h3 id="爬虫实现"><a href="#爬虫实现" class="headerlink" title="爬虫实现"></a>爬虫实现</h3><p>   采用的是最简单的静态爬取链家网页。说白了就是获取到网页html,格式化之后，采用正则或者xpath(<a href="https://www.cnblogs.com/lei0213/p/7506130.html" target="_blank" rel="noopener">xpath用法</a>)获取到文本信息，然后用一个超好用的图表库pyecharts，生成可视化图表。</p>
+<p>完整代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: UTF-8 -*-</span><br><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br><span class="line">import requests</span><br><span class="line">import urllib2</span><br><span class="line">from lxml import html</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pyecharts</span><br><span class="line">from pyecharts import Pie</span><br><span class="line">from pyecharts import Bar</span><br><span class="line">import numpy as np</span><br><span class="line">from docx import Document</span><br><span class="line">from docx.shared import Inches</span><br><span class="line">from PIL import Image</span><br><span class="line"></span><br><span class="line">CITY = &apos;&apos;</span><br><span class="line">DATACOUNT = 0</span><br><span class="line">TotalPage = 330</span><br><span class="line">fiveDownLevel = &apos;5k以下&apos;</span><br><span class="line">fiveKLevel = &apos;5k-1w&apos;</span><br><span class="line">OneOneLevel = &apos;1w-1.5w&apos;</span><br><span class="line">OneTwoLevel = &apos;1.5w-2w&apos;</span><br><span class="line">TwoOneLevel = &apos;2w-2.5w&apos;</span><br><span class="line">TwoTwoLevel = &apos;2.5w-3w&apos;</span><br><span class="line">ThreeAboveLevel = &apos;3w以上&apos;</span><br><span class="line">addressDict = &#123;&#125;</span><br><span class="line">priceDict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">def crow(i):</span><br><span class="line">    print(&apos;正在爬取第&#123;&#125;页,还剩&#123;&#125;页&apos;.format(i,TotalPage-i))</span><br><span class="line">    # 拼装第i页的网址</span><br><span class="line">    url = &apos;https://sh.lianjia.com/ershoufang/pg%s/&apos; % str(i)</span><br><span class="line"></span><br><span class="line">    # 构造模拟请求的客户端信息</span><br><span class="line">    headers = &#123;&apos;User-Agent&apos;:&apos;Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36&apos;&#125;</span><br><span class="line">    req = urllib2.Request(url=url,headers=headers)#这里要注意，必须使用url=url，headers=headers的格式，否则回报错，无法连接字符</span><br><span class="line">    response = urllib2.urlopen(req)#注意，这里要用req，不然就被添加userag</span><br><span class="line">    rst = response.read().decode(&quot;utf-8&quot;)</span><br><span class="line">    rst=html.fromstring(rst)</span><br><span class="line">    path = &apos;/html/body/div[4]/div[1]/ul/li&apos;</span><br><span class="line">    parseHtml(path, rst)</span><br><span class="line">    global CITY</span><br><span class="line">    st = rst.xpath(&apos;/html/body/div[2]/div[1]/div[1]/ul/li[1]/a/@title&apos;)[0].strip()</span><br><span class="line">    CITY = st[0:st.find(u&apos;在售二手房&apos;)]</span><br><span class="line"></span><br><span class="line">#解析网址</span><br><span class="line">def parseHtml(path, rst):</span><br><span class="line">    datas = rst.xpath(path)</span><br><span class="line">    global DATACOUNT </span><br><span class="line">    DATACOUNT += len(datas)</span><br><span class="line">    for data in datas:</span><br><span class="line">        title=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[1]/a/text()&apos;)</span><br><span class="line">        area=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[3]/div/a/text()&apos;)</span><br><span class="line">        houseInfo=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[2]/div/text()&apos;)</span><br><span class="line">        flood=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[3]/div/text()&apos;)</span><br><span class="line">        followInfo=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[4]/text()&apos;)</span><br><span class="line">        totalPrice=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[6]/div[1]/span/text()&apos;)</span><br><span class="line">        unitPrice=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[6]/div[2]/span/text()&apos;)</span><br><span class="line">        bulidDatas(area,totalPrice,unitPrice)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#组装分析的数据</span><br><span class="line">def bulidDatas(area,totalPrice,unitPrice): </span><br><span class="line">    #区域</span><br><span class="line">    ar = area[0].strip()</span><br><span class="line">    if ar in addressDict:</span><br><span class="line">       addressDict[ar].append(1)</span><br><span class="line">    else:</span><br><span class="line">       addressDict[ar] = [1] </span><br><span class="line">    </span><br><span class="line">    #均价 这里可以根据自己需求划分不同的价格范围</span><br><span class="line">    p = unitPrice[0].strip()</span><br><span class="line">    sp = p.find(&apos;单价&apos;)</span><br><span class="line">    kp = p.find(&apos;元&apos;)</span><br><span class="line">    startP = int(p[2:kp])   </span><br><span class="line">    if startP &lt; 5000:</span><br><span class="line">        p = fiveDownLevel</span><br><span class="line">    elif startP &gt;= 5000 and startP &lt; 10000:</span><br><span class="line">        p = fiveKLevel</span><br><span class="line">    elif startP &gt;= 10000 and startP &lt; 15000:</span><br><span class="line">        p = OneOneLevel</span><br><span class="line">    elif startP &gt;= 15000 and startP &lt; 20000:</span><br><span class="line">        p = OneTwoLevel      </span><br><span class="line">    elif startP &gt;= 20000 and startP &lt; 25000:</span><br><span class="line">        p = TwoOneLevel</span><br><span class="line">    elif startP &gt;= 25000 and startP &lt; 30000:</span><br><span class="line">        p = TwoTwoLevel</span><br><span class="line">    elif startP &gt;= 30000:</span><br><span class="line">        p = ThreeAboveLevel </span><br><span class="line">    if p in priceDict:</span><br><span class="line">       priceDict[p].append(1)</span><br><span class="line">    else:</span><br><span class="line">       priceDict[p] = [1] </span><br><span class="line"></span><br><span class="line">#绘制地址分布图表</span><br><span class="line">def drawAddressSheet():</span><br><span class="line">    labels = []</span><br><span class="line">    sizes = []</span><br><span class="line">    for key in addressDict:</span><br><span class="line">        labels.append(key)</span><br><span class="line">        vList = addressDict[key]</span><br><span class="line">        sizes.append(len(vList))</span><br><span class="line">    drawBarGraph(sizes,labels,&apos;%s区域范围分布图&apos;%CITY,&apos;机会数量&apos;,&apos;区域范围分布图&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#绘制薪资分布图表</span><br><span class="line">def drawPriceLevelSheet():</span><br><span class="line">    labels = []</span><br><span class="line">    sizes = []</span><br><span class="line">    for key in priceDict:</span><br><span class="line">        labels.append(key)</span><br><span class="line">        vList = priceDict[key]</span><br><span class="line">        sizes.append(len(vList))</span><br><span class="line">    drawBarGraph(sizes,labels,&apos;%s均价分布饼状图&apos;%CITY,&apos;薪资范围&apos;,&apos;均价分布柱形图&apos;)    </span><br><span class="line"></span><br><span class="line">def drawBarGraph(sizes,labels,title,category,imgName):</span><br><span class="line">    #饼状图</span><br><span class="line">    pie = Pie(title,title_pos=&apos;center&apos;)</span><br><span class="line">    # pie.add(category,labels,sizes,is_lable_show=True)</span><br><span class="line">    pie.add(category, labels, sizes, radius=[40, 75],</span><br><span class="line">        label_text_color=None,  #标签字体的颜色</span><br><span class="line">        is_label_show=True,</span><br><span class="line">        legend_orient=&apos;vertical&apos;,</span><br><span class="line">        legend_pos=&apos;left&apos;)</span><br><span class="line">    pie.render(path=&apos;./%s.png&apos; % imgName)</span><br><span class="line"></span><br><span class="line">    #柱形图</span><br><span class="line">    # bar = Bar(title,&apos;Theme&apos;,width=1100)</span><br><span class="line">    # bar.use_theme(&apos;dark&apos;)</span><br><span class="line">    # bar.add(category,labels,sizes)</span><br><span class="line">    # bar.render(path=&apos;./%s.png&apos; % imgName)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def saveToWord():</span><br><span class="line">    doc = Document()</span><br><span class="line">    doc.add_paragraph(u&apos;%s二手房行业分析报告&apos;%CITY + &apos;\n&apos;*2) </span><br><span class="line">    doc.add_picture(u&apos;%s区域范围分布图.png&apos;%CITY, width=Inches(8))</span><br><span class="line">    doc.add_paragraph(&apos;\n&apos;*2) </span><br><span class="line">    doc.add_picture(u&apos;%s均价分布饼状图.png&apos;%CITY, width=Inches(8))</span><br><span class="line">    doc.add_paragraph(&apos;\n&apos;*2) </span><br><span class="line">    doc.save(u&apos;行业分析报告.docx&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#开始抓取数据</span><br><span class="line">def startScraper():</span><br><span class="line">   for i in range(TotalPage):</span><br><span class="line">       print(&apos;爬取数据中...&apos;)</span><br><span class="line">       crow(i)</span><br><span class="line">   print(&apos;绘制中...&apos;)</span><br><span class="line">   drawAddressSheet()</span><br><span class="line">   drawPriceLevelSheet()</span><br><span class="line">   print(&apos;绘制完成&apos;)</span><br><span class="line">   print(&apos;总共爬取&#123;&#125;&#123;&#125;条数据&apos;.format(CITY,str(DATACOUNT)))</span><br><span class="line">   print(&apos;生成报告文档...&apos;)</span><br><span class="line">   saveToWord()</span><br><span class="line">   print(&apos;生成成功&apos;)</span><br><span class="line">startScraper()</span><br></pre></td></tr></table></figure>
+<p>生成图表如下(以无锡为例)：</p>
+<p><img src="../../images/均价分布柱形图.png" alt="avatar"></p>
+<p><img src="../../images/区域范围分布图.png" alt="avatar"></p>
+<hr>
+<hr>
+<h4 id="以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。"><a href="#以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。" class="headerlink" title="以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。"></a>以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/02/19/Python爬虫之链家房价篇/" data-id="cjsb44yli0000hs03mythsw7a" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-重读经典之&lt;&lt;设计模式&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/13/重读经典之<<设计模式>>/" class="article-date">
+  <time datetime="2019-02-12T16:00:00.000Z" itemprop="datePublished">2019-02-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/13/重读经典之<<设计模式>>/">重读经典之&lt;&lt;程序是如何跑起来的&gt;&gt;</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>  这本书比较浅显通俗，权当做。</p>
+<h3 id="软件设计的七大原则"><a href="#软件设计的七大原则" class="headerlink" title="软件设计的七大原则"></a>软件设计的七大原则</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjsb44ymd000xhs03mn0laik4" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-iOS编译过程" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/18/iOS编译过程/" class="article-date">
@@ -137,97 +227,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjrc4wgd20001cgonkjxk8a9z" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjsb44ymb000shs03r8w9jz9n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-重读经典之&lt;设计模式&gt;" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/01/14/重读经典之<设计模式>/" class="article-date">
-  <time datetime="2019-01-13T16:00:00.000Z" itemprop="datePublished">2019-01-14</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/读书/">读书</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/14/重读经典之<设计模式>/">重读经典之&lt;设计模式&gt;</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2018过去了，2019新的启程，今年可是立了flag的，至少读八本书。当然内容不局限于技术类书籍，包括金融、历史、思维等等，第一本读的是&lt;设计模式&gt;, 23种设计模式和7大设计原则并不是新鲜事物，其实大家都耳熟能详的，在编码的过程中也是运用自如，重读经典只是想对自己的理论体系做一次加固和回顾。</p>
-<h3 id="软件设计的七大原则"><a href="#软件设计的七大原则" class="headerlink" title="软件设计的七大原则"></a>软件设计的七大原则</h3><h5 id="1-里氏替换原则"><a href="#1-里氏替换原则" class="headerlink" title="1.里氏替换原则"></a>1.里氏替换原则</h5><p>  继承必须确保父类所拥有的性质在子类中仍然成立。通俗的说，子类可以扩展父类的功能，但不能改变父类的功能。如果通过重写父类的方法完成功能，继承体系的可复用性比较差，特别是多态的时候。</p>
-<h5 id="2-开闭原则"><a href="#2-开闭原则" class="headerlink" title="2.开闭原则"></a>2.开闭原则</h5><p>  软件实体应当对扩展开放，对修改关闭。通俗的说，当应用的需求改变时，在不修改软件实体的源代码前提下，可以扩展模块的功能，使其满足新的需求。这样设计的意义在于恶意提高复用性、灵活性和可维护性。</p>
-<h5 id="3-依赖倒置原则"><a href="#3-依赖倒置原则" class="headerlink" title="3.依赖倒置原则"></a>3.依赖倒置原则</h5><p>  高层模块不应该依赖低层模块，两者都应该依赖其抽象；抽象不应该依赖细节，细节应该依赖抽象。这样设计的好处是可以降低类之间的耦合性。</p>
-<h5 id="4-单一职责原则"><a href="#4-单一职责原则" class="headerlink" title="4.单一职责原则"></a>4.单一职责原则</h5><p>  规定一个类应该有且仅有一个引起它变化的原因，否则类应该被拆分。这样设计的优点是1.降低类的复杂度，2.提高类的可读性。3.提高系统的可维护性。</p>
-<h5 id="5-接口隔离原则"><a href="#5-接口隔离原则" class="headerlink" title="5.接口隔离原则"></a>5.接口隔离原则</h5><p>  一个类对另一个类的依赖应该建立在最小的接口上，即要为各个类建立它们需要的专用接口，而不要试图去建立一个很庞大的接口供所有依赖它的类去调用。这样设计可以约束接口，降低类对接口的依赖性。</p>
-<h5 id="6-迪米特法则"><a href="#6-迪米特法则" class="headerlink" title="6.迪米特法则"></a>6.迪米特法则</h5><p>  只和当前对象相关的实体交互，不和无关类交互。当前对象相关类包括当前对象本身、当前对象的成员对象、当前对象所创建的对象、当前对象的方法参数等，这些对象同当前对象存在关联、聚合或组合关系，可以直接访问这些对象的方法。</p>
-<h5 id="7-合成复用原则"><a href="#7-合成复用原则" class="headerlink" title="7.合成复用原则"></a>7.合成复用原则</h5><p>  即日常经常说到的组合，它要求在软件复用时，要尽量先使用组合或者聚合等关联关系来实现，其次才考虑使用继承关系来实现。 </p>
-<h3 id="软件设计的23种模式"><a href="#软件设计的23种模式" class="headerlink" title="软件设计的23种模式"></a>软件设计的23种模式</h3><h5 id="1-单例模式-Singleton"><a href="#1-单例模式-Singleton" class="headerlink" title="1.单例模式 (Singleton)"></a>1.单例模式 (Singleton)</h5><p>  只创建一次实例对象，并对外提供一个访问该单例的全局访问点。包括饿汉模式（类一旦加载就创建）和懒汉模式（加载时不创建，使用时创建)</p>
-<h5 id="2-原型模式-Prototype"><a href="#2-原型模式-Prototype" class="headerlink" title="2.原型模式 (Prototype)"></a>2.原型模式 (Prototype)</h5><p>  用一个已经创建的实例作为原型，通过复制该原型对象创建一个类似的新对象，一般使用Clone()方法。</p>
-<h5 id="3-工厂方法模式-FactoryMethod"><a href="#3-工厂方法模式-FactoryMethod" class="headerlink" title="3.工厂方法模式(FactoryMethod)"></a>3.工厂方法模式(FactoryMethod)</h5><p>  定义一个创建产品对象的工厂接口，将产品对象的实际创建工作推迟到具体子工厂类当中。无论增加多少种产品类，都不用修改原来类中代码，增加工厂类就可以实现。</p>
-<h5 id="4-抽象工厂模式-AbstractMethod"><a href="#4-抽象工厂模式-AbstractMethod" class="headerlink" title="4.抽象工厂模式(AbstractMethod)"></a>4.抽象工厂模式(AbstractMethod)</h5><p>  是一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。抽象工厂模式是工厂方法模式的升级版本，工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品</p>
-<hr>
-<ul>
-<li><p>工厂经历了简单工厂模式、工厂方法模式、抽象工厂模式三个阶段。<br>简单工厂模式三个参与者：工厂（Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个产品就增加一个子产品类，并在工厂添加对应的生产方法。</p>
-</li>
-<li><p>工厂方法模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)抽象产品（Abstract Product)、具体产品（Concrete Product),每添加一个新的产品就增加一个具体工厂类来生新产品，这样设计的好处是只需要添加新产品对应的具体工厂，不需要对原来代码改动。易于扩展，设计上也比较符合面向对象设计中的单一职责原则。</p>
-</li>
-<li><p>抽象工厂模式四个参与者：抽象工厂（Abstract Factory)、具体工厂（Concrete Factory)、抽象产品（Abstract Product)、具体产品（Concrete Product),抽象工厂模式与工厂方法模式的区别是，工厂方法模式每个具体工厂负责一个具体产品的实例创建，抽象工厂模式每个具体工厂负责多个或者一系列具体产品的实例创建。抽象工厂的最大好处在于隐藏真正的具体工厂，让调用者感觉不到内部差异性，屏蔽了内部实现，调用者只关注公有接口。</p>
-</li>
-</ul>
-<hr>
-<h5 id="5-建造者模式-Builder"><a href="#5-建造者模式-Builder" class="headerlink" title="5.建造者模式(Builder)"></a>5.建造者模式(Builder)</h5><p>  将一个复杂对象的构造和表示分离，分解为多个简单对象，然后一步步构建而成。</p>
-<h5 id="6-代理模式-Proxy"><a href="#6-代理模式-Proxy" class="headerlink" title="6.代理模式(Proxy)"></a>6.代理模式(Proxy)</h5><p>  处于某些原因的考虑需要给对象提供一个代理来控制对该对象的访问。代理实际上是一个中间层，可以保护访问目标对象，扩展目标对象的功能，降低系统耦合度。</p>
-<h5 id="7-适配器模式-Adapter"><a href="#7-适配器模式-Adapter" class="headerlink" title="7.适配器模式(Adapter)"></a>7.适配器模式(Adapter)</h5><p>  将目标类的接口转为另一种接口形式，使得目标类的接口可以兼容所有对接类。优点是可以不改变两端接口实现对接，复用目标类。</p>
-<h5 id="8-桥接模式-Bridge"><a href="#8-桥接模式-Bridge" class="headerlink" title="8.桥接模式(Bridge)"></a>8.桥接模式(Bridge)</h5><p>  基于类的最小设计原则，通过使用封装、聚合及继承等行为让不同的类承担不同的职责。它的主要特点是把抽象(Abstraction)与行为实现(Implementation)分离开来，从而可以保持各部分的独立性以及应对他们的功能扩展。</p>
-<hr>
-<ul>
-<li>Adapter和Bridge有一定的共性，Adapter主要是解决两个已有接口之间不匹配的问题，不考虑接口如何实现。Bridge模式则对抽象接口与它的实现部分进行桥接，需要在设计之前实施。</li>
-</ul>
-<hr>
-<h5 id="9-装饰模式-Decorator"><a href="#9-装饰模式-Decorator" class="headerlink" title="9.装饰模式(Decorator)"></a>9.装饰模式(Decorator)</h5><p>在不改变现有对象结构的情况下，动态地给该对象增加一些职责（即增加其额外功能）的模式。</p>
-<h5 id="10-外观模式-Facade"><a href="#10-外观模式-Facade" class="headerlink" title="10.外观模式(Facade)"></a>10.外观模式(Facade)</h5><p> 为多个复杂的子系统提供一个一致的接口，外部不需要关心内部子系统实现的具体细节，这样设计的目的是降低复杂度，提升可维护性。</p>
-<h5 id="11-享元模式-Flyweight"><a href="#11-享元模式-Flyweight" class="headerlink" title="11.享元模式(Flyweight)"></a>11.享元模式(Flyweight)</h5><p>  用共享来实现大量细粒度对象的复用，通过复用减少大量数据和对象的创建和开销，从而提高系统资源的利用率。</p>
-<h5 id="12-策略模式-Strategy"><a href="#12-策略模式-Strategy" class="headerlink" title="12.策略模式(Strategy)"></a>12.策略模式(Strategy)</h5><p>  定义一系列的算法，并将之封装起来，使它们可以互相替换，算法的变化不影响使用者。</p>
-<h5 id="13-命令模式-Command"><a href="#13-命令模式-Command" class="headerlink" title="13.命令模式(Command)"></a>13.命令模式(Command)</h5><p>  将一个请求封装为一个对象，使发出请求的责任和执行请求的责任分割开。这样两者之间通过命令对象进行沟通，这样方便将命令对象进行储存、传递、调用、增加与管理。</p>
-<h5 id="14-责任链模式-Chain-of-Responsibility"><a href="#14-责任链模式-Chain-of-Responsibility" class="headerlink" title="14.责任链模式(Chain of Responsibility)"></a>14.责任链模式(Chain of Responsibility)</h5><p>  为了避免请求发送者与多个请求处理者耦合在一起，将所有请求的处理者通过前一对象记住其下一个对象的引用而连成一条链；当有请求发生时，可将请求沿着这条链传递，直到有对象处理它为止。移动前端的响应链即是这种模式。</p>
-<h5 id="15-状态模式-State"><a href="#15-状态模式-State" class="headerlink" title="15.状态模式(State)"></a>15.状态模式(State)</h5><p>对有状态的对象，把复杂的“判断逻辑”提取到不同的状态对象中，允许状态对象在其内部状态发生改变时改变其行为，通俗的说就是将一个对象的状态封装到一个类中去，这个类中值（状态）的改变可以通知到该对象并作出相应的操作。</p>
-<h5 id="16-观察者模式-Observer"><a href="#16-观察者模式-Observer" class="headerlink" title="16.观察者模式(Observer)"></a>16.观察者模式(Observer)</h5><p>指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并被自动更新。这种模式有时又称作发布-订阅模式、模型-视图模式。</p>
-<h5 id="17-中介者模式-Mediator"><a href="#17-中介者模式-Mediator" class="headerlink" title="17.中介者模式(Mediator)"></a>17.中介者模式(Mediator)</h5><p>定义一个中介对象来桥接一系列对象之间的交互，使原来的对象之间松耦合。使迪米特法则的典型应用。</p>
-<h5 id="18-迭代器模式-Iterator"><a href="#18-迭代器模式-Iterator" class="headerlink" title="18.迭代器模式(Iterator)"></a>18.迭代器模式(Iterator)</h5><p>提供一个对象来顺序访问聚合对象中的一系列数据，而不暴露聚合对象的内部表示.</p>
-<h5 id="19-访问者模式-Visitor"><a href="#19-访问者模式-Visitor" class="headerlink" title="19.访问者模式(Visitor)"></a>19.访问者模式(Visitor)</h5><p>将作用于某种数据结构中的各元素的操作分离出来封装成独立的类，使其在不改变数据结构的前提下可以添加作用于这些元素的新的操作，为数据结构中的每个元素提供多种访问方式</p>
-<h5 id="20-备忘录模式-Memento"><a href="#20-备忘录模式-Memento" class="headerlink" title="20.备忘录模式(Memento)"></a>20.备忘录模式(Memento)</h5><p>   在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态，以便以后当需要时能将该对象恢复到原先保存的状态。该模式又叫快照模式。通俗的说，就是保存一个对象初始状态，以便之后可以恢复这个对象。</p>
-<h5 id="21-解释器模式-Interpreter"><a href="#21-解释器模式-Interpreter" class="headerlink" title="21.解释器模式(Interpreter)"></a>21.解释器模式(Interpreter)</h5><p>   给分析对象定义一个语言，并定义该语言的文法表示，再设计一个解析器来解释语言中的句子。也就是说，用编译语言的方式来分析应用中的实例</p>
-<h5 id="22-模板方法模式-Template-Method"><a href="#22-模板方法模式-Template-Method" class="headerlink" title="22.模板方法模式(Template Method)"></a>22.模板方法模式(Template Method)</h5><p>   定义一个操作中的算法骨架，而将算法的一些步骤延迟到子类中，使得子类可以不改变该算法结构的情况下重定义该算法的某些特定步骤。可以封装不变的部分，扩展可变的部分，在父类中提取公共部分代码，便于代码复用。</p>
-<h5 id="23-组合模式-Composite"><a href="#23-组合模式-Composite" class="headerlink" title="23.组合模式(Composite)"></a>23.组合模式(Composite)</h5><p>   它是一种将对象组合成树状的层次结构的模式，用来表示“部分-整体”的关系，使用户对单个对象和组合对象具有一致的访问性</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/14/重读经典之<设计模式>/" data-id="cjrc4wgec001zcgonatuhhoge" class="article-share-link">Share</a>
-      
-      
     </footer>
   </div>
   
@@ -282,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjrc4wgds000wcgontu65x5g8" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjsb44ymf0012hs03zovvm1i6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -339,7 +343,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjrc4wgd90005cgon3dj650ly" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjsb44ylv0005hs03a98e0pjx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
@@ -402,7 +406,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjrc4wgec001ycgonltt3s8lu" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjsb44ymy0023hs03ndlokh8g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li></ul>
@@ -467,7 +471,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjrc4wgd70004cgon5x46r1ug" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjsb44ylt0003hs033q6o0jty" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图片优化/">图片优化</a></li></ul>
@@ -519,7 +523,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjrc4wgda0006cgonkj3k1kqk" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjsb44ylx0008hs031ox45xiv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
@@ -568,7 +572,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjrc4wgdq000tcgon8t7uv68q" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/20/常用的几种排序算法/" data-id="cjsb44ymc000whs03fr6pfoi6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
@@ -632,57 +636,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjrc4wgdn000ncgonb2hexlo0" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/10/10/内存的几大分布区域/" data-id="cjsb44ym8000mhs033kx1lmcj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存/">内存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布/">分布</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-swift实现几种排序算法" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/09/swift实现几种排序算法/" class="article-date">
-  <time datetime="2018-10-08T16:00:00.000Z" itemprop="datePublished">2018-10-09</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/09/swift实现几种排序算法/">swift实现几种排序算法</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="为什么要使用链表"><a href="#为什么要使用链表" class="headerlink" title="为什么要使用链表"></a>为什么要使用链表</h3><ol>
-<li>数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1)</li>
-<li>可以解决数组无法存储多种数据类型的问题</li>
-</ol>
-<p>关于链表的原理不多做赘述了，分为单向链表和双向链表。 </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjrc4wgdg000ecgoni6oz4iug" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
 
     </footer>
   </div>
@@ -706,7 +663,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
     </div>
   </div>
 
@@ -735,7 +692,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
     </div>
   </div>
 
@@ -748,11 +705,15 @@
       <ul>
         
           <li>
-            <a href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
+            <a href="/2019/02/19/Python爬虫之链家房价篇/">Python爬虫之链家房价篇</a>
           </li>
         
           <li>
-            <a href="/2019/01/14/重读经典之<设计模式>/">重读经典之&lt;设计模式&gt;</a>
+            <a href="/2019/02/13/重读经典之<<设计模式>>/">重读经典之&lt;&lt;程序是如何跑起来的&gt;&gt;</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
           </li>
         
           <li>
@@ -761,10 +722,6 @@
         
           <li>
             <a href="/2018/11/23/iOS探究Block的实现/">iOS探究Block的实现</a>
-          </li>
-        
-          <li>
-            <a href="/2018/11/22/iOS分类Category底层原理探究/">iOS分类Category底层原理探究</a>
           </li>
         
       </ul>
