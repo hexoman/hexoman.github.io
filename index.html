@@ -70,6 +70,112 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
+  <time datetime="2019-03-07T16:00:00.000Z" itemprop="datePublished">2019-03-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+<p>打印如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Darwin Kernel Version 17.7.0: Wed Oct 10 23:06:14 PDT 2018; root:xnu-4570.71.13~1/RELEASE_X86_64 x86_64</span><br></pre></td></tr></table></figure>
+<h2 id="一、OS-X和iOS的架构"><a href="#一、OS-X和iOS的架构" class="headerlink" title="一、OS X和iOS的架构"></a>一、OS X和iOS的架构</h2><h3 id="1-1-UNIX的系统目录"><a href="#1-1-UNIX的系统目录" class="headerlink" title="1.1 UNIX的系统目录"></a>1.1 UNIX的系统目录</h3><p>OS X是一个符合UNIX标准的系统。</p>
+<ul>
+<li>/bin:UNIX二进制程序，常用UNIX命令（ls、mv）所在的目录</li>
+<li>/sbin: 系统程序，用于系统管理，例如文件系统管理和网络配置</li>
+<li>/usr: 第三方软件可以安装在这里</li>
+<li>/etc: 其他文件。包含大部分系统的配置文件，例如密码文件（/etc/password)</li>
+<li>/dev: BSD设备文件，这些特殊文件表示了系统中存在的设备（字符设备和块设备）</li>
+<li>/tmp: 临时目录。唯一一个所有人都能读写的目录</li>
+<li>/var: 各种杂项文件。日志文件、邮件存储等</li>
+</ul>
+<h3 id="1-2"><a href="#1-2" class="headerlink" title="1.2"></a>1.2</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt1l71sv001czkon0rog7huk" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-深入理解weak源码" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/06/深入理解weak源码/" class="article-date">
+  <time datetime="2019-03-05T16:00:00.000Z" itemprop="datePublished">2019-03-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="weak源码解析"><a href="#weak源码解析" class="headerlink" title="weak源码解析"></a>weak源码解析</h2><h3 id="weak原理概括"><a href="#weak原理概括" class="headerlink" title="weak原理概括"></a>weak原理概括</h3><p>runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。key是这个对象的地址，value是weak指针的地址数组。</p>
+<h3 id="objc-initWeak"><a href="#objc-initWeak" class="headerlink" title="objc_initWeak"></a>objc_initWeak</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">objc_initWeak(id *location, id newObj)</span><br><span class="line">&#123;</span><br><span class="line">    //实例对象是否有效，无效则释放指针</span><br><span class="line">    if (!newObj) &#123;</span><br><span class="line">        *location = nil;</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">//用template传递三个bool</span><br><span class="line">return storeWeak&lt;DontHaveOld, DoHaveNew, DoCrashIfDeallocating&gt;</span><br><span class="line">    (location, (objc_object*)newObj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>初始化时，调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址，判断实例对象是否有效，无效则释放指针，有效则继续往下调用storeWeak</p>
+<h3 id="storeWeak"><a href="#storeWeak" class="headerlink" title="storeWeak"></a>storeWeak</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">//更新指针指向</span><br><span class="line">//HaveOld = true,说明这个对象有值，需要被清理，可能为nil</span><br><span class="line">//HaveNew = true,说明有个新的值需要更新到当前对象，可能为nil</span><br><span class="line">//CrashIfDeallocating = true,newObj被释放或者不支持弱引用，进程会暂停</span><br><span class="line">//CrashIfDeallocating = false,用 nil 替代存储</span><br><span class="line">template &lt;HaveOld haveOld, HaveNew haveNew,</span><br><span class="line">          CrashIfDeallocating crashIfDeallocating&gt;</span><br><span class="line">static id </span><br><span class="line">storeWeak(id *location, objc_object *newObj)</span><br><span class="line">&#123;</span><br><span class="line">    assert(haveOld  ||  haveNew);</span><br><span class="line">    if (!haveNew) assert(newObj == nil);</span><br><span class="line"></span><br><span class="line">    Class previouslyInitializedClass = nil;</span><br><span class="line">    id oldObj;</span><br><span class="line">    //创建新旧两个SideTable结构体</span><br><span class="line">    SideTable *oldTable;</span><br><span class="line">    SideTable *newTable;</span><br><span class="line"></span><br><span class="line">    // Acquire locks for old and new values.</span><br><span class="line">    // Order by lock address to prevent lock ordering problems. </span><br><span class="line">    // Retry if the old value changes underneath us.</span><br><span class="line"> retry:</span><br><span class="line">    if (haveOld) &#123;</span><br><span class="line">       //有旧值，获得以oldObj为索引存储的值地址</span><br><span class="line">        oldObj = *location;</span><br><span class="line">        oldTable = &amp;SideTables()[oldObj];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        oldTable = nil;</span><br><span class="line">    &#125;</span><br><span class="line">    if (haveNew) &#123;</span><br><span class="line">        //获得以newObj为索引存储的值地址</span><br><span class="line">        newTable = &amp;SideTables()[newObj];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        newTable = nil;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //加锁</span><br><span class="line">    SideTable::lockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line"></span><br><span class="line">    if (haveOld  &amp;&amp;  *location != oldObj) &#123;</span><br><span class="line">        //location和oldObj不同，说明已经处理过</span><br><span class="line">        SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line">        goto retry;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //使用previouslyInitializedClass和Initialize来保护线程</span><br><span class="line">    if (haveNew  &amp;&amp;  newObj) &#123;</span><br><span class="line">        //获取新对象的isa指针</span><br><span class="line">        Class cls = newObj-&gt;getIsa();</span><br><span class="line">        //</span><br><span class="line">        if (cls != previouslyInitializedClass  &amp;&amp;  </span><br><span class="line">            !((objc_class *)cls)-&gt;isInitialized()) </span><br><span class="line">        &#123;</span><br><span class="line">            // 解锁</span><br><span class="line">            SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line">            //初始化isa指针</span><br><span class="line">            _class_initialize(_class_getNonMetaClass(cls, (id)newObj));</span><br><span class="line"></span><br><span class="line">            //把cls赋给previouslyInitializedClass，是为了标记之后做多线程保护</span><br><span class="line">            previouslyInitializedClass = cls;</span><br><span class="line">            //重试</span><br><span class="line">            goto retry;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //清楚旧值</span><br><span class="line">    if (haveOld) &#123;</span><br><span class="line">        weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //替换新值</span><br><span class="line">    if (haveNew) &#123;</span><br><span class="line">        newObj = (objc_object *)</span><br><span class="line">            weak_register_no_lock(&amp;newTable-&gt;weak_table, (id)newObj, location, </span><br><span class="line">                                  crashIfDeallocating);</span><br><span class="line"></span><br><span class="line">        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) &#123;</span><br><span class="line">            newObj-&gt;setWeaklyReferenced_nolock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //改变指针指向</span><br><span class="line">        *location = (id)newObj;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        //没有新值</span><br><span class="line">    &#125;</span><br><span class="line">    //解锁</span><br><span class="line">    SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line"></span><br><span class="line">    return (id)newObj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总的来说，storeWeak就是一直更新指针并创建弱引用表的过程。继续来看下SideTable结构和weak_table_t</p>
+<h3 id="SideTable"><a href="#SideTable" class="headerlink" title="SideTable"></a>SideTable</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">struct SideTable &#123;</span><br><span class="line">    //自旋锁</span><br><span class="line">    spinlock_t slock;</span><br><span class="line">    //引用计数表</span><br><span class="line">    RefcountMap refcnts;</span><br><span class="line">    //weak引用表</span><br><span class="line">    weak_table_t weak_table;</span><br><span class="line"></span><br><span class="line">    //构造方法</span><br><span class="line">    SideTable() &#123;</span><br><span class="line">        memset(&amp;weak_table, 0, sizeof(weak_table));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //析构函数</span><br><span class="line">    ~SideTable() &#123;</span><br><span class="line">        _objc_fatal(&quot;Do not delete SideTable.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //加锁</span><br><span class="line">    void lock() &#123; slock.lock(); &#125;</span><br><span class="line">    //解锁</span><br><span class="line">    void unlock() &#123; slock.unlock(); &#125;</span><br><span class="line">    void forceReset() &#123; slock.forceReset(); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>SideTable是用来管理引用计数和weak表，使用spinlock_lock自旋锁来防止操作表结构的时候可能的竞争。</p>
+<h3 id="weak-table-t"><a href="#weak-table-t" class="headerlink" title="weak_table_t"></a>weak_table_t</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct weak_table_t &#123;</span><br><span class="line">    weak_entry_t *weak_entries; //保存所有指向对象的指针</span><br><span class="line">    size_t    num_entries;  //空间大小</span><br><span class="line">    uintptr_t mask;</span><br><span class="line">    uintptr_t max_hash_displacement;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="weak-entry-t"><a href="#weak-entry-t" class="headerlink" title="weak_entry_t"></a>weak_entry_t</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct weak_entry_t &#123;</span><br><span class="line">    DisguisedPtr&lt;objc_object&gt; referent; // 封装 objc_object 指针，即 weak 修饰的变量指向的对象</span><br><span class="line">    union &#123;</span><br><span class="line">        struct &#123;</span><br><span class="line">            weak_referrer_t *referrers; //弱引用指针</span><br><span class="line">            uintptr_t        out_of_line_ness : 2;</span><br><span class="line">            uintptr_t        num_refs : PTR_MINUS_2;/ 引用数值，这里记录弱引用表中引用有效数字，即里面元素的数量</span><br><span class="line">            uintptr_t        mask;</span><br><span class="line">            uintptr_t        max_hash_displacement;// hash 元素上限阀值</span><br><span class="line">        &#125;;</span><br><span class="line">        struct &#123;</span><br><span class="line">            // out_of_line_ness field is low bits of inline_referrers[1]</span><br><span class="line">            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>weak_entry_t负责维护和存储指向一个对象的所有弱引用hash表。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt1l71so0013zkonm0nnt7uy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weak/">weak</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-python学习笔记之基础语法" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/02/python学习笔记之基础语法/" class="article-date">
@@ -123,7 +229,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjsua04750005e803usxm9ogp" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt1l71s60006zkonz1la3sud" class="article-share-link">Share</a>
       
       
     </footer>
@@ -184,7 +290,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjsua048i002ae803dp7mqae7" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt1l71tc002ezkonhbf96j9o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li></ul>
@@ -235,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjsua04780009e80312cbrg7o" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt1l71s7000azkont2hii4g3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -271,12 +377,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>  这本书比较浅显通俗，权当做。</p>
-<h3 id="软件设计的七大原则"><a href="#软件设计的七大原则" class="headerlink" title="软件设计的七大原则"></a>软件设计的七大原则</h3>
+        <h3 id="d"><a href="#d" class="headerlink" title="d"></a>d</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjsua047r0014e80393zu17wk" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt1l71ss0015zkonv164abpp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -353,7 +458,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjsua04740004e803wxhh3w71" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt1l71s40005zkon6fhrtd86" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
@@ -412,7 +517,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjsua047p0012e803d0vdyjoe" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt1l71st0019zkon141lq466" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -469,7 +574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjsua04760006e803dnvilgau" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt1l71s30004zkonygc90t6w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
@@ -532,127 +637,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjsua048h0029e803tfynqqhc" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/22/iOS分类Category底层原理探究/" data-id="cjt1l71tb002dzkonfv19pfrx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/category/">category</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-iOS图片加载过程以及优化" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/20/iOS图片加载过程以及优化/" class="article-date">
-  <time datetime="2018-11-19T16:00:00.000Z" itemprop="datePublished">2018-11-20</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/20/iOS图片加载过程以及优化/">iOS图片加载过程以及优化</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="UIImageView加载图片的过程"><a href="#UIImageView加载图片的过程" class="headerlink" title="UIImageView加载图片的过程"></a>UIImageView加载图片的过程</h3><ol>
-<li><p>从磁盘拷贝数据到内核缓冲区域；</p>
-</li>
-<li><p>从内核缓存区域复制数据到用户内存；</p>
-</li>
-<li><p>UIImage赋值给UIImageView的image时，图像数据会被解码，变成位图数，内存大小为  width <em> height </em>4bytes （4bytes:每个像素点的大小) 。</p>
-</li>
-<li><p>CTTransaction捕捉到UIImageView layer树的变化；</p>
-</li>
-<li><p>主线程 runloop提交CTTransaction，开始图像渲染。（如果数据没有<a href="https://blog.csdn.net/weixin_40853073/article/details/81451792" target="_blank" rel="noopener">字节对齐</a>，Core Animation会再拷贝一份数据，进行字节对齐，GPU处理位图数据，进行渲染）。</p>
-</li>
-</ol>
-<h3 id="UIImage几种加载方式的区别"><a href="#UIImage几种加载方式的区别" class="headerlink" title="UIImage几种加载方式的区别"></a>UIImage几种加载方式的区别</h3><ul>
-<li><p>imageNamed：在图片第一次渲染到屏幕的时候触发解码，缓存解码之后的数据，缓存在全局内存中，不会随着UIImage的释放而释放。</p>
-</li>
-<li><p>imageWithContentsOfFile: 或 imageWithData: 与imageNamed不同的是会随着UIImage的释放而释放。</p>
-</li>
-</ul>
-<h3 id="几种优化思路"><a href="#几种优化思路" class="headerlink" title="几种优化思路"></a>几种优化思路</h3><h4 id="降低采样率"><a href="#降低采样率" class="headerlink" title="降低采样率"></a>降低采样率</h4><p>即减少加载UIImage内存的大小,根据imageview实际size来加载，可以减少内存占用。解码后生成CGImage缩略图，再转化为UIImage,然后传给UIImgaeView渲染展示。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">NSInteger imageSize = MAX(size.height, size.width);</span><br><span class="line">CGImageRef thumbnailImage;</span><br><span class="line">CGImageSourceRef imageSource;</span><br><span class="line">    </span><br><span class="line">CFDictionaryRef imageOptions;</span><br><span class="line">CFStringRef imageKeys[3];</span><br><span class="line">CFTypeRef imageValues[3];</span><br><span class="line">    </span><br><span class="line">CFNumberRef thumbnailSize;</span><br><span class="line">//先判断数据是否存在</span><br><span class="line">imageSource = CGImageSourceCreateWithURL((CFURLRef)url, NULL);</span><br><span class="line">    </span><br><span class="line">if (imageSource == NULL) &#123;</span><br><span class="line">    fprintf(stderr, &quot;Image source is NULL.&quot;);</span><br><span class="line">    return  NULL;</span><br><span class="line">&#125;</span><br><span class="line">//创建缩略图等比缩放大小，会根据长宽值比较大的作为imageSize进行缩放</span><br><span class="line">thumbnailSize = CFNumberCreate(NULL, kCFNumberIntType, &amp;imageSize);</span><br><span class="line">    </span><br><span class="line">imageKeys[0] = kCGImageSourceCreateThumbnailWithTransform;</span><br><span class="line">imageValues[0] = (CFTypeRef)kCFBooleanTrue;</span><br><span class="line">    </span><br><span class="line">imageKeys[1] = kCGImageSourceCreateThumbnailFromImageIfAbsent;</span><br><span class="line">imageValues[1] = (CFTypeRef)kCFBooleanTrue;</span><br><span class="line">//缩放键值对</span><br><span class="line">imageKeys[2] = kCGImageSourceThumbnailMaxPixelSize;</span><br><span class="line">imageValues[2] = (CFTypeRef)thumbnailSize;</span><br><span class="line">    </span><br><span class="line">imageOptions = CFDictionaryCreate(NULL, (const void **) imageKeys,</span><br><span class="line">                                  (const void **) imageValues, 3,</span><br><span class="line">                                  &amp;kCFTypeDictionaryKeyCallBacks,</span><br><span class="line">                                  &amp;kCFTypeDictionaryValueCallBacks);</span><br><span class="line">//获取缩略图</span><br><span class="line">thumbnailImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, imageOptions);</span><br><span class="line">CFRelease(imageOptions);</span><br><span class="line">CFRelease(thumbnailSize);</span><br><span class="line">CFRelease(imageSource);</span><br><span class="line">if (thumbnailImage == NULL) &#123;</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line">return [UIImage imageWithCGImage:thumbnailImage];</span><br></pre></td></tr></table></figure>
-<h4 id="异步解码"><a href="#异步解码" class="headerlink" title="异步解码"></a>异步解码</h4><p>解码的操作在主线程，比较耗费CPU的资源。可以把耗时的解码操作放入子线程，解码完成之后再回调到主线程刷新，例如SDWebImage。还有更加极限的优化是在子线程解码之后，将解码之后的图片存在磁盘之中，例如<a href="https://github.com/path/FastImageCache" target="_blank" rel="noopener">FastImageCache</a>。</p>
-<h4 id="mmap内存映射"><a href="#mmap内存映射" class="headerlink" title="mmap内存映射"></a>mmap内存映射</h4><p>上面提到过从磁盘读取数据时，需要把数据读入内核缓冲区，然后复制到用户内存空间，是比较耗时的。mmap是把文件映射到用户空间的虚拟内存，等同于把文件放入内存，操作中并不消耗物理内存，效率比较高。</p>
-<h4 id="字节对齐"><a href="#字节对齐" class="headerlink" title="字节对齐"></a>字节对齐</h4><p>UIImageView在渲染之前对于未字节对齐的图像数据拷贝一份，然后进行字节对齐的操作，这一过程消耗也比较多。可以统一管理和优化字节对齐的时机。FastImageCache也针对字节对齐做了优化管理。具体将在下文重点分析FastImageCache。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/20/iOS图片加载过程以及优化/" data-id="cjsua04700001e803e3ybs3x1" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图片优化/">图片优化</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-swift如何用栈实现一个队列" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/05/swift如何用栈实现一个队列/" class="article-date">
-  <time datetime="2018-11-04T16:00:00.000Z" itemprop="datePublished">2018-11-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/05/swift如何用栈实现一个队列/">swift用Stack实现一个队列</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h3><p>栈是先进后出，而队列是先进先出，完全不同的顺序，如何做到用栈来实现队列呢？初步的思路是，将栈内容完全反转，这里我们需要两个栈，栈A为原始数据，然后反序压入栈B，再从栈B压出去，那么对于栈A来说数据就是先进先出了</p>
-<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>首先实现一个stack，定义压栈push、出栈pop、获取内容个数的size等接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">struct Stack&lt;Int&gt; &#123;</span><br><span class="line">    var items = [Int]()</span><br><span class="line">    mutating func push (item: Int) &#123;</span><br><span class="line">       items.append(item)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func size() -&gt; Int &#123;</span><br><span class="line">        return items.count as! Int;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    mutating func pop() -&gt;Int &#123;</span><br><span class="line">        if items.count &lt; 1 &#123;</span><br><span class="line">            return 0 as! Int</span><br><span class="line">        &#125;</span><br><span class="line">        return items.removeLast();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//定义两个栈A和B</span><br><span class="line">var stackNew = Stack&lt;Int&gt;()</span><br><span class="line">var stackOld = Stack&lt;Int&gt;()</span><br></pre></td></tr></table></figure>
-<p>入队操作，在A栈中压进item。出队操作，在B栈为空的情况下，把A栈压出的item压入B栈，那么位于A栈顶的item将位于B栈底，从而实现AB的顺序反转，如果B栈不为空，则按顺序压出item。从而实现A栈中原始数据的先进先出。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">//入队操作</span><br><span class="line">func enQueue(item: Int) &#123;</span><br><span class="line">    stackOld.push(item: item)</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">//出队列操作</span><br><span class="line">func deQueque() -&gt; Int&#123;</span><br><span class="line">    if stackNew.size() == 0 &#123;</span><br><span class="line">        if stackOld.size() == 0 &#123;</span><br><span class="line">            return 0</span><br><span class="line">        &#125;</span><br><span class="line">        reservseStack()</span><br><span class="line">    &#125;</span><br><span class="line">    return stackNew.pop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//新生成一个反序的栈</span><br><span class="line">func reservseStack()&#123;</span><br><span class="line">    while stackOld.size() != 0 &#123;</span><br><span class="line">        stackNew.push(item:stackOld.pop())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>调试代码和数据打印</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">override func viewDidLoad() &#123;</span><br><span class="line">    super.viewDidLoad()</span><br><span class="line">    enQueue(item: 1);</span><br><span class="line">    enQueue(item: 2);</span><br><span class="line">    enQueue(item: 3);</span><br><span class="line">    enQueue(item: 4);</span><br><span class="line">    print(&quot;———————————————————&quot;);</span><br><span class="line">    print(&quot;出队\(deQueque())&quot;);</span><br><span class="line">    print(&quot;出队\(deQueque())&quot;);</span><br><span class="line">    print(&quot;出队\(deQueque())&quot;);</span><br><span class="line">    print(&quot;出队\(deQueque())&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">入队1</span><br><span class="line">入队2</span><br><span class="line">入队3</span><br><span class="line">入队4</span><br><span class="line">———————————————————</span><br><span class="line">出队1</span><br><span class="line">出队2</span><br><span class="line">出队3</span><br><span class="line">出队4</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/05/swift如何用栈实现一个队列/" data-id="cjsua0479000ae803t6o31txq" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
 
     </footer>
   </div>
@@ -665,7 +653,7 @@
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
   </nav>
 
 </section>
@@ -686,7 +674,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -696,7 +684,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -718,6 +706,14 @@
       <ul>
         
           <li>
+            <a href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
+          </li>
+        
+          <li>
             <a href="/2019/03/02/python学习笔记之基础语法/">python学习笔记之基础语法</a>
           </li>
         
@@ -727,14 +723,6 @@
         
           <li>
             <a href="/2019/02/19/python爬虫之链家房价篇/">Python爬虫之链家房价篇</a>
-          </li>
-        
-          <li>
-            <a href="/2019/02/13/重读经典之<<设计模式>>/">重读经典之&lt;&lt;程序是如何跑起来的&gt;&gt;</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
           </li>
         
       </ul>

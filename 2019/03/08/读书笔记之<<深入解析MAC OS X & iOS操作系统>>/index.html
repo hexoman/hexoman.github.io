@@ -5,20 +5,20 @@
   
 
   
-  <title>swift实现几种排序算法 | larbraryy的博客</title>
+  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt; | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="为什么要使用链表 数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1) 可以解决数组无法存储多种数据类型的问题  关于链表的原理不多做赘述了，分为单向链表和双向链表。">
-<meta name="keywords" content="排序,快排，冒泡">
+  <meta name="description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
+<meta name="keywords" content="ios 架构 读书">
 <meta property="og:type" content="article">
-<meta property="og:title" content="swift实现几种排序算法">
-<meta property="og:url" content="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/index.html">
+<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;">
+<meta property="og:url" content="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="为什么要使用链表 数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1) 可以解决数组无法存储多种数据类型的问题  关于链表的原理不多做赘述了，分为单向链表和双向链表。">
+<meta property="og:description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-01-17T09:06:47.137Z">
+<meta property="og:updated_time" content="2019-03-08T09:39:02.874Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="swift实现几种排序算法">
-<meta name="twitter:description" content="为什么要使用链表 数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1) 可以解决数组无法存储多种数据类型的问题  关于链表的原理不多做赘述了，分为单向链表和双向链表。">
+<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;">
+<meta name="twitter:description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -69,14 +69,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-swift实现几种排序算法" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2018/10/09/swift实现几种排序算法/" class="article-date">
-  <time datetime="2018-10-08T16:00:00.000Z" itemprop="datePublished">2018-10-09</time>
+    <a href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
+  <time datetime="2019-03-07T16:00:00.000Z" itemprop="datePublished">2019-03-08</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
+    <a class="article-category-link" href="/categories/读书/">读书</a>
   </div>
 
   </div>
@@ -87,7 +87,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      swift实现几种排序算法
+      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;
     </h1>
   
 
@@ -95,39 +95,37 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="为什么要使用链表"><a href="#为什么要使用链表" class="headerlink" title="为什么要使用链表"></a>为什么要使用链表</h3><ol>
-<li>数组插入和删除的时间复杂度为O(n)，相对比较耗时，而链表O(1)</li>
-<li>可以解决数组无法存储多种数据类型的问题</li>
-</ol>
-<p>关于链表的原理不多做赘述了，分为单向链表和双向链表。 </p>
-
+        <h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+<p>打印如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Darwin Kernel Version 17.7.0: Wed Oct 10 23:06:14 PDT 2018; root:xnu-4570.71.13~1/RELEASE_X86_64 x86_64</span><br></pre></td></tr></table></figure>
+<h2 id="一、OS-X和iOS的架构"><a href="#一、OS-X和iOS的架构" class="headerlink" title="一、OS X和iOS的架构"></a>一、OS X和iOS的架构</h2><h3 id="1-1-UNIX的系统目录"><a href="#1-1-UNIX的系统目录" class="headerlink" title="1.1 UNIX的系统目录"></a>1.1 UNIX的系统目录</h3><p>OS X是一个符合UNIX标准的系统。</p>
+<ul>
+<li>/bin:UNIX二进制程序，常用UNIX命令（ls、mv）所在的目录</li>
+<li>/sbin: 系统程序，用于系统管理，例如文件系统管理和网络配置</li>
+<li>/usr: 第三方软件可以安装在这里</li>
+<li>/etc: 其他文件。包含大部分系统的配置文件，例如密码文件（/etc/password)</li>
+<li>/dev: BSD设备文件，这些特殊文件表示了系统中存在的设备（字符设备和块设备）</li>
+<li>/tmp: 临时目录。唯一一个所有人都能读写的目录</li>
+<li>/var: 各种杂项文件。日志文件、邮件存储等</li>
+</ul>
+<h3 id="1-2"><a href="#1-2" class="headerlink" title="1.2"></a>1.2</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/10/09/swift实现几种排序算法/" data-id="cjt1l71sg000lzkonjzda5c22" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt1l71sv001czkon0rog7huk" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
-
     </footer>
   </div>
   
     
 <nav id="article-nav">
   
-    <a href="/2018/10/10/内存的几大分布区域/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          内存的几大分布区域
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/25/swift详解链表结构(一)/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/03/06/深入理解weak源码/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">swift详解链表结构(一）</div>
+      <div class="article-nav-title">深入理解weak源码</div>
     </a>
   
 </nav>
