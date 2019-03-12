@@ -113,7 +113,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjt550f9k0014xl0370o6scet" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjt5xrxza001amgonub7za0wp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/runtime/">runtime</a></li></ul>
@@ -202,12 +202,19 @@
 <h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
 <h3 id="可执行文件"><a href="#可执行文件" class="headerlink" title="可执行文件"></a>可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
 <p><img src="../../images/胖二进制.png" alt="avatar"></p>
-<p>  Mach-O的二进制文件：包含mach-header（结构如下图）<br><img src="../../images/mach-header.png" alt="avatar"></p>
+<p>  Mach-O的二进制文件：包含mach-header、加载命令、Data数据段</p>
+<h4 id="mach-header结构如下"><a href="#mach-header结构如下" class="headerlink" title="mach-header结构如下"></a>mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
+<h4 id="加载命令-Load-Commands"><a href="#加载命令-Load-Commands" class="headerlink" title="加载命令 (Load Commands)"></a>加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
+<ul>
+<li>LC_SEGMENT：最主要的加载命令。指导内核如何设置新运行的进程的内存空间。对于每一个段，将文件中相应的内容加载到内存中：从偏移量为fileoff处加载filesize字节到虚拟内存地址vmaddr处的vmsize字节。每一个段的页面都根据initprot进行初始化，initprot指定如何通过读/写/执行位初始化页面的保护级别。段的保护设置可以动态改变。</li>
+<li>LC_UNIXTHREAD：当所有库都完成加载之后，LC_UNIXTHREAD负责启动二进制程序的主线程。罗列所有初始化寄存器的状态，大部分寄存器会初始化为0，其中指令或者程序计数器是例外，这些寄存器保存了程序入口的地址。</li>
+<li>LC_</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt550f9n001axl03q60c2ldm" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt5xrxz90016mgonbrlt5dxw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -257,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt550f9l0018xl03vhhtq8um" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt5xrxzb001dmgonoiqejpnx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weak/">weak</a></li></ul>
@@ -322,7 +329,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt550f8x0006xl03tkulfo1r" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt5xrxyn0009mgonw9elatiw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -383,7 +390,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt550fa6002mxl0317hp8dnv" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt5xrxzz002imgon314rftay" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li></ul>
@@ -434,7 +441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt550f8y0009xl03fy7ytoeu" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt5xrxyo000amgon95d5lmk7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -474,7 +481,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt550f9o001exl03jmyrr4c1" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt5xrxzc001hmgonu4w32y64" class="article-share-link">Share</a>
       
       
     </footer>
@@ -551,7 +558,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt550f8v0005xl03ah1yq7iq" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt5xrxyl0006mgon1fpwy29f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
@@ -610,7 +617,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt550f9i000zxl03ern92asd" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt5xrxz40013mgon7v1yqdlr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -667,7 +674,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt550f8u0004xl038js9ofsz" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt5xrxyj0004mgon0ajw5ow8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
