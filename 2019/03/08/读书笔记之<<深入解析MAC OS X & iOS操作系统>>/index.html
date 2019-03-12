@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/iOS沙盒.png">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/胖二进制.png">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/mach-header.png">
-<meta property="og:updated_time" content="2019-03-12T15:38:26.198Z">
+<meta property="og:updated_time" content="2019-03-12T15:40:05.181Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;">
 <meta name="twitter:description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
@@ -160,7 +160,7 @@
 <li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
 <li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
 </ul>
-
+<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4>
       
     </div>
     <footer class="article-footer">
