@@ -70,65 +70,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-深入理解runtime源码之alloc" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/10/深入理解runtime源码之alloc/" class="article-date">
-  <time datetime="2019-03-09T16:00:00.000Z" itemprop="datePublished">2019-03-10</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文是探究rumtime源码的第一篇，当一个NSObject 对象初始化的时候到底发生了什么呢，来看看源码的实现吧</p>
-<h3 id="alloc函数"><a href="#alloc函数" class="headerlink" title="alloc函数"></a>alloc函数</h3><p>入口函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (id)alloc &#123;</span><br><span class="line">    return _objc_rootAlloc(self);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>继续查看_objc_rootAllo函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">_objc_rootAlloc(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    return callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">callAlloc(Class cls, bool checkNil, bool allocWithZone=false)</span><br><span class="line">&#123;</span><br><span class="line">    if (slowpath(checkNil &amp;&amp; !cls)) return nil;</span><br><span class="line"></span><br><span class="line">#if __OBJC2__  </span><br><span class="line">    if (fastpath(!cls-&gt;ISA()-&gt;hasCustomAWZ())) &#123;</span><br><span class="line">        //查看下类是否能否快速分配内存</span><br><span class="line">        if (fastpath(cls-&gt;canAllocFast())) &#123;</span><br><span class="line">            //是否包含析构函数</span><br><span class="line">            bool dtor = cls-&gt;hasCxxDtor();</span><br><span class="line">            //内存分配</span><br><span class="line">            id obj = (id)calloc(1, cls-&gt;bits.fastInstanceSize());</span><br><span class="line">            //失败调用异常处理</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            //初始化obj的isa</span><br><span class="line">            obj-&gt;initInstanceIsa(cls, dtor);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            id obj = class_createInstance(cls, 0);</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">#endif</span><br><span class="line">    //如果allocWithZone 为true，则实现allocWithZone 方法</span><br><span class="line">    if (allocWithZone) return [cls allocWithZone:nil];</span><br><span class="line">    return [cls alloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>if <strong>OBJC2</strong>用来判断OC版本，目前使用的基本上都是2.0了。<br>这里要提到两个有意思的宏定义slowpath和fastpath,内部实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define fastpath(x) (__builtin_expect(bool(x), 1))</span><br><span class="line">#define slowpath(x) (__builtin_expect(bool(x), 0))</span><br></pre></td></tr></table></figure>
-<p>那么__builtin_expect到底是什么意义呢？这个指令的作用其实是让调用者告诉编译器执行的概率，fastpath的含义就是执行的概率大，slowpath执行的概率低，实现这个的作用是为了编译器做优化。</p>
-<p>下面分析下initInstanceIsa的过程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">objc_object::initIsa(Class cls, bool nonpointer, bool hasCxxDtor) </span><br><span class="line">&#123; </span><br><span class="line">    assert(!isTaggedPointer()); </span><br><span class="line">    </span><br><span class="line">    if (!nonpointer) &#123;</span><br><span class="line">        isa.cls = cls;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        assert(!DisableNonpointerIsa);</span><br><span class="line">        assert(!cls-&gt;instancesRequireRawIsa());</span><br><span class="line">        //创建isa对象</span><br><span class="line">        isa_t newisa(0);</span><br><span class="line">         </span><br><span class="line">#if SUPPORT_INDEXED_ISA</span><br><span class="line">        assert(cls-&gt;classArrayIndex() &gt; 0);</span><br><span class="line">        //设置占位bits</span><br><span class="line">        newisa.bits = ISA_INDEX_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.indexcls = (uintptr_t)cls-&gt;classArrayIndex();</span><br><span class="line">#else</span><br><span class="line">        newisa.bits = ISA_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.shiftcls = (uintptr_t)cls &gt;&gt; 3;</span><br><span class="line">#endif</span><br><span class="line">        isa = newisa;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="init函数"><a href="#init函数" class="headerlink" title="init函数"></a>init函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (id)init &#123;</span><br><span class="line">    return _objc_rootInit(self);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">id</span><br><span class="line">_objc_rootInit(id obj)</span><br><span class="line">&#123;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>init函数作用就是返回已经alloc出来的对象</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjt5xrxza001amgonub7za0wp" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/runtime/">runtime</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
-  <time datetime="2019-03-07T16:00:00.000Z" itemprop="datePublished">2019-03-08</time>
+    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
+  <time datetime="2019-03-11T16:00:00.000Z" itemprop="datePublished">2019-03-12</time>
 </a>
     
   <div class="article-category">
@@ -143,7 +88,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+      <a class="article-title" href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
     </h1>
   
 
@@ -211,13 +156,69 @@
 <li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
 <li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
 </ul>
-<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4>
+<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4><p>符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt5xrxz90016mgonbrlt5dxw" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt5y9gmn001e3xonbzfdqgqg" class="article-share-link">Share</a>
       
       
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-深入理解runtime源码之alloc" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/10/深入理解runtime源码之alloc/" class="article-date">
+  <time datetime="2019-03-09T16:00:00.000Z" itemprop="datePublished">2019-03-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文是探究rumtime源码的第一篇，当一个NSObject 对象初始化的时候到底发生了什么呢，来看看源码的实现吧</p>
+<h3 id="alloc函数"><a href="#alloc函数" class="headerlink" title="alloc函数"></a>alloc函数</h3><p>入口函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (id)alloc &#123;</span><br><span class="line">    return _objc_rootAlloc(self);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>继续查看_objc_rootAllo函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">_objc_rootAlloc(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    return callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">callAlloc(Class cls, bool checkNil, bool allocWithZone=false)</span><br><span class="line">&#123;</span><br><span class="line">    if (slowpath(checkNil &amp;&amp; !cls)) return nil;</span><br><span class="line"></span><br><span class="line">#if __OBJC2__  </span><br><span class="line">    if (fastpath(!cls-&gt;ISA()-&gt;hasCustomAWZ())) &#123;</span><br><span class="line">        //查看下类是否能否快速分配内存</span><br><span class="line">        if (fastpath(cls-&gt;canAllocFast())) &#123;</span><br><span class="line">            //是否包含析构函数</span><br><span class="line">            bool dtor = cls-&gt;hasCxxDtor();</span><br><span class="line">            //内存分配</span><br><span class="line">            id obj = (id)calloc(1, cls-&gt;bits.fastInstanceSize());</span><br><span class="line">            //失败调用异常处理</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            //初始化obj的isa</span><br><span class="line">            obj-&gt;initInstanceIsa(cls, dtor);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            id obj = class_createInstance(cls, 0);</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">#endif</span><br><span class="line">    //如果allocWithZone 为true，则实现allocWithZone 方法</span><br><span class="line">    if (allocWithZone) return [cls allocWithZone:nil];</span><br><span class="line">    return [cls alloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>if <strong>OBJC2</strong>用来判断OC版本，目前使用的基本上都是2.0了。<br>这里要提到两个有意思的宏定义slowpath和fastpath,内部实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define fastpath(x) (__builtin_expect(bool(x), 1))</span><br><span class="line">#define slowpath(x) (__builtin_expect(bool(x), 0))</span><br></pre></td></tr></table></figure>
+<p>那么__builtin_expect到底是什么意义呢？这个指令的作用其实是让调用者告诉编译器执行的概率，fastpath的含义就是执行的概率大，slowpath执行的概率低，实现这个的作用是为了编译器做优化。</p>
+<p>下面分析下initInstanceIsa的过程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">objc_object::initIsa(Class cls, bool nonpointer, bool hasCxxDtor) </span><br><span class="line">&#123; </span><br><span class="line">    assert(!isTaggedPointer()); </span><br><span class="line">    </span><br><span class="line">    if (!nonpointer) &#123;</span><br><span class="line">        isa.cls = cls;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        assert(!DisableNonpointerIsa);</span><br><span class="line">        assert(!cls-&gt;instancesRequireRawIsa());</span><br><span class="line">        //创建isa对象</span><br><span class="line">        isa_t newisa(0);</span><br><span class="line">         </span><br><span class="line">#if SUPPORT_INDEXED_ISA</span><br><span class="line">        assert(cls-&gt;classArrayIndex() &gt; 0);</span><br><span class="line">        //设置占位bits</span><br><span class="line">        newisa.bits = ISA_INDEX_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.indexcls = (uintptr_t)cls-&gt;classArrayIndex();</span><br><span class="line">#else</span><br><span class="line">        newisa.bits = ISA_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.shiftcls = (uintptr_t)cls &gt;&gt; 3;</span><br><span class="line">#endif</span><br><span class="line">        isa = newisa;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="init函数"><a href="#init函数" class="headerlink" title="init函数"></a>init函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (id)init &#123;</span><br><span class="line">    return _objc_rootInit(self);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">id</span><br><span class="line">_objc_rootInit(id obj)</span><br><span class="line">&#123;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>init函数作用就是返回已经alloc出来的对象</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjt5y9gmi00123xono0seu44x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/runtime/">runtime</a></li></ul>
+
     </footer>
   </div>
   
@@ -265,7 +266,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt5xrxzb001dmgonoiqejpnx" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt5y9gmk00183xondlkka8a7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weak/">weak</a></li></ul>
@@ -330,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt5xrxyn0009mgonw9elatiw" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt5y9glx00063xonhmwk133f" class="article-share-link">Share</a>
       
       
     </footer>
@@ -391,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt5xrxzz002imgon314rftay" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt5y9gnd002m3xonpjfytr52" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li></ul>
@@ -442,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt5xrxyo000amgon95d5lmk7" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt5y9gly00093xonl7zddpic" class="article-share-link">Share</a>
       
       
     </footer>
@@ -482,7 +483,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt5xrxzc001hmgonu4w32y64" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt5y9gml001a3xonelptfa6y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -559,7 +560,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt5xrxyl0006mgon1fpwy29f" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt5y9glw00053xonu8174ajw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
@@ -618,7 +619,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt5xrxz40013mgon7v1yqdlr" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt5y9gmj00143xonk9u9plrz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
@@ -675,7 +676,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt5xrxyj0004mgon0ajw5ow8" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt5y9glv00043xon1n7rhuay" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
@@ -744,11 +745,11 @@
       <ul>
         
           <li>
-            <a href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
+            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
           </li>
         
           <li>
-            <a href="/2019/03/08/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+            <a href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
           </li>
         
           <li>
