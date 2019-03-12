@@ -208,7 +208,8 @@
 <ul>
 <li>LC_SEGMENT：最主要的加载命令。指导内核如何设置新运行的进程的内存空间。对于每一个段，将文件中相应的内容加载到内存中：从偏移量为fileoff处加载filesize字节到虚拟内存地址vmaddr处的vmsize字节。每一个段的页面都根据initprot进行初始化，initprot指定如何通过读/写/执行位初始化页面的保护级别。段的保护设置可以动态改变。</li>
 <li>LC_UNIXTHREAD：当所有库都完成加载之后，LC_UNIXTHREAD负责启动二进制程序的主线程。罗列所有初始化寄存器的状态，大部分寄存器会初始化为0，其中指令或者程序计数器是例外，这些寄存器保存了程序入口的地址。</li>
-<li>LC_</li>
+<li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
+<li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
 </ul>
 
       
