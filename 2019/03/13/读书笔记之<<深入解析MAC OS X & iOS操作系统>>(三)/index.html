@@ -5,19 +5,23 @@
   
 
   
-  <title>Tag: 二叉树 | larbraryy的博客</title>
+  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三） | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="劳于读书，逸于作文">
+  <meta name="description" content="第三部分终于说到了最为重要的内核架构模块。 内核基础知识内核（kennel）是所有现在操作系统的核心。大致分为巨内核、微内核、混合内核 巨内核  宏内核，仍然是UNIX和LINUX采用的主要内核架构。巨内核采用的方式是将所有内核功能——不论是基础功能还是高级功能——全部放入一个地址空间中。这种架构的内核中，线程调度、内存管理、文件系统、安全管理、设备驱动都在一起。     所有内核功能都在同一个">
 <meta name="keywords" content="ios 架构 读书">
-<meta property="og:type" content="website">
-<meta property="og:title" content="larbraryy的博客">
-<meta property="og:url" content="https://hexoman.github.io/tags/二叉树/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）">
+<meta property="og:url" content="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="劳于读书，逸于作文">
+<meta property="og:description" content="第三部分终于说到了最为重要的内核架构模块。 内核基础知识内核（kennel）是所有现在操作系统的核心。大致分为巨内核、微内核、混合内核 巨内核  宏内核，仍然是UNIX和LINUX采用的主要内核架构。巨内核采用的方式是将所有内核功能——不论是基础功能还是高级功能——全部放入一个地址空间中。这种架构的内核中，线程调度、内存管理、文件系统、安全管理、设备驱动都在一起。     所有内核功能都在同一个">
 <meta property="og:locale" content="zh">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/巨内核.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/微内核.png">
+<meta property="og:updated_time" content="2019-03-13T14:49:05.097Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="larbraryy的博客">
-<meta name="twitter:description" content="劳于读书，逸于作文">
+<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）">
+<meta name="twitter:description" content="第三部分终于说到了最为重要的内核架构模块。 内核基础知识内核（kennel）是所有现在操作系统的核心。大致分为巨内核、微内核、混合内核 巨内核  宏内核，仍然是UNIX和LINUX采用的主要内核架构。巨内核采用的方式是将所有内核功能——不论是基础功能还是高级功能——全部放入一个地址空间中。这种架构的内核中，线程调度、内存管理、文件系统、安全管理、设备驱动都在一起。     所有内核功能都在同一个">
+<meta name="twitter:image" content="https://hexoman.github.io/2019/03/images/巨内核.png">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -68,40 +72,70 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/09/22/swift实现一个二叉树/" class="archive-article-date">
-  <time datetime="2018-09-21T16:00:00.000Z" itemprop="datePublished">Sep 22</time>
+        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(三)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" class="article-date">
+  <time datetime="2019-03-12T16:00:00.000Z" itemprop="datePublished">2019-03-13</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/22/swift实现一个二叉树/">swift实现一个二叉树</a>
+    <h1 class="article-title" itemprop="name">
+      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 第三部分终于说到了最为重要的内核架构模块。</p>
+<h2 id="内核基础知识"><a href="#内核基础知识" class="headerlink" title="内核基础知识"></a>内核基础知识</h2><p>内核（kennel）是所有现在操作系统的核心。大致分为巨内核、微内核、混合内核</p>
+<h3 id="巨内核"><a href="#巨内核" class="headerlink" title="巨内核"></a>巨内核</h3><p>  宏内核，仍然是UNIX和LINUX采用的主要内核架构。巨内核采用的方式是将所有内核功能——不论是基础功能还是高级功能——全部放入一个地址空间中。这种架构的内核中，线程调度、内存管理、文件系统、安全管理、设备驱动都在一起。<br>  <img src="../../images/巨内核.png" alt="avatar"></p>
+<p>  所有内核功能都在同一个地址空间中。例如在linux中，32位应用程序可寻址的内存空间是4GB，其中1GB完全献给内核。这样设计的好处是：在巨内核架构中，从用户态到内核态切换非常高效，基本就是一次线程切换的开销。这是因为内核的内存页面映射在所有进程的地址空间中，也就是说除了硬件青汁的内核态和用户态之间的隔离外，两者之间没有任何分别。所有的进程，不论所有者还是功能，都包含一份内核内存的拷贝，这些拷贝都映射到同一组物理页面，而且是常驻内存的物理页面。这不仅节省宝贵的RAM，也避免了系统调用的重大开销。</p>
+<h3 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h3><p>   微内核只包含最核心的内核功能，只负责最关键的部分——任务调度和内存管理，其他功能都交给外部服务程序（用户态）完成。服务程序之间被完全隔离开，服务程序之间所有通信都由消息传递完成。消息机制允许将消息以及后续消息投递至服务程序的队列中排队，服务程序从队列中取出消息并以此处理。</p>
+<p>   <img src="../../images/微内核.png" alt="avatar"></p>
+<p>   微内核具有巨内核没有的优点：</p>
+<ul>
+<li>正确性。代码量小，可以遍历所有代码路径，验证代码功能的正确性。</li>
+<li>稳定性和健壮性，可能发生的故障点少。由于所有其他功能都是在外部服务完成，有故障只需要重启受影响的服务程序即可恢复。</li>
+<li><p>灵活性，以及对不同平台和架构的适配性。</p>
+<p>缺点也相当明显——性能。微内核的消息传递在底层需要通过内存复制和数次上下文切换来实现，开销比较大。</p>
+</li>
+</ul>
+<h3 id="混合内核"><a href="#混合内核" class="headerlink" title="混合内核"></a>混合内核</h3><p>兼具微内核和巨内核的好处。内核最核心部分支持底层服务、调度、进程通信IPC（Inter-Process communication)和虚拟内存，其他服务都实现在这个核心之外，但是也在内核态中。混合内核并没有微内核的健壮性，牺牲健壮性换来和巨内核一样的运行效率。</p>
 
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjt7bltaw0000nlonfo6v22ii" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
 
 </section>
         

@@ -70,9 +70,121 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(三)" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" class="article-date">
+  <time datetime="2019-03-12T16:00:00.000Z" itemprop="datePublished">2019-03-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 第三部分终于说到了最为重要的内核架构模块。</p>
+<h2 id="内核基础知识"><a href="#内核基础知识" class="headerlink" title="内核基础知识"></a>内核基础知识</h2><p>内核（kennel）是所有现在操作系统的核心。大致分为巨内核、微内核、混合内核</p>
+<h3 id="巨内核"><a href="#巨内核" class="headerlink" title="巨内核"></a>巨内核</h3><p>  宏内核，仍然是UNIX和LINUX采用的主要内核架构。巨内核采用的方式是将所有内核功能——不论是基础功能还是高级功能——全部放入一个地址空间中。这种架构的内核中，线程调度、内存管理、文件系统、安全管理、设备驱动都在一起。<br>  <img src="../../images/巨内核.png" alt="avatar"></p>
+<p>  所有内核功能都在同一个地址空间中。例如在linux中，32位应用程序可寻址的内存空间是4GB，其中1GB完全献给内核。这样设计的好处是：在巨内核架构中，从用户态到内核态切换非常高效，基本就是一次线程切换的开销。这是因为内核的内存页面映射在所有进程的地址空间中，也就是说除了硬件青汁的内核态和用户态之间的隔离外，两者之间没有任何分别。所有的进程，不论所有者还是功能，都包含一份内核内存的拷贝，这些拷贝都映射到同一组物理页面，而且是常驻内存的物理页面。这不仅节省宝贵的RAM，也避免了系统调用的重大开销。</p>
+<h3 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h3><p>   微内核只包含最核心的内核功能，只负责最关键的部分——任务调度和内存管理，其他功能都交给外部服务程序（用户态）完成。服务程序之间被完全隔离开，服务程序之间所有通信都由消息传递完成。消息机制允许将消息以及后续消息投递至服务程序的队列中排队，服务程序从队列中取出消息并以此处理。</p>
+<p>   <img src="../../images/微内核.png" alt="avatar"></p>
+<p>   微内核具有巨内核没有的优点：</p>
+<ul>
+<li>正确性。代码量小，可以遍历所有代码路径，验证代码功能的正确性。</li>
+<li>稳定性和健壮性，可能发生的故障点少。由于所有其他功能都是在外部服务完成，有故障只需要重启受影响的服务程序即可恢复。</li>
+<li><p>灵活性，以及对不同平台和架构的适配性。</p>
+<p>缺点也相当明显——性能。微内核的消息传递在底层需要通过内存复制和数次上下文切换来实现，开销比较大。</p>
+</li>
+</ul>
+<h3 id="混合内核"><a href="#混合内核" class="headerlink" title="混合内核"></a>混合内核</h3><p>兼具微内核和巨内核的好处。内核最核心部分支持底层服务、调度、进程通信IPC（Inter-Process communication)和虚拟内存，其他服务都实现在这个核心之外，但是也在内核态中。混合内核并没有微内核的健壮性，牺牲健壮性换来和巨内核一样的运行效率。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjt7bltaw0000nlonfo6v22ii" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(二)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" class="article-date">
+  <time datetime="2019-03-12T16:00:00.000Z" itemprop="datePublished">2019-03-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、引导过程：EFI和iBoot"><a href="#一、引导过程：EFI和iBoot" class="headerlink" title="一、引导过程：EFI和iBoot"></a>一、引导过程：EFI和iBoot</h2><p>引导的过程是指从计算机通电一瞬间到CPU开始执行操作系统代码的整个过程。</p>
+<h4 id="1-1-揭秘EFI"><a href="#1-1-揭秘EFI" class="headerlink" title="1.1 揭秘EFI"></a>1.1 揭秘EFI</h4><p>   BIOS是一个固定的程序，而且通常是封闭的。EFI是一套接口，更像一个运行时环境，规范了一组应用程序的编程接口，基于EFI的程序可以利用这些接口实现功能。EFI程序通常是引导加载器（苹果的Boot Camp)，或者一些诊断程序（苹果的硬件测试工具）。</p>
+<p><img src="../../images/EFI架构图.png" alt="avatar"></p>
+<p>EFI二进制程序实现了这样的原型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">typedef EFI_SATTUS (EFIAPI *EFI_IMAGE_ENTER_POINT) </span><br><span class="line">(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE SystemTable)</span><br></pre></td></tr></table></figure>
+<h2 id="二、launchd"><a href="#二、launchd" class="headerlink" title="二、launchd"></a>二、launchd</h2><p> 整个用户环境启动的入口，作为系统中的第一个用户态进程，负责间接或直接的启动系统中的其他进程。launchd由内核直接启动，负责加载BSD子系统的主内核线程创建一个线程来执行bsainit_task。</p>
+<h3 id="2-1-系统范围和用户范围的launchd"><a href="#2-1-系统范围和用户范围的launchd" class="headerlink" title="2.1 系统范围和用户范围的launchd"></a>2.1 系统范围和用户范围的launchd</h3><p>系统范围的launchd是不可能终止的，当系统关闭时，launchd也是最后一个退出的进程。<br>用户范围的launchd是在用户登陆时执行的，通过SSH远程登录也会创建launchd，iOS上只有一个launchd实例，即系统范围的实例</p>
+<h3 id="2-2-多面手launchd"><a href="#2-2-多面手launchd" class="headerlink" title="2.2 多面手launchd"></a>2.2 多面手launchd</h3><p>launchd是用户态出现的第一个进程。当系统还在启动初期的时候，launchd是系统上唯一的进程。launchd身兼数职。</p>
+<ul>
+<li>init，init的职责是派生出各种各样的后台守护程序，设置好系统，然后转入后台，确保这些守护程序都活着，如果程序死了，launchd会重新派生出新的守护程序。</li>
+<li>atd/crond 运行定时作业，即在指定时间运行指定的命令</li>
+<li>inetd/xinetd 用途是启动网络服务。这个守护程序的职责是绑定一些端口（TCP/UDP端口），当有连接请求到达时，根据需要启动相应的服务程序，并将服务程序的输入输出描述符连接到对应的套接字。如果没有活动的请求需要处理，那么系统就不需要让服务程序运行，从而降低系统负载。</li>
+<li>事务支持 launchd支持事务，会在系统关闭、用户退出或超过指定时间后检查未决的事物。</li>
+<li>资源遏制和限制，例如jetsam机制可以强制实行虚拟内存使用率的限制。</li>
+<li>I/O Kit整合 </li>
+</ul>
+<h3 id="2-3-LaunchdDaemon列表"><a href="#2-3-LaunchdDaemon列表" class="headerlink" title="2.3 LaunchdDaemon列表"></a>2.3 LaunchdDaemon列表</h3><p><img src="../../images/lauchdDaemon1.png" alt="avatar"><br><img src="../../images/lauchdDaemon2.png" alt="avatar"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjt7bltaz0001nlonzqdl2t64" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(一)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" class="article-date">
   <time datetime="2019-03-11T16:00:00.000Z" itemprop="datePublished">2019-03-12</time>
 </a>
     
@@ -88,7 +200,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+      <a class="article-title" href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
     </h1>
   
 
@@ -96,7 +208,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
+        <p>   由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。</p>
+<h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
 <p>打印如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Darwin Kernel Version 17.7.0: Wed Oct 10 23:06:14 PDT 2018; root:xnu-4570.71.13~1/RELEASE_X86_64 x86_64</span><br></pre></td></tr></table></figure>
@@ -144,24 +257,36 @@
 <h4 id="2-2-3-iOS的entitlement"><a href="#2-2-3-iOS的entitlement" class="headerlink" title="2.2.3 iOS的entitlement"></a>2.2.3 iOS的entitlement</h4><p>entitlement plist文件嵌入应用程序的二进制文件中，并由苹果进行数字签名。任务的相关条目允许在底层访问mach任务，mach任务支持BSD进程的底层内核原语。获得任务的端口就相当于拥有了任务，可以访问这个任务的虚拟内存和各种描述符。另一个重要的entitlement就是dynamic-codesigning,允许动态生成代码，据目前了解，只有mobilesafari才有这种entitlement。</p>
 <p>沙盒化进程如下：</p>
 <p><img src="../../images/iOS沙盒.png" alt="avatar"></p>
-<h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
-<h3 id="可执行文件"><a href="#可执行文件" class="headerlink" title="可执行文件"></a>可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
+<h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="2-1-进程的生命周期"><a href="#2-1-进程的生命周期" class="headerlink" title="2.1 进程的生命周期"></a>2.1 进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
+<h3 id="2-2-可执行文件"><a href="#2-2-可执行文件" class="headerlink" title="2.2 可执行文件"></a>2.2 可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
 <p><img src="../../images/胖二进制.png" alt="avatar"></p>
 <p>  Mach-O的二进制文件：包含mach-header、加载命令、Data数据段</p>
-<h4 id="mach-header结构如下"><a href="#mach-header结构如下" class="headerlink" title="mach-header结构如下"></a>mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
-<h4 id="加载命令-Load-Commands"><a href="#加载命令-Load-Commands" class="headerlink" title="加载命令 (Load Commands)"></a>加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
+<h4 id="2-2-1-mach-header结构如下"><a href="#2-2-1-mach-header结构如下" class="headerlink" title="2.2.1 mach-header结构如下"></a>2.2.1 mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
+<h4 id="2-2-2-加载命令-Load-Commands"><a href="#2-2-2-加载命令-Load-Commands" class="headerlink" title="2.2.2 加载命令 (Load Commands)"></a>2.2.2 加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
 <ul>
 <li>LC_SEGMENT：最主要的加载命令。指导内核如何设置新运行的进程的内存空间。对于每一个段，将文件中相应的内容加载到内存中：从偏移量为fileoff处加载filesize字节到虚拟内存地址vmaddr处的vmsize字节。每一个段的页面都根据initprot进行初始化，initprot指定如何通过读/写/执行位初始化页面的保护级别。段的保护设置可以动态改变。</li>
 <li>LC_UNIXTHREAD：当所有库都完成加载之后，LC_UNIXTHREAD负责启动二进制程序的主线程。罗列所有初始化寄存器的状态，大部分寄存器会初始化为0，其中指令或者程序计数器是例外，这些寄存器保存了程序入口的地址。</li>
 <li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
 <li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
 </ul>
-<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4><p>符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。</p>
+<h4 id="2-2-3-动态库"><a href="#2-2-3-动态库" class="headerlink" title="2.2.3 动态库"></a>2.2.3 动态库</h4><p>  符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。<br>  链接的过程，内核执行LC_DYLINKER命令来启动动态链接器。链接器扫描Mach-O文件头，找到相关加载命令。如果二进制文件中使用外部定义的函数和符号，在文本段中会有一个__stubs的区，是本地未定义符号的占位符。编译器在生成代码时会创建对符号桩区的调用，链接器会在运行时解决对桩的调用。链接器解决方法是在被调用的地址处放置一个JMP指令，JMP指令将控制权交给真实的函数体。<br>  LC_LOAD_DYLIB命令告诉链接器寻找到符号的位置。链接器加载每一个指定库，并搜寻匹配的符号。被链接的库有一个符号表，符号表将</p>
+<h3 id="2-3-进程地址空间"><a href="#2-3-进程地址空间" class="headerlink" title="2.3 进程地址空间"></a>2.3 进程地址空间</h3><p>  用户态的一个优点在于虚拟内存的隔离。进程独享一个私有的地址空间，在iOS范围是2-3GB，在32位OS X是4GB，64位OSX则是16EB。</p>
+<h4 id="2-3-1-地址空间布局随机化（ASLR）"><a href="#2-3-1-地址空间布局随机化（ASLR）" class="headerlink" title="2.3.1 地址空间布局随机化（ASLR）"></a>2.3.1 地址空间布局随机化（ASLR）</h4><p>  进程每一次的启动，地址空间都会被简单的随机化，是为了防止黑客攻击的一种安全手段。由于ASLR的作用，进程的地址空间变得流动性非常大，但是尽管具体的地址会随机”滑动“某个小的偏移量，但是整体布局保持不变。</p>
+<h4 id="2-3-2-内存空间的分布"><a href="#2-3-2-内存空间的分布" class="headerlink" title="2.3.2 内存空间的分布"></a>2.3.2 内存空间的分布</h4><ul>
+<li>_PAGEZERO：32位中，单独的一个页面(4kb),64位中，这个段对应一个完整的32位地址空间（4GB）。这个段有助于捕捉空指针引用。</li>
+<li>_TEXT 存放程序代码。文本段设置为读且可执行，这样可以防止二进制代码在内存被修改，还可以通过共享这个只读段优化内存的使用。通过这种方式，同一个程序的多个实例可以使用一份_TEXT副本。</li>
+<li>_LINKEDIT: dyld使用。包含了字符串表、符号表及其他数据</li>
+<li>_IMPORT: 用于i386的二进制文件导入</li>
+<li>_DATA: 用于可读/可写的数据</li>
+<li>_MALLOC_TINY: 用于小于一个页面大小的内存分配。</li>
+<li>_MALLOC_SMALL: 用于几个页面大小的内存分配。</li>
+<li>_MALLOC_LARGE: 用于1MB以上大小的内存分配。</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt5y9gmn001e3xonbzfdqgqg" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" data-id="cjt7bltbd0004nlonvg6mhosw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -572,122 +697,6 @@
 
 
   
-    <article id="post-数据结构：回溯法" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/29/数据结构：回溯法/" class="article-date">
-  <time datetime="2018-11-29T06:39:54.000Z" itemprop="datePublished">2018-11-29</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/29/数据结构：回溯法/">数据结构：回溯法</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="回溯法的定义"><a href="#回溯法的定义" class="headerlink" title="回溯法的定义"></a>回溯法的定义</h3><p>一个问题解决的可能性都可以抽象为一个树状结构，在某一步含有n个可能的选项，那么这一步即可形象的表示为树中的一个节点，这个节点有n个子节点。遍历这个树，叶节点包含答案，则顺着叶节点的子节点寻找下去，否则，回溯到该叶节点的上一个节点去尝试其他节点，直至寻找到答案为止。</p>
-<h4 id="如何使用回溯法"><a href="#如何使用回溯法" class="headerlink" title="如何使用回溯法"></a>如何使用回溯法</h4><p>eg:给定一个数组[1,2,3,4],求可能的排列顺序的可能性。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func backTrack(nums:[Int], tempList: inout Array&lt;Int&gt;, resultList: inout Array&lt;Array&lt;Int&gt;&gt;) &#123;</span><br><span class="line">        if (tempList.count == nums.count) &#123;</span><br><span class="line">            //终结条件，满足一个条件时</span><br><span class="line">            let newTemplist : Array&lt;Int&gt; = tempList;</span><br><span class="line">            resultList.append(newTemplist);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            for i in 0..&lt;nums.count &#123;</span><br><span class="line">                if (tempList.contains(nums[i])) &#123;</span><br><span class="line">                    //如果已经包含了，就不添加</span><br><span class="line">                    continue;</span><br><span class="line">                &#125;</span><br><span class="line">                tempList.append(nums[i]);</span><br><span class="line">                //递归调用，此时的tempList一直在变化，直到满足终结条件才结束</span><br><span class="line">                backTrack(nums: nums, tempList: &amp;tempList, resultList: &amp;resultList);</span><br><span class="line">                //它移除tempList最后一个元素的作用就是返回上一次调用时的数据，也就是希望返回之前的节点再去重新搜索满足条件。这样才能实现回溯</span><br><span class="line">                tempList.remove(at: (tempList.count - 1));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var resultList : Array&lt;Array&lt;Int&gt;&gt; = Array&lt;Array&lt;Int&gt;&gt;(); var tempList : Array&lt;Int&gt; = Array&lt;Int&gt;();</span><br><span class="line">backTrack(nums: nums, tempList: &amp;tempList, resultList: &amp;resultList);</span><br><span class="line">print(resultList);</span><br></pre></td></tr></table></figure>
-<h4 id="矩阵寻找路径"><a href="#矩阵寻找路径" class="headerlink" title="矩阵寻找路径"></a>矩阵寻找路径</h4><p>一个非常经典的在矩阵中寻找路径的问题。在一个M*N的字符矩阵中，寻找是否存在指定路径。要求路径单步只能上下左右移动，不能重复移动某一个格子。<br>如果在矩阵中寻找bfce路径，判断是否包含该路径<br><img src="../../images/juzhen.png" alt="avatar"></p>
-<p>这里思路可以抽象为树形结构<br><img src="../../images/juzhenshu.png" alt="avatar"></p>
-<p>代码实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">func hasPathCore(rows:Int, columns:Int, row:Int, col:Int, isVisited:inout [Int], pathList:[String], pathLength:inout Int, origList:[String]) -&gt;Bool &#123;</span><br><span class="line">        if (pathList.count &lt;= pathLength) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        var hasPath = false;</span><br><span class="line">        //nowIndex代表矩阵中当前的位置</span><br><span class="line">        let nowIndex = row * columns + col;</span><br><span class="line">        if (row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; col &gt;= 0 &amp;&amp; col &lt; columns &amp;&amp; origList[nowIndex] == pathList[pathLength] &amp;&amp; isVisited[nowIndex] == 0) &#123;</span><br><span class="line">            //保证遍历还在矩阵范围内进行，将矩阵当前位置的元素和目标路径中节点元素对比，相等且没进走过的格子算为有效格子。</span><br><span class="line">            //pathLength++，开始寻找目标路径下一个节点</span><br><span class="line">            pathLength += 1;</span><br><span class="line">            //将矩阵中当前格子作为有效格子放入isVisited</span><br><span class="line">            isVisited[nowIndex] = 1;</span><br><span class="line">            //递归：访问上下左右四个元素是否满足有效格子</span><br><span class="line">            hasPath = hasPathCore(rows: rows, columns: columns, row: row, col: (col - 1), isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: row, col: (col + 1), isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: (row - 1), col: col, isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: (row + 1), col: col, isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList);</span><br><span class="line">            if (!hasPath) &#123;</span><br><span class="line">                //当前元素之后的路径没有找到合适的，回到上一个元素。这里可以形象的理解为树形结构中节点，当前节点下面的子节点不包含问题，那么放弃当前节点，返回上一个节点进行深度寻找。</span><br><span class="line">                pathLength -= 1;</span><br><span class="line">                isVisited[nowIndex] = 0;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return hasPath;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//判断是否含有路径</span><br><span class="line">func isHasPath(rows:Int, columns: Int, pathList: inout [String], origList:[String]) -&gt; Bool &#123;</span><br><span class="line">    if (rows &lt; 1 || columns &lt; 1) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //因为不能重复统计格子，visitedListot用来代表有没有进入过格子。</span><br><span class="line">    var visitedList : Array&lt;Int&gt; = Array&lt;Int&gt;();</span><br><span class="line">    for _ in 0..&lt;(rows * columns) &#123;</span><br><span class="line">        visitedList.append(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var pathLength = 0;</span><br><span class="line">    //这里遍历所有元素来寻找路径，当一个点找不到符合条件的路径时，就需要重新开始一个起点</span><br><span class="line">    for row in 0..&lt;rows &#123;</span><br><span class="line">        for col in 0..&lt;columns &#123;</span><br><span class="line">            if (hasPathCore(rows: rows, columns: columns, row: row, col: col, isVisited: &amp;visitedList, pathList: pathList, pathLength: &amp;pathLength, origList: origList)) &#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>main函数中调用如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let strList = [&quot;a&quot;,&quot;b&quot;,&quot;t&quot;,&quot;g&quot;,&quot;c&quot;,&quot;f&quot;,&quot;c&quot;,&quot;s&quot;,&quot;j&quot;,&quot;d&quot;,&quot;e&quot;,&quot;h&quot;];</span><br><span class="line">var path = [&quot;b&quot;,&quot;f&quot;,&quot;c&quot;,&quot;e&quot;];</span><br><span class="line">let haspath = isHasPath(rows: 3, columns: 4, pathList: &amp;path, origList: strList);</span><br><span class="line">print(haspath);</span><br></pre></td></tr></table></figure>
-<h3 id="矩阵中求起点到终点的路径条数"><a href="#矩阵中求起点到终点的路径条数" class="headerlink" title="矩阵中求起点到终点的路径条数"></a>矩阵中求起点到终点的路径条数</h3><p>在一个3*4矩阵中寻找起点a到终点h的路径条数。要求单步只能向下和向右移动。这题和上题有点类似，解题如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">func findPath(rows:Int, columns: Int, origList:[String], target:String) -&gt; Int &#123;</span><br><span class="line">    if (rows &lt; 1 || columns &lt; 1) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //路径条数</span><br><span class="line">    var pathCount = 0;</span><br><span class="line">    //从[0,0]开始计算</span><br><span class="line">    isArriveTheLastPoint(rows: rows, columns: columns, row: 0, col: 0, target: target, origList: origList,pathCount: &amp;pathCount);</span><br><span class="line">    return pathCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>递归算法 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">func isArriveTheLastPoint(rows:Int, columns:Int, row: Int, col: Int, target:String, origList:[String], pathCount:inout Int) &#123;</span><br><span class="line">    var isEnd = false;</span><br><span class="line">    //nowIndex代表矩阵中当前的位置</span><br><span class="line">    let nowIndex = row * columns + col;</span><br><span class="line">    if (row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; col &gt;= 0 &amp;&amp; col &lt; columns) &#123;</span><br><span class="line">        if (origList[nowIndex] == target) &#123;</span><br><span class="line">            //已经到达终点，算作一个完整路径。那么路径条数+1</span><br><span class="line">            isEnd = true;</span><br><span class="line">            pathCount += 1;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if (!isEnd) &#123;</span><br><span class="line">            //递归，分别向右和向下访问两个元素是否到达指定终点</span><br><span class="line">            let nextCol =  col + 1;</span><br><span class="line">            let nextRow =  row + 1;</span><br><span class="line">            isArriveTheLastPoint(rows: rows, columns: columns, row: row, col: nextCol, target: target,origList:origList,pathCount: &amp;pathCount);</span><br><span class="line">            isArriveTheLastPoint(rows: rows, columns: columns, row: nextRow, col: col, target: target,origList:origList,pathCount: &amp;pathCount);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>main函数调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let strList = [&quot;a&quot;,&quot;b&quot;,&quot;t&quot;,&quot;g&quot;,&quot;c&quot;,&quot;f&quot;,&quot;c&quot;,&quot;s&quot;,&quot;j&quot;,&quot;d&quot;,&quot;e&quot;,&quot;h&quot;];</span><br><span class="line">let target = &quot;h&quot;;</span><br><span class="line">let count = findPath(rows: 3, columns: 4, origList: strList, target:target);</span><br><span class="line">print(count);</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt5y9gmj00143xonk9u9plrz" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-iOS探究Block的实现" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/23/iOS探究Block的实现/" class="article-date">
-  <time datetime="2018-11-23T08:39:29.000Z" itemprop="datePublished">2018-11-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/23/iOS探究Block的实现/">iOS探究Block的实现</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h3><ul>
-<li>NSGlobalBlock 位于text段</li>
-<li>NSStackBlock 位于栈内存</li>
-<li>NSMallocBlock 位于堆内存</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 100;</span><br><span class="line">NSLog(@&quot;位于text段,%@&quot;,^&#123;NSLog(@&quot;&quot;);&#125;);</span><br><span class="line">NSLog(@&quot;位于栈内,%@&quot;,^&#123;NSLog(@&quot;%d&quot;,a);&#125;);</span><br><span class="line">void (^block)(void) = ^&#123;NSLog(@&quot;%d&quot;,a);&#125;;</span><br><span class="line">NSLog(@&quot;位于堆内,%@&quot;,block);</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018-11-23 16:48:14.336424+0800 TestRuntime[14636:230602] 位于text段,&lt;__NSGlobalBlock__: 0x100002060&gt;</span><br><span class="line">2018-11-23 16:48:14.336534+0800 TestRuntime[14636:230602] 位于栈内,&lt;__NSStackBlock__: 0x7ffeefbfeb08&gt;</span><br><span class="line">2018-11-23 16:48:14.336641+0800 TestRuntime[14636:230602] 位于堆内,&lt;__NSMallocBlock__: 0x6000000503b0&gt;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>NSGlobalBlock是因为没有引用任何外部变量，block不需要建立局部变量值的快照。</li>
-<li>NSStackBlock使用了局部变量，局部变量的值被copy到栈上，以供block使用。但实际上很多场景都不是NSStackBlock，而是NSMallocBlock。这是因为ARC下编译器在NSStackBlock类型的block传递过程中进行了自动优化，将传递过程将 block拷贝到堆。分析见这篇文章<a href="https://www.jianshu.com/p/03ad4b2ecedf" target="_blank" rel="noopener">ARC下NSStackBlock去哪了。</a></li>
-<li>NSMallocBlock 拷贝block到堆上。</li>
-</ol>
-<h3 id="block的使用"><a href="#block的使用" class="headerlink" title="__block的使用"></a>__block的使用</h3><p>Block内引用外部变量a是只读的，但是如果想在block内部改变a时，需要在定义a的时候使用__block修饰。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__block int a = 100;</span><br><span class="line">testBlock block = ^&#123;</span><br><span class="line">a++;</span><br><span class="line">&#125;;</span><br><span class="line">block();</span><br><span class="line">NSLog(@&quot;%d&quot;,a);</span><br></pre></td></tr></table></figure>
-<p>打印值为101，实际上传入block的是a的指针。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt5y9glv00043xon1n7rhuay" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 
   <nav id="page-nav">
@@ -745,7 +754,15 @@
       <ul>
         
           <li>
-            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
           </li>
         
           <li>
@@ -754,14 +771,6 @@
         
           <li>
             <a href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/python学习笔记之基础语法/">python学习笔记之基础语法</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/深入理解AutoreleasePool源码/">深入理解AutoreleasePool源码</a>
           </li>
         
       </ul>

@@ -5,24 +5,24 @@
   
 
   
-  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt; | larbraryy的博客</title>
+  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一） | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
+  <meta name="description" content="由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。 一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、X">
 <meta name="keywords" content="ios 架构 读书">
 <meta property="og:type" content="article">
-<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;">
-<meta property="og:url" content="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/index.html">
+<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）">
+<meta property="og:url" content="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
+<meta property="og:description" content="由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。 一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、X">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/kqueue.png">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/iOS沙盒.png">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/胖二进制.png">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/mach-header.png">
-<meta property="og:updated_time" content="2019-03-12T15:49:50.876Z">
+<meta property="og:updated_time" content="2019-03-13T08:00:44.376Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;">
-<meta name="twitter:description" content="一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。查看drawin和xnu版本的命令行 1uname -a 打印如下： 1Darwin Kernel Version 17.7.0: Wed">
+<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）">
+<meta name="twitter:description" content="由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。 一、达尔文主义1.1 OS X和Darwin的区别   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、X">
 <meta name="twitter:image" content="https://hexoman.github.io/2019/03/images/kqueue.png">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
@@ -74,9 +74,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(一)" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" class="article-date">
+    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" class="article-date">
   <time datetime="2019-03-11T16:00:00.000Z" itemprop="datePublished">2019-03-12</time>
 </a>
     
@@ -92,7 +92,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;
+      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）
     </h1>
   
 
@@ -100,7 +100,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
+        <p>   由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。</p>
+<h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
 <p>打印如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Darwin Kernel Version 17.7.0: Wed Oct 10 23:06:14 PDT 2018; root:xnu-4570.71.13~1/RELEASE_X86_64 x86_64</span><br></pre></td></tr></table></figure>
@@ -148,24 +149,36 @@
 <h4 id="2-2-3-iOS的entitlement"><a href="#2-2-3-iOS的entitlement" class="headerlink" title="2.2.3 iOS的entitlement"></a>2.2.3 iOS的entitlement</h4><p>entitlement plist文件嵌入应用程序的二进制文件中，并由苹果进行数字签名。任务的相关条目允许在底层访问mach任务，mach任务支持BSD进程的底层内核原语。获得任务的端口就相当于拥有了任务，可以访问这个任务的虚拟内存和各种描述符。另一个重要的entitlement就是dynamic-codesigning,允许动态生成代码，据目前了解，只有mobilesafari才有这种entitlement。</p>
 <p>沙盒化进程如下：</p>
 <p><img src="../../images/iOS沙盒.png" alt="avatar"></p>
-<h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
-<h3 id="可执行文件"><a href="#可执行文件" class="headerlink" title="可执行文件"></a>可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
+<h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="2-1-进程的生命周期"><a href="#2-1-进程的生命周期" class="headerlink" title="2.1 进程的生命周期"></a>2.1 进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
+<h3 id="2-2-可执行文件"><a href="#2-2-可执行文件" class="headerlink" title="2.2 可执行文件"></a>2.2 可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
 <p><img src="../../images/胖二进制.png" alt="avatar"></p>
 <p>  Mach-O的二进制文件：包含mach-header、加载命令、Data数据段</p>
-<h4 id="mach-header结构如下"><a href="#mach-header结构如下" class="headerlink" title="mach-header结构如下"></a>mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
-<h4 id="加载命令-Load-Commands"><a href="#加载命令-Load-Commands" class="headerlink" title="加载命令 (Load Commands)"></a>加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
+<h4 id="2-2-1-mach-header结构如下"><a href="#2-2-1-mach-header结构如下" class="headerlink" title="2.2.1 mach-header结构如下"></a>2.2.1 mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
+<h4 id="2-2-2-加载命令-Load-Commands"><a href="#2-2-2-加载命令-Load-Commands" class="headerlink" title="2.2.2 加载命令 (Load Commands)"></a>2.2.2 加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
 <ul>
 <li>LC_SEGMENT：最主要的加载命令。指导内核如何设置新运行的进程的内存空间。对于每一个段，将文件中相应的内容加载到内存中：从偏移量为fileoff处加载filesize字节到虚拟内存地址vmaddr处的vmsize字节。每一个段的页面都根据initprot进行初始化，initprot指定如何通过读/写/执行位初始化页面的保护级别。段的保护设置可以动态改变。</li>
 <li>LC_UNIXTHREAD：当所有库都完成加载之后，LC_UNIXTHREAD负责启动二进制程序的主线程。罗列所有初始化寄存器的状态，大部分寄存器会初始化为0，其中指令或者程序计数器是例外，这些寄存器保存了程序入口的地址。</li>
 <li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
 <li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
 </ul>
-<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4><p>符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。</p>
+<h4 id="2-2-3-动态库"><a href="#2-2-3-动态库" class="headerlink" title="2.2.3 动态库"></a>2.2.3 动态库</h4><p>  符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。<br>  链接的过程，内核执行LC_DYLINKER命令来启动动态链接器。链接器扫描Mach-O文件头，找到相关加载命令。如果二进制文件中使用外部定义的函数和符号，在文本段中会有一个__stubs的区，是本地未定义符号的占位符。编译器在生成代码时会创建对符号桩区的调用，链接器会在运行时解决对桩的调用。链接器解决方法是在被调用的地址处放置一个JMP指令，JMP指令将控制权交给真实的函数体。<br>  LC_LOAD_DYLIB命令告诉链接器寻找到符号的位置。链接器加载每一个指定库，并搜寻匹配的符号。被链接的库有一个符号表，符号表将</p>
+<h3 id="2-3-进程地址空间"><a href="#2-3-进程地址空间" class="headerlink" title="2.3 进程地址空间"></a>2.3 进程地址空间</h3><p>  用户态的一个优点在于虚拟内存的隔离。进程独享一个私有的地址空间，在iOS范围是2-3GB，在32位OS X是4GB，64位OSX则是16EB。</p>
+<h4 id="2-3-1-地址空间布局随机化（ASLR）"><a href="#2-3-1-地址空间布局随机化（ASLR）" class="headerlink" title="2.3.1 地址空间布局随机化（ASLR）"></a>2.3.1 地址空间布局随机化（ASLR）</h4><p>  进程每一次的启动，地址空间都会被简单的随机化，是为了防止黑客攻击的一种安全手段。由于ASLR的作用，进程的地址空间变得流动性非常大，但是尽管具体的地址会随机”滑动“某个小的偏移量，但是整体布局保持不变。</p>
+<h4 id="2-3-2-内存空间的分布"><a href="#2-3-2-内存空间的分布" class="headerlink" title="2.3.2 内存空间的分布"></a>2.3.2 内存空间的分布</h4><ul>
+<li>_PAGEZERO：32位中，单独的一个页面(4kb),64位中，这个段对应一个完整的32位地址空间（4GB）。这个段有助于捕捉空指针引用。</li>
+<li>_TEXT 存放程序代码。文本段设置为读且可执行，这样可以防止二进制代码在内存被修改，还可以通过共享这个只读段优化内存的使用。通过这种方式，同一个程序的多个实例可以使用一份_TEXT副本。</li>
+<li>_LINKEDIT: dyld使用。包含了字符串表、符号表及其他数据</li>
+<li>_IMPORT: 用于i386的二进制文件导入</li>
+<li>_DATA: 用于可读/可写的数据</li>
+<li>_MALLOC_TINY: 用于小于一个页面大小的内存分配。</li>
+<li>_MALLOC_SMALL: 用于几个页面大小的内存分配。</li>
+<li>_MALLOC_LARGE: 用于1MB以上大小的内存分配。</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/" data-id="cjt5y9gmn001e3xonbzfdqgqg" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" data-id="cjt7bltbd0004nlonvg6mhosw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -173,6 +186,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）
+        
+      </div>
+    </a>
   
   
     <a href="/2019/03/10/深入理解runtime源码之alloc/" id="article-nav-older" class="article-nav-link-wrap">
@@ -235,7 +257,15 @@
       <ul>
         
           <li>
-            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
           </li>
         
           <li>
@@ -244,14 +274,6 @@
         
           <li>
             <a href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/python学习笔记之基础语法/">python学习笔记之基础语法</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/深入理解AutoreleasePool源码/">深入理解AutoreleasePool源码</a>
           </li>
         
       </ul>

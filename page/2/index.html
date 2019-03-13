@@ -70,6 +70,122 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-数据结构：回溯法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/29/数据结构：回溯法/" class="article-date">
+  <time datetime="2018-11-29T06:39:54.000Z" itemprop="datePublished">2018-11-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/29/数据结构：回溯法/">数据结构：回溯法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="回溯法的定义"><a href="#回溯法的定义" class="headerlink" title="回溯法的定义"></a>回溯法的定义</h3><p>一个问题解决的可能性都可以抽象为一个树状结构，在某一步含有n个可能的选项，那么这一步即可形象的表示为树中的一个节点，这个节点有n个子节点。遍历这个树，叶节点包含答案，则顺着叶节点的子节点寻找下去，否则，回溯到该叶节点的上一个节点去尝试其他节点，直至寻找到答案为止。</p>
+<h4 id="如何使用回溯法"><a href="#如何使用回溯法" class="headerlink" title="如何使用回溯法"></a>如何使用回溯法</h4><p>eg:给定一个数组[1,2,3,4],求可能的排列顺序的可能性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func backTrack(nums:[Int], tempList: inout Array&lt;Int&gt;, resultList: inout Array&lt;Array&lt;Int&gt;&gt;) &#123;</span><br><span class="line">        if (tempList.count == nums.count) &#123;</span><br><span class="line">            //终结条件，满足一个条件时</span><br><span class="line">            let newTemplist : Array&lt;Int&gt; = tempList;</span><br><span class="line">            resultList.append(newTemplist);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            for i in 0..&lt;nums.count &#123;</span><br><span class="line">                if (tempList.contains(nums[i])) &#123;</span><br><span class="line">                    //如果已经包含了，就不添加</span><br><span class="line">                    continue;</span><br><span class="line">                &#125;</span><br><span class="line">                tempList.append(nums[i]);</span><br><span class="line">                //递归调用，此时的tempList一直在变化，直到满足终结条件才结束</span><br><span class="line">                backTrack(nums: nums, tempList: &amp;tempList, resultList: &amp;resultList);</span><br><span class="line">                //它移除tempList最后一个元素的作用就是返回上一次调用时的数据，也就是希望返回之前的节点再去重新搜索满足条件。这样才能实现回溯</span><br><span class="line">                tempList.remove(at: (tempList.count - 1));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var resultList : Array&lt;Array&lt;Int&gt;&gt; = Array&lt;Array&lt;Int&gt;&gt;(); var tempList : Array&lt;Int&gt; = Array&lt;Int&gt;();</span><br><span class="line">backTrack(nums: nums, tempList: &amp;tempList, resultList: &amp;resultList);</span><br><span class="line">print(resultList);</span><br></pre></td></tr></table></figure>
+<h4 id="矩阵寻找路径"><a href="#矩阵寻找路径" class="headerlink" title="矩阵寻找路径"></a>矩阵寻找路径</h4><p>一个非常经典的在矩阵中寻找路径的问题。在一个M*N的字符矩阵中，寻找是否存在指定路径。要求路径单步只能上下左右移动，不能重复移动某一个格子。<br>如果在矩阵中寻找bfce路径，判断是否包含该路径<br><img src="../../images/juzhen.png" alt="avatar"></p>
+<p>这里思路可以抽象为树形结构<br><img src="../../images/juzhenshu.png" alt="avatar"></p>
+<p>代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">func hasPathCore(rows:Int, columns:Int, row:Int, col:Int, isVisited:inout [Int], pathList:[String], pathLength:inout Int, origList:[String]) -&gt;Bool &#123;</span><br><span class="line">        if (pathList.count &lt;= pathLength) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        var hasPath = false;</span><br><span class="line">        //nowIndex代表矩阵中当前的位置</span><br><span class="line">        let nowIndex = row * columns + col;</span><br><span class="line">        if (row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; col &gt;= 0 &amp;&amp; col &lt; columns &amp;&amp; origList[nowIndex] == pathList[pathLength] &amp;&amp; isVisited[nowIndex] == 0) &#123;</span><br><span class="line">            //保证遍历还在矩阵范围内进行，将矩阵当前位置的元素和目标路径中节点元素对比，相等且没进走过的格子算为有效格子。</span><br><span class="line">            //pathLength++，开始寻找目标路径下一个节点</span><br><span class="line">            pathLength += 1;</span><br><span class="line">            //将矩阵中当前格子作为有效格子放入isVisited</span><br><span class="line">            isVisited[nowIndex] = 1;</span><br><span class="line">            //递归：访问上下左右四个元素是否满足有效格子</span><br><span class="line">            hasPath = hasPathCore(rows: rows, columns: columns, row: row, col: (col - 1), isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: row, col: (col + 1), isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: (row - 1), col: col, isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList)</span><br><span class="line">                || hasPathCore(rows: rows, columns: columns, row: (row + 1), col: col, isVisited: &amp;isVisited, pathList: pathList, pathLength: &amp;pathLength, origList: origList);</span><br><span class="line">            if (!hasPath) &#123;</span><br><span class="line">                //当前元素之后的路径没有找到合适的，回到上一个元素。这里可以形象的理解为树形结构中节点，当前节点下面的子节点不包含问题，那么放弃当前节点，返回上一个节点进行深度寻找。</span><br><span class="line">                pathLength -= 1;</span><br><span class="line">                isVisited[nowIndex] = 0;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return hasPath;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//判断是否含有路径</span><br><span class="line">func isHasPath(rows:Int, columns: Int, pathList: inout [String], origList:[String]) -&gt; Bool &#123;</span><br><span class="line">    if (rows &lt; 1 || columns &lt; 1) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //因为不能重复统计格子，visitedListot用来代表有没有进入过格子。</span><br><span class="line">    var visitedList : Array&lt;Int&gt; = Array&lt;Int&gt;();</span><br><span class="line">    for _ in 0..&lt;(rows * columns) &#123;</span><br><span class="line">        visitedList.append(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var pathLength = 0;</span><br><span class="line">    //这里遍历所有元素来寻找路径，当一个点找不到符合条件的路径时，就需要重新开始一个起点</span><br><span class="line">    for row in 0..&lt;rows &#123;</span><br><span class="line">        for col in 0..&lt;columns &#123;</span><br><span class="line">            if (hasPathCore(rows: rows, columns: columns, row: row, col: col, isVisited: &amp;visitedList, pathList: pathList, pathLength: &amp;pathLength, origList: origList)) &#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>main函数中调用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let strList = [&quot;a&quot;,&quot;b&quot;,&quot;t&quot;,&quot;g&quot;,&quot;c&quot;,&quot;f&quot;,&quot;c&quot;,&quot;s&quot;,&quot;j&quot;,&quot;d&quot;,&quot;e&quot;,&quot;h&quot;];</span><br><span class="line">var path = [&quot;b&quot;,&quot;f&quot;,&quot;c&quot;,&quot;e&quot;];</span><br><span class="line">let haspath = isHasPath(rows: 3, columns: 4, pathList: &amp;path, origList: strList);</span><br><span class="line">print(haspath);</span><br></pre></td></tr></table></figure>
+<h3 id="矩阵中求起点到终点的路径条数"><a href="#矩阵中求起点到终点的路径条数" class="headerlink" title="矩阵中求起点到终点的路径条数"></a>矩阵中求起点到终点的路径条数</h3><p>在一个3*4矩阵中寻找起点a到终点h的路径条数。要求单步只能向下和向右移动。这题和上题有点类似，解题如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">func findPath(rows:Int, columns: Int, origList:[String], target:String) -&gt; Int &#123;</span><br><span class="line">    if (rows &lt; 1 || columns &lt; 1) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //路径条数</span><br><span class="line">    var pathCount = 0;</span><br><span class="line">    //从[0,0]开始计算</span><br><span class="line">    isArriveTheLastPoint(rows: rows, columns: columns, row: 0, col: 0, target: target, origList: origList,pathCount: &amp;pathCount);</span><br><span class="line">    return pathCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归算法 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">func isArriveTheLastPoint(rows:Int, columns:Int, row: Int, col: Int, target:String, origList:[String], pathCount:inout Int) &#123;</span><br><span class="line">    var isEnd = false;</span><br><span class="line">    //nowIndex代表矩阵中当前的位置</span><br><span class="line">    let nowIndex = row * columns + col;</span><br><span class="line">    if (row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; col &gt;= 0 &amp;&amp; col &lt; columns) &#123;</span><br><span class="line">        if (origList[nowIndex] == target) &#123;</span><br><span class="line">            //已经到达终点，算作一个完整路径。那么路径条数+1</span><br><span class="line">            isEnd = true;</span><br><span class="line">            pathCount += 1;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if (!isEnd) &#123;</span><br><span class="line">            //递归，分别向右和向下访问两个元素是否到达指定终点</span><br><span class="line">            let nextCol =  col + 1;</span><br><span class="line">            let nextRow =  row + 1;</span><br><span class="line">            isArriveTheLastPoint(rows: rows, columns: columns, row: row, col: nextCol, target: target,origList:origList,pathCount: &amp;pathCount);</span><br><span class="line">            isArriveTheLastPoint(rows: rows, columns: columns, row: nextRow, col: col, target: target,origList:origList,pathCount: &amp;pathCount);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>main函数调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let strList = [&quot;a&quot;,&quot;b&quot;,&quot;t&quot;,&quot;g&quot;,&quot;c&quot;,&quot;f&quot;,&quot;c&quot;,&quot;s&quot;,&quot;j&quot;,&quot;d&quot;,&quot;e&quot;,&quot;h&quot;];</span><br><span class="line">let target = &quot;h&quot;;</span><br><span class="line">let count = findPath(rows: 3, columns: 4, origList: strList, target:target);</span><br><span class="line">print(count);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2018/11/29/数据结构：回溯法/" data-id="cjt5y9gmj00143xonk9u9plrz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/回溯/">回溯</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-iOS探究Block的实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/23/iOS探究Block的实现/" class="article-date">
+  <time datetime="2018-11-23T08:39:29.000Z" itemprop="datePublished">2018-11-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/23/iOS探究Block的实现/">iOS探究Block的实现</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h3><ul>
+<li>NSGlobalBlock 位于text段</li>
+<li>NSStackBlock 位于栈内存</li>
+<li>NSMallocBlock 位于堆内存</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a = 100;</span><br><span class="line">NSLog(@&quot;位于text段,%@&quot;,^&#123;NSLog(@&quot;&quot;);&#125;);</span><br><span class="line">NSLog(@&quot;位于栈内,%@&quot;,^&#123;NSLog(@&quot;%d&quot;,a);&#125;);</span><br><span class="line">void (^block)(void) = ^&#123;NSLog(@&quot;%d&quot;,a);&#125;;</span><br><span class="line">NSLog(@&quot;位于堆内,%@&quot;,block);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018-11-23 16:48:14.336424+0800 TestRuntime[14636:230602] 位于text段,&lt;__NSGlobalBlock__: 0x100002060&gt;</span><br><span class="line">2018-11-23 16:48:14.336534+0800 TestRuntime[14636:230602] 位于栈内,&lt;__NSStackBlock__: 0x7ffeefbfeb08&gt;</span><br><span class="line">2018-11-23 16:48:14.336641+0800 TestRuntime[14636:230602] 位于堆内,&lt;__NSMallocBlock__: 0x6000000503b0&gt;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>NSGlobalBlock是因为没有引用任何外部变量，block不需要建立局部变量值的快照。</li>
+<li>NSStackBlock使用了局部变量，局部变量的值被copy到栈上，以供block使用。但实际上很多场景都不是NSStackBlock，而是NSMallocBlock。这是因为ARC下编译器在NSStackBlock类型的block传递过程中进行了自动优化，将传递过程将 block拷贝到堆。分析见这篇文章<a href="https://www.jianshu.com/p/03ad4b2ecedf" target="_blank" rel="noopener">ARC下NSStackBlock去哪了。</a></li>
+<li>NSMallocBlock 拷贝block到堆上。</li>
+</ol>
+<h3 id="block的使用"><a href="#block的使用" class="headerlink" title="__block的使用"></a>__block的使用</h3><p>Block内引用外部变量a是只读的，但是如果想在block内部改变a时，需要在定义a的时候使用__block修饰。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__block int a = 100;</span><br><span class="line">testBlock block = ^&#123;</span><br><span class="line">a++;</span><br><span class="line">&#125;;</span><br><span class="line">block();</span><br><span class="line">NSLog(@&quot;%d&quot;,a);</span><br></pre></td></tr></table></figure>
+<p>打印值为101，实际上传入block的是a的指针。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2018/11/23/iOS探究Block的实现/" data-id="cjt5y9glv00043xon1n7rhuay" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/block/">block</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-iOS分类Category底层原理探究" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/11/22/iOS分类Category底层原理探究/" class="article-date">
@@ -514,125 +630,6 @@
 
 
   
-    <article id="post-swift实现一个二叉树" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/09/22/swift实现一个二叉树/" class="article-date">
-  <time datetime="2018-09-21T16:00:00.000Z" itemprop="datePublished">2018-09-22</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/22/swift实现一个二叉树/">swift实现一个二叉树</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="二叉树的原理和用途"><a href="#二叉树的原理和用途" class="headerlink" title="二叉树的原理和用途"></a>二叉树的原理和用途</h2><h3 id="为什么要用二叉树"><a href="#为什么要用二叉树" class="headerlink" title="为什么要用二叉树"></a>为什么要用二叉树</h3><p> 二叉树是一种基本的排序树，用于快速查找。数组搜索比较方便，而插入相对麻烦，链表插入和删除简单，而搜索比较慢，而二叉树是兼顾两者的优点。</p>
-<h3 id="二叉树的分类"><a href="#二叉树的分类" class="headerlink" title="二叉树的分类"></a>二叉树的分类</h3><p>二叉树因为结构的不同主要分为斜树、满二叉树和完全二叉树，当然还有普通的二叉树，比较基本这里不单独做赘述。</p>
-<h4 id="斜树"><a href="#斜树" class="headerlink" title="斜树"></a>斜树</h4><p>只有左子树或者只有右子树</p>
-<p><img src="../../images/binaryTree1.png" alt="avatar"></p>
-<h4 id="满二叉树"><a href="#满二叉树" class="headerlink" title="满二叉树"></a>满二叉树</h4><p>所有分支节点都有左子树和右子树，所有叶子结点都在同一层。其有如下特点：1.叶子只能出现在最下一层；2.节点个数为 n = 2^k-1</p>
-<p><img src="../../images/binaryTree2.png" alt="avatar"></p>
-<h4 id="完全二叉树"><a href="#完全二叉树" class="headerlink" title="完全二叉树"></a>完全二叉树</h4><p>完全二叉树和满二叉树的区别是，最后一行可能不完整，但是绝对是右边的连续部分缺失，节点范围是2^(k-1)-1 &lt; n &lt; 2^k-1<br><img src="../../images/binaryTree3.png" alt="avatar"></p>
-<h4 id="二叉树的创建"><a href="#二叉树的创建" class="headerlink" title="二叉树的创建"></a>二叉树的创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//创建二叉树</span><br><span class="line">    func createBinaryTree(root: inout TreeNode?, listData:[String]) &#123;</span><br><span class="line">        rootindex = rootindex + 1;</span><br><span class="line">        if rootindex &gt;= listData.count &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        let data:String = listData[rootindex] as String</span><br><span class="line">        if data == &quot;#&quot; &#123;</span><br><span class="line">            root = nil;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            root = TreeNode()</span><br><span class="line">            root?.data = data;</span><br><span class="line">            createBinaryTree(root: &amp;root!.leftChild, listData: listData)</span><br><span class="line">            createBinaryTree(root: &amp;root!.rightChild, listData: listData)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>调用处：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let preListData:[String] = [&quot;1&quot;,&quot;2&quot;,&quot;4&quot;,&quot;#&quot;,&quot;#&quot;,&quot;5&quot;,&quot;7&quot;,&quot;#&quot;,&quot;#&quot;,&quot;#&quot;,&quot;3&quot;,&quot;#&quot;,&quot;6&quot;,&quot;#&quot;,&quot;#&quot;];</span><br><span class="line">var preOrderRoot:TreeNode?</span><br><span class="line">createBinaryTree(root: &amp;preOrderRoot, listData: preListData);</span><br></pre></td></tr></table></figure>
-<h4 id="前序、中序、后序的递归实现"><a href="#前序、中序、后序的递归实现" class="headerlink" title="前序、中序、后序的递归实现"></a>前序、中序、后序的递归实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//前序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        print(node?.value!);</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//中序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        print(node?.value!);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//后序遍历</span><br><span class="line">func sortTree(node: TreeNode?) &#123;</span><br><span class="line">    if (node == nil) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sortTree(node: node?.leftNode);</span><br><span class="line">        sortTree(node: node?.rightNode);</span><br><span class="line">        print(node?.value!);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="求二叉树的深度"><a href="#求二叉树的深度" class="headerlink" title="求二叉树的深度"></a>求二叉树的深度</h4><pre><code>//思路：分别计算左子树、右子树的深度，最后取最大值+1即是二叉树深度
-func getTresDepth(node: Node?) -&gt;Int{
-    var leftDepth = 0
-    var rightDepth = 0
-    var max = 0
-    if (node != nil) {
-        leftDepth = getTresDepth(node: node?.leftNode);
-        rightDepth = getTresDepth(node: node?.rightNode);
-        max = leftDepth &gt; rightDepth ? leftDepth : rightDepth;
-        return (max + 1);
-    } else {
-        return 0;
-    }
-}
-
-</code></pre>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/09/22/swift实现一个二叉树/" data-id="cjt5y9gm4000g3xonmyxi7zqb" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Hexo常用命令" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/09/20/Hexo常用命令/" class="article-date">
-  <time datetime="2018-09-19T16:00:00.000Z" itemprop="datePublished">2018-09-20</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/工具/">工具</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/20/Hexo常用命令/">Hexo常用命令</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h3><p><code>hexo new &quot;postName&quot;</code> #新建文章</p>
-<p><code>hexo new page &quot;pageName&quot;</code> #新建页面</p>
-<p><code>hexo generate</code> #生成静态页面至public</p>
-<p><code>hexo service</code> #开启预览访问端口</p>
-<p><code>hexo deploy</code> #部署到guthub</p>
-<p><code>hexo help</code> #查看帮助</p>
-<p><code>hexo version</code> #查看hexo版本</p>
-<h3 id="组合命令"><a href="#组合命令" class="headerlink" title="组合命令"></a>组合命令</h3><p><code>hexo s -g</code> #生成本地预览</p>
-<p><code>hexo d -g</code> #生成并上传</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2018/09/20/Hexo常用命令/" data-id="cjt5y9gln00003xonxwjrtw3c" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 
   <nav id="page-nav">
@@ -690,7 +687,15 @@ func getTresDepth(node: Node?) -&gt;Int{
       <ul>
         
           <li>
-            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;</a>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
           </li>
         
           <li>
@@ -699,14 +704,6 @@ func getTresDepth(node: Node?) -&gt;Int{
         
           <li>
             <a href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/python学习笔记之基础语法/">python学习笔记之基础语法</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/02/深入理解AutoreleasePool源码/">深入理解AutoreleasePool源码</a>
           </li>
         
       </ul>

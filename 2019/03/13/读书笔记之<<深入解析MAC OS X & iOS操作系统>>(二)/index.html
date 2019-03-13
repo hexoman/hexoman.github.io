@@ -5,19 +5,24 @@
   
 
   
-  <title>Tag: 二叉树 | larbraryy的博客</title>
+  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二） | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="劳于读书，逸于作文">
+  <meta name="description" content="一、引导过程：EFI和iBoot引导的过程是指从计算机通电一瞬间到CPU开始执行操作系统代码的整个过程。 1.1 揭秘EFI   BIOS是一个固定的程序，而且通常是封闭的。EFI是一套接口，更像一个运行时环境，规范了一组应用程序的编程接口，基于EFI的程序可以利用这些接口实现功能。EFI程序通常是引导加载器（苹果的Boot Camp)，或者一些诊断程序（苹果的硬件测试工具）。  EFI二进制程序">
 <meta name="keywords" content="ios 架构 读书">
-<meta property="og:type" content="website">
-<meta property="og:title" content="larbraryy的博客">
-<meta property="og:url" content="https://hexoman.github.io/tags/二叉树/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）">
+<meta property="og:url" content="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="劳于读书，逸于作文">
+<meta property="og:description" content="一、引导过程：EFI和iBoot引导的过程是指从计算机通电一瞬间到CPU开始执行操作系统代码的整个过程。 1.1 揭秘EFI   BIOS是一个固定的程序，而且通常是封闭的。EFI是一套接口，更像一个运行时环境，规范了一组应用程序的编程接口，基于EFI的程序可以利用这些接口实现功能。EFI程序通常是引导加载器（苹果的Boot Camp)，或者一些诊断程序（苹果的硬件测试工具）。  EFI二进制程序">
 <meta property="og:locale" content="zh">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/EFI架构图.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/lauchdDaemon1.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/lauchdDaemon2.png">
+<meta property="og:updated_time" content="2019-03-13T13:37:08.735Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="larbraryy的博客">
-<meta name="twitter:description" content="劳于读书，逸于作文">
+<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）">
+<meta name="twitter:description" content="一、引导过程：EFI和iBoot引导的过程是指从计算机通电一瞬间到CPU开始执行操作系统代码的整个过程。 1.1 揭秘EFI   BIOS是一个固定的程序，而且通常是封闭的。EFI是一套接口，更像一个运行时环境，规范了一组应用程序的编程接口，基于EFI的程序可以利用这些接口实现功能。EFI程序通常是引导加载器（苹果的Boot Camp)，或者一些诊断程序（苹果的硬件测试工具）。  EFI二进制程序">
+<meta name="twitter:image" content="https://hexoman.github.io/2019/03/images/EFI架构图.png">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -68,40 +73,81 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/09/22/swift实现一个二叉树/" class="archive-article-date">
-  <time datetime="2018-09-21T16:00:00.000Z" itemprop="datePublished">Sep 22</time>
+        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(二)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" class="article-date">
+  <time datetime="2019-03-12T16:00:00.000Z" itemprop="datePublished">2019-03-13</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/22/swift实现一个二叉树/">swift实现一个二叉树</a>
+    <h1 class="article-title" itemprop="name">
+      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、引导过程：EFI和iBoot"><a href="#一、引导过程：EFI和iBoot" class="headerlink" title="一、引导过程：EFI和iBoot"></a>一、引导过程：EFI和iBoot</h2><p>引导的过程是指从计算机通电一瞬间到CPU开始执行操作系统代码的整个过程。</p>
+<h4 id="1-1-揭秘EFI"><a href="#1-1-揭秘EFI" class="headerlink" title="1.1 揭秘EFI"></a>1.1 揭秘EFI</h4><p>   BIOS是一个固定的程序，而且通常是封闭的。EFI是一套接口，更像一个运行时环境，规范了一组应用程序的编程接口，基于EFI的程序可以利用这些接口实现功能。EFI程序通常是引导加载器（苹果的Boot Camp)，或者一些诊断程序（苹果的硬件测试工具）。</p>
+<p><img src="../../images/EFI架构图.png" alt="avatar"></p>
+<p>EFI二进制程序实现了这样的原型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">typedef EFI_SATTUS (EFIAPI *EFI_IMAGE_ENTER_POINT) </span><br><span class="line">(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE SystemTable)</span><br></pre></td></tr></table></figure>
+<h2 id="二、launchd"><a href="#二、launchd" class="headerlink" title="二、launchd"></a>二、launchd</h2><p> 整个用户环境启动的入口，作为系统中的第一个用户态进程，负责间接或直接的启动系统中的其他进程。launchd由内核直接启动，负责加载BSD子系统的主内核线程创建一个线程来执行bsainit_task。</p>
+<h3 id="2-1-系统范围和用户范围的launchd"><a href="#2-1-系统范围和用户范围的launchd" class="headerlink" title="2.1 系统范围和用户范围的launchd"></a>2.1 系统范围和用户范围的launchd</h3><p>系统范围的launchd是不可能终止的，当系统关闭时，launchd也是最后一个退出的进程。<br>用户范围的launchd是在用户登陆时执行的，通过SSH远程登录也会创建launchd，iOS上只有一个launchd实例，即系统范围的实例</p>
+<h3 id="2-2-多面手launchd"><a href="#2-2-多面手launchd" class="headerlink" title="2.2 多面手launchd"></a>2.2 多面手launchd</h3><p>launchd是用户态出现的第一个进程。当系统还在启动初期的时候，launchd是系统上唯一的进程。launchd身兼数职。</p>
+<ul>
+<li>init，init的职责是派生出各种各样的后台守护程序，设置好系统，然后转入后台，确保这些守护程序都活着，如果程序死了，launchd会重新派生出新的守护程序。</li>
+<li>atd/crond 运行定时作业，即在指定时间运行指定的命令</li>
+<li>inetd/xinetd 用途是启动网络服务。这个守护程序的职责是绑定一些端口（TCP/UDP端口），当有连接请求到达时，根据需要启动相应的服务程序，并将服务程序的输入输出描述符连接到对应的套接字。如果没有活动的请求需要处理，那么系统就不需要让服务程序运行，从而降低系统负载。</li>
+<li>事务支持 launchd支持事务，会在系统关闭、用户退出或超过指定时间后检查未决的事物。</li>
+<li>资源遏制和限制，例如jetsam机制可以强制实行虚拟内存使用率的限制。</li>
+<li>I/O Kit整合 </li>
+</ul>
+<h3 id="2-3-LaunchdDaemon列表"><a href="#2-3-LaunchdDaemon列表" class="headerlink" title="2.3 LaunchdDaemon列表"></a>2.3 LaunchdDaemon列表</h3><p><img src="../../images/lauchdDaemon1.png" alt="avatar"><br><img src="../../images/lauchdDaemon2.png" alt="avatar"></p>
 
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjt7bltaz0001nlonzqdl2t64" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
 
 </section>
         
