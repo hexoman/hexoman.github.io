@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四） | larbraryy的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="第四部分主要讲解Mach的虚拟内存。 虚拟内存架构虚拟内存的抽象是Mach中提供最重要的机制，主要通过内存对象和分页器的形式提供的。  虚拟内存层   vm_map: 表示任务地址空间内一个或多个虚拟内存区域。每个区域都由一个独立的条目（vm_map_entry),这些条目由一个双向链表vm_map_links维护 vm_map_entry：每一个vm_map_entry表示虚拟内存中一块连续的">
+<meta name="keywords" content="ios 架构 读书">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）">
+<meta property="og:url" content="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/index.html">
+<meta property="og:site_name" content="larbraryy的博客">
+<meta property="og:description" content="第四部分主要讲解Mach的虚拟内存。 虚拟内存架构虚拟内存的抽象是Mach中提供最重要的机制，主要通过内存对象和分页器的形式提供的。  虚拟内存层   vm_map: 表示任务地址空间内一个或多个虚拟内存区域。每个区域都由一个独立的条目（vm_map_entry),这些条目由一个双向链表vm_map_links维护 vm_map_entry：每一个vm_map_entry表示虚拟内存中一块连续的">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/vm_map_header.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/vm_map.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/vm_map_entry.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/pmap.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/zone.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/03/images/kernel_memory_allocate.png">
+<meta property="og:updated_time" content="2019-03-19T14:44:55.418Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）">
+<meta name="twitter:description" content="第四部分主要讲解Mach的虚拟内存。 虚拟内存架构虚拟内存的抽象是Mach中提供最重要的机制，主要通过内存对象和分页器的形式提供的。  虚拟内存层   vm_map: 表示任务地址空间内一个或多个虚拟内存区域。每个区域都由一个独立的条目（vm_map_entry),这些条目由一个双向链表vm_map_links维护 vm_map_entry：每一个vm_map_entry表示虚拟内存中一块连续的">
+<meta name="twitter:image" content="https://hexoman.github.io/2019/03/images/vm_map_header.png">
+  
+    <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">larbraryy的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">专注于技术和生活</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://hexoman.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(四)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" class="article-date">
+  <time datetime="2019-03-14T16:00:00.000Z" itemprop="datePublished">2019-03-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 第四部分主要讲解Mach的虚拟内存。</p>
+<h2 id="虚拟内存架构"><a href="#虚拟内存架构" class="headerlink" title="虚拟内存架构"></a>虚拟内存架构</h2><p>虚拟内存的抽象是Mach中提供最重要的机制，主要通过内存对象和分页器的形式提供的。</p>
+<ol>
+<li>虚拟内存层</li>
+</ol>
+<ul>
+<li>vm_map: 表示任务地址空间内一个或多个虚拟内存区域。每个区域都由一个独立的条目（vm_map_entry),这些条目由一个双向链表vm_map_links维护</li>
+<li>vm_map_entry：每一个vm_map_entry表示虚拟内存中一块连续的区域，每一个区域都可以通过指定的保护权限进行保护。vm_map_entry通常指向一个vm_object, 但也可以指向一个嵌套的 vm_map,即子映射。</li>
+<li>vm_object: 将vm_map_entry和实际的支撑的内存关联起来。包含一个vm_page\链表，还包含一个用于访问正确分页器的Mach端口（memory_object),通过这个分页器进行页面的清理和获取操作。</li>
+<li>vm_page: vm_page真正表示了vm_object或部分vm_object。vm_page 可以有多种状态：驻留内存、交换出、加密、干净和脏。</li>
+</ul>
+<ol start="2">
+<li>物理内存<br>物理内存的层面处理的是虚拟内存到物理内存的映射。这个层面只有一个抽象pmap, 提供了机器无关的接口。这个接口隐藏了底层平台的细节，底层的细节需要处理器层次进行分页操作，其重要处理的对象包括硬件页表项（page table entry, PTE）、翻译查找表（translation lookaside buffer, TLB）</li>
+</ol>
+<p>vm_map结构体构成如下图.vm_map表示vm_map.size字节的内存，这些内存通过一个包含vm_map.hdr.nentries条目的链表（vm_map.hdr.links）维护。链表中每一项都是一个vm_map_entry,一个vm_map_entry表示虚拟内存中的一个连续的块。</p>
+<p>  <img src="../../images/vm_map_header.png" alt="avatar"></p>
+<p>  <img src="../../images/vm_map.png" alt="avatar"></p>
+<p>vm_map_entry结构体构成如下图。vm_map_entry关键元素是vm_map_object,这是一个联合体，即可以包含另一个vm_map,也可以包含一个vm_object_t。</p>
+<p>  <img src="../../images/vm_map_entry.png" alt="avatar"></p>
+<p>vm_object是一个巨大的数据结构，这里重点关注三个字段：</p>
+<ul>
+<li>memq: vm_page对象的链表，每一项都代表一个驻留内存的虚拟内存页面。尽管一个对象可以表示一个单独的页面，但是大部分情况下一个对象可以包含多个页面。</li>
+<li>pager:指向分页器的Mach端口。分页器将未驻留内存的页面关联到后备存储，后备存储可以是内存映射的文件、设备和交换文件，后备存储保存了没有驻留内存的页面。</li>
+</ul>
+<h2 id="物理内存管理"><a href="#物理内存管理" class="headerlink" title="物理内存管理"></a>物理内存管理</h2><p>XNU构建于Mach的物理内存抽象层之上，这个抽象层称为pmap。</p>
+<p><img src="../../images/pmap.png" alt="avatar"></p>
+<h2 id="Mach-Zone"><a href="#Mach-Zone" class="headerlink" title="Mach Zone"></a>Mach Zone</h2><p>Zone是一种内存区域，用于快速分配和释放频繁使用的固定大小的对象。内核使用，用户态不能访问。</p>
+<p><img src="../../images/zone.png" alt="avatar"></p>
+<p>如果系统内存不足，zone可能会进行垃圾回收。首先扫描所有的zone（跳过标记为不可回收的zone),检查这些zone的空闲列表，判断哪些是可以回收的。然后将这些对象转为页面：和非空闲对象共享了一个页面的对象不能释放，只有页面全部空闲的对象才能释放。</p>
+<h2 id="内核内存分配器"><a href="#内核内存分配器" class="headerlink" title="内核内存分配器"></a>内核内存分配器</h2><p>内核的分配器函数负责分配虚拟内存，并且做好后备物理内存的映射。</p>
+<ul>
+<li>kernel_memory_allocate() 所有内核分配路径都会经过kernel_memory_allocate（）。这个函数执行实际的内存分配。同时对vm_map和pmap操作。这个函数在传入的vm_map中找到一个足够大的虚拟地址空间，然后从联动的页面列表中找出满足分配的内存。</li>
+</ul>
+<p><img src="../../images/kernel_memory_allocate.png" alt="avatar"></p>
+<p>——————————————————</p>
+<p>此处未完待续。。。</p>
+<p>——————————————————</p>
+<h2 id="内核内存分配器-1"><a href="#内核内存分配器-1" class="headerlink" title="内核内存分配器"></a>内核内存分配器</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjtfw8i45002j8moni5iwf4ok" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/15/深入理解isa指针/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          深入理解isa指针
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/03/15/深入理解isa指针/">深入理解isa指针</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 zw<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

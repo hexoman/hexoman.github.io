@@ -70,6 +70,135 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-深入理解isa指针" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/15/深入理解isa指针/" class="article-date">
+  <time datetime="2019-03-14T16:00:00.000Z" itemprop="datePublished">2019-03-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/15/深入理解isa指针/">深入理解isa指针</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> <strong>OC类有几个重要的概念，instance、class object、metaclass、isa 这篇从源码的角度探究它们的实现。</strong></p>
+<h3 id="instance对象实例"><a href="#instance对象实例" class="headerlink" title="instance对象实例"></a>instance对象实例</h3><p>创建一个对象或者实例其实就是一个objc_object结构体，只包含一个Class类型的isa，isa指针是指向对象所属的类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class;</span><br><span class="line"></span><br><span class="line">struct objc_object &#123;</span><br><span class="line">   Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">/// A pointer to an instance of a class.</span><br><span class="line">typedef struct objc_object *id;</span><br></pre></td></tr></table></figure>
+<p>举个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString *str = @&quot;Hello World&quot;;</span><br></pre></td></tr></table></figure>
+<p>str的本质是一个objc_object，isa指针则指向NSString这个类对象</p>
+<h3 id="类对象-class-object"><a href="#类对象-class-object" class="headerlink" title="类对象 class object"></a>类对象 class object</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY; </span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class      //父类                          OBJC2_UNAVAILABLE;                  </span><br><span class="line">    const char * _Nonnull name       //类的名字                          OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                     //版本                        OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size               //实例大小                           OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars   //实例变量列表                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;                            //方法列表    </span><br><span class="line">    struct objc_cache * _Nonnull cache        //缓存                  OBJC2_UNAVAILABLE;    </span><br><span class="line">    struct objc_protocol_list * _Nullable protocols    //协议      OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<p>类对象结构如上，主要是objc_class结构体。第一个元素也是一个isa指针，类对象的isa指向元类（metaClass), 元类中保存了创建类对象和类方法的所有信息。<br>如下这张图很好的解释了，实例和类对象、元类以及它们父类之间的关系。<br><img src="../../images/class_object.png" alt="avatar"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OBJC_EXPORT Class _Nullable</span><br><span class="line">object_getClass(id _Nullable obj) </span><br><span class="line">    OBJC_AVAILABLE(10.5, 2.0, 9.0, 1.0, 2.0);</span><br></pre></td></tr></table></figure>
+<p>object_getClasss用来获取isa指针的指向。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjtfw8i3f00148monp4wgpkcd" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/isa/">isa</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(四)" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" class="article-date">
+  <time datetime="2019-03-14T16:00:00.000Z" itemprop="datePublished">2019-03-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 第四部分主要讲解Mach的虚拟内存。</p>
+<h2 id="虚拟内存架构"><a href="#虚拟内存架构" class="headerlink" title="虚拟内存架构"></a>虚拟内存架构</h2><p>虚拟内存的抽象是Mach中提供最重要的机制，主要通过内存对象和分页器的形式提供的。</p>
+<ol>
+<li>虚拟内存层</li>
+</ol>
+<ul>
+<li>vm_map: 表示任务地址空间内一个或多个虚拟内存区域。每个区域都由一个独立的条目（vm_map_entry),这些条目由一个双向链表vm_map_links维护</li>
+<li>vm_map_entry：每一个vm_map_entry表示虚拟内存中一块连续的区域，每一个区域都可以通过指定的保护权限进行保护。vm_map_entry通常指向一个vm_object, 但也可以指向一个嵌套的 vm_map,即子映射。</li>
+<li>vm_object: 将vm_map_entry和实际的支撑的内存关联起来。包含一个vm_page\链表，还包含一个用于访问正确分页器的Mach端口（memory_object),通过这个分页器进行页面的清理和获取操作。</li>
+<li>vm_page: vm_page真正表示了vm_object或部分vm_object。vm_page 可以有多种状态：驻留内存、交换出、加密、干净和脏。</li>
+</ul>
+<ol start="2">
+<li>物理内存<br>物理内存的层面处理的是虚拟内存到物理内存的映射。这个层面只有一个抽象pmap, 提供了机器无关的接口。这个接口隐藏了底层平台的细节，底层的细节需要处理器层次进行分页操作，其重要处理的对象包括硬件页表项（page table entry, PTE）、翻译查找表（translation lookaside buffer, TLB）</li>
+</ol>
+<p>vm_map结构体构成如下图.vm_map表示vm_map.size字节的内存，这些内存通过一个包含vm_map.hdr.nentries条目的链表（vm_map.hdr.links）维护。链表中每一项都是一个vm_map_entry,一个vm_map_entry表示虚拟内存中的一个连续的块。</p>
+<p>  <img src="../../images/vm_map_header.png" alt="avatar"></p>
+<p>  <img src="../../images/vm_map.png" alt="avatar"></p>
+<p>vm_map_entry结构体构成如下图。vm_map_entry关键元素是vm_map_object,这是一个联合体，即可以包含另一个vm_map,也可以包含一个vm_object_t。</p>
+<p>  <img src="../../images/vm_map_entry.png" alt="avatar"></p>
+<p>vm_object是一个巨大的数据结构，这里重点关注三个字段：</p>
+<ul>
+<li>memq: vm_page对象的链表，每一项都代表一个驻留内存的虚拟内存页面。尽管一个对象可以表示一个单独的页面，但是大部分情况下一个对象可以包含多个页面。</li>
+<li>pager:指向分页器的Mach端口。分页器将未驻留内存的页面关联到后备存储，后备存储可以是内存映射的文件、设备和交换文件，后备存储保存了没有驻留内存的页面。</li>
+</ul>
+<h2 id="物理内存管理"><a href="#物理内存管理" class="headerlink" title="物理内存管理"></a>物理内存管理</h2><p>XNU构建于Mach的物理内存抽象层之上，这个抽象层称为pmap。</p>
+<p><img src="../../images/pmap.png" alt="avatar"></p>
+<h2 id="Mach-Zone"><a href="#Mach-Zone" class="headerlink" title="Mach Zone"></a>Mach Zone</h2><p>Zone是一种内存区域，用于快速分配和释放频繁使用的固定大小的对象。内核使用，用户态不能访问。</p>
+<p><img src="../../images/zone.png" alt="avatar"></p>
+<p>如果系统内存不足，zone可能会进行垃圾回收。首先扫描所有的zone（跳过标记为不可回收的zone),检查这些zone的空闲列表，判断哪些是可以回收的。然后将这些对象转为页面：和非空闲对象共享了一个页面的对象不能释放，只有页面全部空闲的对象才能释放。</p>
+<h2 id="内核内存分配器"><a href="#内核内存分配器" class="headerlink" title="内核内存分配器"></a>内核内存分配器</h2><p>内核的分配器函数负责分配虚拟内存，并且做好后备物理内存的映射。</p>
+<ul>
+<li>kernel_memory_allocate() 所有内核分配路径都会经过kernel_memory_allocate（）。这个函数执行实际的内存分配。同时对vm_map和pmap操作。这个函数在传入的vm_map中找到一个足够大的虚拟地址空间，然后从联动的页面列表中找出满足分配的内存。</li>
+</ul>
+<p><img src="../../images/kernel_memory_allocate.png" alt="avatar"></p>
+<p>——————————————————</p>
+<p>此处未完待续。。。</p>
+<p>——————————————————</p>
+<h2 id="内核内存分配器-1"><a href="#内核内存分配器-1" class="headerlink" title="内核内存分配器"></a>内核内存分配器</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjtfw8i45002j8moni5iwf4ok" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(三)" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" class="article-date">
@@ -111,11 +240,27 @@
 </li>
 </ul>
 <h3 id="混合内核"><a href="#混合内核" class="headerlink" title="混合内核"></a>混合内核</h3><p>兼具微内核和巨内核的好处。内核最核心部分支持底层服务、调度、进程通信IPC（Inter-Process communication)和虚拟内存，其他服务都实现在这个核心之外，但是也在内核态中。混合内核并没有微内核的健壮性，牺牲健壮性换来和巨内核一样的运行效率。</p>
+<hr>
+<p>那么思考一个问题：XNU是属于什么类型的内核？</p>
+<p>从技术来说，XNU是一个混合内核。XNU的核心Mach最早就是一个真正的微内核，现在Mach的原语还是围绕消息传递的基础构建的，然后，消息通常是以指针的形式传递，并没有昂贵的复制操作，因为大部分的服务都是在同一地址空间中执行（因此也会归属为巨内核）。类似的，建立在Mach之上的BSD层一直是一个巨内核，这个子系统也在同一个地址空间中。在iOS中，XNU目前在4GB的地址空间中预留顶部2GB。</p>
+<hr>
+<h3 id="异常和中断"><a href="#异常和中断" class="headerlink" title="异常和中断"></a>异常和中断</h3><p>异常基本可以分为如下三种：</p>
+<ul>
+<li>错误（fault):指令遇到可以纠正的异常，并且处理器可以重新启动这条出现异常的指令。常见的例子是页异常，某个虚拟内存地址表示的页面不在物理RAM中发生页错误，出现页错误时，执行错误处理程序，完成后返回到生成这个错误的指令。</li>
+<li>陷阱（trap):类似错误，但是处理完成后返回的是发生陷进指令之后的那条指令</li>
+<li>中止(abort): 不可重启指令。如果一个错误发生两次，那么也没必要再重试了。</li>
+</ul>
+<p>中断是一个特殊组建产生的，这个组件称之为可编程中断控制器（programmable interrupt Controller, PIC),PIC接受来自系统总线上设备的消息，然后将消息分见到某一中断请求线上去，并设置活跃状态，这个中断被一个函数处理完成之后，重置这条线的状态。</p>
+<h2 id="Mach内核"><a href="#Mach内核" class="headerlink" title="Mach内核"></a>Mach内核</h2><h3 id="Mach的设计原则"><a href="#Mach的设计原则" class="headerlink" title="Mach的设计原则"></a>Mach的设计原则</h3><p>mach中所有的东西都是通过自己的对象实现的。进程、虚拟内存、线程都是对象，所有对象都有自己属性。Mach的独特之处在于选择了通过消息传递的方式实现对象之间的通信。</p>
+<h3 id="Mach消息"><a href="#Mach消息" class="headerlink" title="Mach消息"></a>Mach消息</h3><p>Mach中最基本的概念是消息，定义为透明的BLOB（binary large object,二进制大对象）。通过固定的包头进行封装。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct  &#123;</span><br><span class="line">  mach_msg_header_t header</span><br><span class="line">  mach_msg_body_t body</span><br><span class="line">&#125;mach_msg_base_t</span><br></pre></td></tr></table></figure>
+<p>消息头的元数据如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct  &#123;</span><br><span class="line">  mach_msg_bits_t  msgh_bits //消息头的标志位</span><br><span class="line">  mach_msg_size_t  msgh_size //大小，以字节为单位</span><br><span class="line">  mach_port_t      msgh_remote_port//目标（发出的消息）或源（接受的消息）</span><br><span class="line">  mach_port_t      msgh_local_port//源（发出的消息）或目标（接受的消息）</span><br><span class="line"></span><br><span class="line">  mach_msg_size_t  mgsh_reserved //..</span><br><span class="line">  maach_msg_id_t   msgh_id;     //唯一ID</span><br><span class="line">&#125;mach_msg_header_t</span><br></pre></td></tr></table></figure></p>
+<p>Mach消息原来是为真正的微内核架构而设计的，mach_msg()函数必须在发送者和接受者之间复制消息</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjt7bltaw0000nlonfo6v22ii" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjtfw8i47002l8mon0jm935u7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -172,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjt7bltaz0001nlonzqdl2t64" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjtfw8i49002n8monmnv65z3i" class="article-share-link">Share</a>
       
       
     </footer>
@@ -286,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" data-id="cjt7bltbd0004nlonvg6mhosw" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" data-id="cjtfw8i4o002y8mon3u2ijisu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -339,7 +484,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjt5y9gmi00123xono0seu44x" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjtfw8i3g00188monhs9sbt67" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/runtime/">runtime</a></li></ul>
@@ -391,7 +536,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjt5y9gmk00183xondlkka8a7" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjtfw8i3i001b8monnb98gpf6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weak/">weak</a></li></ul>
@@ -456,7 +601,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjt5y9glx00063xonhmwk133f" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjtfw8i2q00068mon7qmxgow8" class="article-share-link">Share</a>
       
       
     </footer>
@@ -517,7 +662,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjt5y9gnd002m3xonpjfytr52" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjtfw8i4n002x8mon5a3x00b6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li></ul>
@@ -568,128 +713,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjt5y9gly00093xonl7zddpic" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjtfw8i2y000g8monotce3i0e" class="article-share-link">Share</a>
       
       
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-重读经典之&lt;&lt;设计模式&gt;&gt;" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/02/13/重读经典之<<设计模式>>/" class="article-date">
-  <time datetime="2019-02-12T16:00:00.000Z" itemprop="datePublished">2019-02-13</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/读书/">读书</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/13/重读经典之<<设计模式>>/">重读经典之&lt;&lt;程序是如何跑起来的&gt;&gt;</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="d"><a href="#d" class="headerlink" title="d"></a>d</h3>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/13/重读经典之<<设计模式>>/" data-id="cjt5y9gml001a3xonelptfa6y" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-iOS编译过程" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/01/18/iOS编译过程/" class="article-date">
-  <time datetime="2019-01-17T16:00:00.000Z" itemprop="datePublished">2019-01-18</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/18/iOS编译过程/">iOS编译原理</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Clang编译到LLVM编译的过程"><a href="#Clang编译到LLVM编译的过程" class="headerlink" title="Clang编译到LLVM编译的过程"></a>Clang编译到LLVM编译的过程</h3><h4 id="1-预处理"><a href="#1-预处理" class="headerlink" title="1.预处理"></a>1.预处理</h4><p>头文件引入，宏替换，注释处理，条件编译（#ifdef)等操作</p>
-<h4 id="2-词法分析"><a href="#2-词法分析" class="headerlink" title="2.词法分析"></a>2.词法分析</h4><p>词法分析器读入源文件的字符流，产生词法单元（Token）作为输出</p>
-<h4 id="3-语法分析"><a href="#3-语法分析" class="headerlink" title="3.语法分析"></a>3.语法分析</h4><p>Token流会被解析成一颗抽象语法树（AST）</p>
-<h4 id="4-CodeGen"><a href="#4-CodeGen" class="headerlink" title="4.CodeGen"></a>4.CodeGen</h4><p>遍历语法树，生成LLVM IR代码</p>
-<h4 id="5-生成汇编代码"><a href="#5-生成汇编代码" class="headerlink" title="5.生成汇编代码"></a>5.生成汇编代码</h4><p>LLVM对IR进行优化，会针对不同的架构生成不同的目标代码，以汇编代码输出</p>
-<h4 id="6-汇编器"><a href="#6-汇编器" class="headerlink" title="6.汇编器"></a>6.汇编器</h4><p>将汇编代码转为机器语言，最后输出目标文件</p>
-<h4 id="7-链接"><a href="#7-链接" class="headerlink" title="7.链接"></a>7.链接</h4><p>将编译产生的.o文件和dylib、a文件，生成一个mach-o文件</p>
-<h3 id="编译和启动加载的一些概念汇总"><a href="#编译和启动加载的一些概念汇总" class="headerlink" title="编译和启动加载的一些概念汇总"></a>编译和启动加载的一些概念汇总</h3><h4 id="App启动的过程"><a href="#App启动的过程" class="headerlink" title="App启动的过程"></a>App启动的过程</h4><ol>
-<li>解析info.plist，加载相关信息，建立沙盒和权限检查</li>
-<li>Mach-O加载</li>
-<li>调用main(), UIApplicationMain(), applicationWillFinishLaunching</li>
-</ol>
-<h4 id="Mach-O流程（pre-main）"><a href="#Mach-O流程（pre-main）" class="headerlink" title="Mach-O流程（pre-main）"></a>Mach-O流程（pre-main）</h4><ul>
-<li>加载动态库dyld。dyld先读取mach-o的header和load commands，检查其依赖的动态库，递归加载，大多都是系统的动态库，会被缓存到dyld shared cache，提高读取效率。</li>
-<li>Rebase &amp;&amp; Bind。处于安全的考虑，ASLR使得地址随机化，导致起始地址不固定，Rebase修正内部（指向当前mach-o文件）的指针指向， Bind修正外部指针指向<br>，Rebase&amp;&amp;Bind用来指向正确的地址，Objective-C 中有很多数据结构都是靠 Rebasing 和 Binding 来修正（fix-up）的，比如 Class 中指向父类的指针和指向方法的指针。</li>
-<li>ObjC SetUp。读取二进制文件中Data段内容，找到objc相关信息；注册Objc类，ObjC Runtime 需要维护一张映射类名与类的全局表。当加载一个 dylib 时，其定义的所有的类都需要被注册到这个全局表中；读取 protocol 以及 category 的信息，把category的定义插入方法列表 (category registration)；确保 selector 的唯一性 </li>
-<li>Initializers。动态调整，在堆和栈中写入内容。<ul>
-<li>Objc的+load()函数</li>
-<li>C++的构造函数属性函数 形如attribute</li>
-<li>dyld开始将程序二进制文件初始化</li>
-<li>交由ImageLoader读取image，其中包含了我们的类、方法等各种符号</li>
-<li>runtime接手后调用mapimages做解析和处理，接下来loadimages中调用 callloadmethods方法，遍历所有加载进来的Class，按继承层级依次调用Class的+load方法和其 Category的+load方法</li>
-</ul>
-</li>
-</ul>
-<h4 id="ASLR地址空间布局随机化"><a href="#ASLR地址空间布局随机化" class="headerlink" title="ASLR地址空间布局随机化"></a>ASLR地址空间布局随机化</h4><p>如果采用ASLR，进程每次启动，地址空间都会被简单地随机化，防止黑客攻击</p>
-<h4 id="Code-Sign"><a href="#Code-Sign" class="headerlink" title="Code Sign"></a>Code Sign</h4><p>代码签名会直接写入到mach-o的可执行文件里，加密哈希不是针对于整个文件，而是针对于每一个Page的。这就保证了在dyld进行加载的时候，可以对每一个page进行独立的验证。</p>
-<h4 id="mach-o文件的组成"><a href="#mach-o文件的组成" class="headerlink" title="mach-o文件的组成"></a>mach-o文件的组成</h4><ul>
-<li>Header头部：包含可以执行的CPU架构，比如x86、arm64</li>
-<li>Load commands加载命令：包含文件的组织架构和在虚拟内存中的布局方式</li>
-<li>Data数据，包含load commands中需要的各个段(segement）数据，每个Segement都是Page的整数倍。每个 segement 又被划分成一些 section。segment 的名字都是大写的，且空间大小为页的整数。页的大小跟硬件有关，在 arm64 架构一页是 16KB，其余为 4KB。</li>
-</ul>
-<h4 id="Data部分包含三个段"><a href="#Data部分包含三个段" class="headerlink" title="Data部分包含三个段"></a>Data部分包含三个段</h4><ul>
-<li>_TEXT代码段，readonly,包含函数和只读字符串</li>
-<li>_DATA数据段，readwrite,包含可读写全局变量</li>
-<li>_LINKEDIT 包含方法和变量的位置、偏移量</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/01/18/iOS编译过程/" data-id="cjt5y9glw00053xonu8174ajw" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理/">编译原理</a></li></ul>
-
     </footer>
   </div>
   
@@ -722,7 +748,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -732,7 +758,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -754,6 +780,14 @@
       <ul>
         
           <li>
+            <a href="/2019/03/15/深入理解isa指针/">深入理解isa指针</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）</a>
+          </li>
+        
+          <li>
             <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
           </li>
         
@@ -763,14 +797,6 @@
         
           <li>
             <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
           </li>
         
       </ul>
