@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>深入理解计算机系统 | larbraryy的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="冯 · 诺依曼体系几乎所有计算机程序都有一个经典的架构基础：冯 · 诺依曼体系。包含运算器、控制器、存储器、输入和输出设备。  CPU主频和性能计算机常说的性能主要体现在两个指标。  第一个是响应时间，或者说执行时间。响应时间越快越好，性能越好。 第二个是吞吐率，可以理解为相同时间内运行的更多。  CPU的主频代表的就是时钟周期时间。比如2.8gGHZ，粗浅的认为CPU在一秒内执行简单指令的数量是">
+<meta name="keywords" content="ios 架构 读书">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解计算机系统">
+<meta property="og:url" content="https://hexoman.github.io/2019/06/17/深入理解计算机系统/index.html">
+<meta property="og:site_name" content="larbraryy的博客">
+<meta property="og:description" content="冯 · 诺依曼体系几乎所有计算机程序都有一个经典的架构基础：冯 · 诺依曼体系。包含运算器、控制器、存储器、输入和输出设备。  CPU主频和性能计算机常说的性能主要体现在两个指标。  第一个是响应时间，或者说执行时间。响应时间越快越好，性能越好。 第二个是吞吐率，可以理解为相同时间内运行的更多。  CPU的主频代表的就是时钟周期时间。比如2.8gGHZ，粗浅的认为CPU在一秒内执行简单指令的数量是">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://hexoman.github.io/2019/06/images/冯诺依曼.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/06/images/栈帧.png">
+<meta property="og:image" content="https://hexoman.github.io/2019/06/images/动态链接.png">
+<meta property="og:updated_time" content="2019-06-20T01:05:22.352Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解计算机系统">
+<meta name="twitter:description" content="冯 · 诺依曼体系几乎所有计算机程序都有一个经典的架构基础：冯 · 诺依曼体系。包含运算器、控制器、存储器、输入和输出设备。  CPU主频和性能计算机常说的性能主要体现在两个指标。  第一个是响应时间，或者说执行时间。响应时间越快越好，性能越好。 第二个是吞吐率，可以理解为相同时间内运行的更多。  CPU的主频代表的就是时钟周期时间。比如2.8gGHZ，粗浅的认为CPU在一秒内执行简单指令的数量是">
+<meta name="twitter:image" content="https://hexoman.github.io/2019/06/images/冯诺依曼.png">
+  
+    <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">larbraryy的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">专注于技术和生活</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://hexoman.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-深入理解计算机系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/17/深入理解计算机系统/" class="article-date">
+  <time datetime="2019-06-16T16:00:00.000Z" itemprop="datePublished">2019-06-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解计算机系统
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="冯-·-诺依曼体系"><a href="#冯-·-诺依曼体系" class="headerlink" title="冯 · 诺依曼体系"></a>冯 · 诺依曼体系</h2><p>几乎所有计算机程序都有一个经典的架构基础：冯 · 诺依曼体系。<br>包含运算器、控制器、存储器、输入和输出设备。</p>
+<p><img src="../../images/冯诺依曼.png" alt="avatar"></p>
+<h4 id="CPU主频和性能"><a href="#CPU主频和性能" class="headerlink" title="CPU主频和性能"></a>CPU主频和性能</h4><p>计算机常说的性能主要体现在两个指标。</p>
+<ul>
+<li>第一个是响应时间，或者说执行时间。响应时间越快越好，性能越好。</li>
+<li>第二个是吞吐率，可以理解为相同时间内运行的更多。</li>
+</ul>
+<p>CPU的主频代表的就是时钟周期时间。比如2.8gGHZ，粗浅的认为CPU在一秒内执行简单指令的数量是 2.8G条。<br>这个时钟走的越快处理的事情就越多，性能就越好呢？其实不然，时钟跑的越快，付出的代价也越大，散热和功耗的压力也就越大，超过CPU承受范围就崩溃了。</p>
+<p>CPU执行时间的公式：程序的CPU执行时间 = CPU时钟周期数 * 时钟周期时间</p>
+<p>对于CPU时钟周期数，我们可以再做一个分解，把它变成“指令数 * 每条指令执行的平均时间周期数（CPI）”,不同的指令对应的CPI不同，乘法的CPI就比加法多。</p>
+<h4 id="CPU的瓶颈"><a href="#CPU的瓶颈" class="headerlink" title="CPU的瓶颈"></a>CPU的瓶颈</h4><p>CPU其实是一个超大规模集成电路，由许多晶体管组合而成。CPU的计算，实际就是晶体管的开闭来进行的。<br>要想计算的快，有两方面的改善。一是增加晶体管密度，二是提升主频，即开闭的速度更快，但都会带来耗电和散热问题。</p>
+<h4 id="优化性能可行的三个方向"><a href="#优化性能可行的三个方向" class="headerlink" title="优化性能可行的三个方向"></a>优化性能可行的三个方向</h4><ul>
+<li>计算机主频，提升硬件性能。</li>
+<li>CPU通过流水线技术，让每条指令的执行时间尽可能减少</li>
+<li>控制指令的条数，主要优化在编译器层面</li>
+<li>加速大概率事件。例如用GPU代替CPU计算来解决90%以上事件的速度提升</li>
+<li>通过预测提高性能。在预测未来的情况下，提前进行相应的操作，来提升性能。</li>
+</ul>
+<h2 id="计算机指令执行的过程"><a href="#计算机指令执行的过程" class="headerlink" title="计算机指令执行的过程"></a>计算机指令执行的过程</h2><p>CPU就是执行各种计算机指令的大脑，CPU能识别的语言叫机器语言。<br>高级语言通过编译成为汇编代码，再用汇编器翻译成机器语言。常见的指令分为五大类。</p>
+<ul>
+<li>算术类指令。例如加减乘除</li>
+<li>数据传输类指令。给变量赋值，在内存中读写数据</li>
+<li>逻辑类指令。逻辑上的与和非</li>
+<li>条件分支指令。if/else</li>
+<li>无条件指令。函数调用</li>
+</ul>
+<h4 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h4><p>一个CPU种有很多不同功能的寄存器，有三种比较特殊。</p>
+<ul>
+<li>PC寄存器（指令地址寄存器）存放下一条需要执行的计算机指令的内存地址</li>
+<li>指令寄存器。存放当前执行的指令</li>
+<li>条件码寄存器。里面用一个flag,存放CPU进行算术或者逻辑算计的结果</li>
+</ul>
+<p>一个程序执行时，CPU会根据PC寄存器里的地址，从内存中把需要执行的指令读取到指令寄存器执行，然后根据指令长度自增，开始读取下一条指令。</p>
+<h4 id="Stack-Overflow"><a href="#Stack-Overflow" class="headerlink" title="Stack Overflow"></a>Stack Overflow</h4><p>当指令在原来顺序执行的过程中，执行了一个内存地址的跳转指令，让指令从原来顺序执行的过程中跳开，从新的跳转后位置执行。<br>但是还有一个场景：需要指令跳走其他指令执行完还能继续在当前位置执行。方法是在内存里开辟一个空间，用栈后进先出数据结构来关系指令的执行。</p>
+<p>举个例子，在A中调用B，那么会在汇编中call指令发生时，将A压栈，此时栈顶是A。并在B函数第一行，通过push rbp压栈，栈顶是B。当B执行完，通过pop rbp出栈B。</p>
+<p><img src="../../images/栈帧.png" alt="avatar"></p>
+<p>栈里压入它存不下的内容，程序在执行的过程中就会遇到栈溢出的错误，即Stack Overflow。</p>
+<h2 id="编译、链接、装载"><a href="#编译、链接、装载" class="headerlink" title="编译、链接、装载"></a>编译、链接、装载</h2><p>高级语言-&gt;汇编代码-&gt;机器码其实分为两部分。</p>
+<ul>
+<li>由编译、汇编、链接三个阶段组成。在这个阶段完成之后，就生成一个可执行文件</li>
+<li>通过装载器把可执行文件装载到内存中，CPU从内存中读取指令和数据，来开始真正执行程序</li>
+</ul>
+<p>可执行文件一般包含如下几个Section:</p>
+<ul>
+<li>.text。也叫代码段或者指令段，用来保存程序的代码和指令</li>
+<li>.data。也叫数据段，用来保存程序里面设置好的初始化数据信息</li>
+<li>重定位表relocation Table。刚开始并不知道跳转地址的信息存储在重定位表中。</li>
+<li>符号表（Symbol Table)。保留所说的当前文件里面定义的函数名称和对应地址的表</li>
+</ul>
+<h4 id="静态链接"><a href="#静态链接" class="headerlink" title="静态链接"></a>静态链接</h4><p>链接器扫描所有的输入文件，然后把符号表信息收集起来，构成一个全局的符号表，然后根据重定位表，把所有不确定要跳转的代码，根据符号表里面存储的地址进行一次修正。最后把所有的目标文件的对应段进行一次合并，变成最终的可执行代码。</p>
+<h4 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h4><p>在动态链接对应的共享库，我们在共享库的 data section里面保存了一张全局偏移表（GOT，Global Offset Table)。所有需要引用当前共享库外部的地址的指令，都会查询 GOT，来找到当前运行程序的虚拟内存里的对应位置。Got表里面的数据，则是在加载一个个共享库的时候写进去的。</p>
+<p><img src="../../images/动态链接.png" alt="avatar"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/06/17/深入理解计算机系统/" data-id="cjx3yrlso001i18oniwds8ktv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/05/04/swift学习笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">swift学习笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/汇编/">汇编</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/Swift/" style="font-size: 10px;">Swift</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/17/深入理解计算机系统/">深入理解计算机系统</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/04/swift学习笔记/">swift学习笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/04/01/汇编入门学习/">汇编入门学习</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/27/iOS中的链接器/">iOS中的链接器</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/24/<<程序员的自我修养>>之链接/">&lt;&lt;程序员的自我修养&gt;&gt;之链接</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 zw<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

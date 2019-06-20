@@ -16,7 +16,7 @@
 <meta property="og:description" content="OC类有几个重要的概念，instance、class object、metaclass、isa 这篇从源码的角度探究它们的实现。 instance对象实例创建一个对象或者实例其实就是一个objc_object结构体，只包含一个Class类型的isa，isa指针是指向对象所属的类。 12345678typedef struct objc_class *Class;struct objc_objec">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://hexoman.github.io/2019/03/images/class_object.png">
-<meta property="og:updated_time" content="2019-03-14T15:40:05.955Z">
+<meta property="og:updated_time" content="2019-03-21T00:56:15.630Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解isa指针">
 <meta name="twitter:description" content="OC类有几个重要的概念，instance、class object、metaclass、isa 这篇从源码的角度探究它们的实现。 instance对象实例创建一个对象或者实例其实就是一个objc_object结构体，只包含一个Class类型的isa，isa指针是指向对象所属的类。 12345678typedef struct objc_class *Class;struct objc_objec">
@@ -103,15 +103,22 @@
 <p>举个例子</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString *str = @&quot;Hello World&quot;;</span><br></pre></td></tr></table></figure>
 <p>str的本质是一个objc_object，isa指针则指向NSString这个类对象</p>
-<h3 id="类对象-class-object"><a href="#类对象-class-object" class="headerlink" title="类对象 class object"></a>类对象 class object</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY; </span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class      //父类                          OBJC2_UNAVAILABLE;                  </span><br><span class="line">    const char * _Nonnull name       //类的名字                          OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                     //版本                        OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size               //实例大小                           OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars   //实例变量列表                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;                            //方法列表    </span><br><span class="line">    struct objc_cache * _Nonnull cache        //缓存                  OBJC2_UNAVAILABLE;    </span><br><span class="line">    struct objc_protocol_list * _Nullable protocols    //协议      OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<h3 id="类对象-class-object"><a href="#类对象-class-object" class="headerlink" title="类对象 class object"></a>类对象 class object</h3><p>2.0之前的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY; </span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class      //父类                          OBJC2_UNAVAILABLE;                  </span><br><span class="line">    const char * _Nonnull name       //类的名字                          OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                     //版本                        OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size               //实例大小                           OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars   //实例变量列表                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;                            //方法列表    </span><br><span class="line">    struct objc_cache * _Nonnull cache        //缓存                  OBJC2_UNAVAILABLE;    </span><br><span class="line">    struct objc_protocol_list * _Nullable protocols    //协议      OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
 <p>类对象结构如上，主要是objc_class结构体。第一个元素也是一个isa指针，类对象的isa指向元类（metaClass), 元类中保存了创建类对象和类方法的所有信息。<br>如下这张图很好的解释了，实例和类对象、元类以及它们父类之间的关系。<br><img src="../../images/class_object.png" alt="avatar"></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OBJC_EXPORT Class _Nullable</span><br><span class="line">object_getClass(id _Nullable obj) </span><br><span class="line">    OBJC_AVAILABLE(10.5, 2.0, 9.0, 1.0, 2.0);</span><br></pre></td></tr></table></figure>
 <p>object_getClasss用来获取isa指针的指向。</p>
-
+<p>2.0之后的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class;</span><br><span class="line">typedef struct objc_object *id;</span><br><span class="line"> </span><br><span class="line">@interface Object &#123; </span><br><span class="line">    Class isa; </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">struct objc_object &#123;</span><br><span class="line">private:</span><br><span class="line">    isa_t isa;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">struct objc_class : objc_object &#123;</span><br><span class="line">    // Class ISA;</span><br><span class="line">    Class superclass;</span><br><span class="line">    cache_t cache;             // formerly cache pointer and vtable</span><br><span class="line">    class_data_bits_t bits;    // class_rw_t * plus custom rr/alloc flags</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">union isa_t </span><br><span class="line">&#123;</span><br><span class="line">    isa_t() &#123; &#125;</span><br><span class="line">    isa_t(uintptr_t value) : bits(value) &#123; &#125;</span><br><span class="line">    Class cls;</span><br><span class="line">    uintptr_t bits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来可以关注下 isa_t里的内容,isa_t是一个union类型的的结构体，union内的变量共享一段内存。并且union占用内存的大小等于其内占用内存最大的变量大小。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">union isa_t </span><br><span class="line">&#123;</span><br><span class="line">    isa_t() &#123; &#125;</span><br><span class="line">    isa_t(uintptr_t value) : bits(value) &#123; &#125;</span><br><span class="line"></span><br><span class="line">    Class cls;</span><br><span class="line">    uintptr_t bits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>isa的初始化</p>
+<p>当我们对一个 ObjC 对象分配内存时，其方法调用栈中包含了上述的两个方法，这里关注的重点是 initIsa 方法。访问对象的 isa 会直接返回一个指向 cls 的指针，magic 的值为 0x3b 用于调试器判断当前对象是真的对象还是没有初始化的空间.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">inline void </span><br><span class="line">objc_object::initInstanceIsa(Class cls, bool hasCxxDtor)</span><br><span class="line">&#123;</span><br><span class="line">    initIsa(cls, true, hasCxxDtor);</span><br><span class="line">&#125;</span><br><span class="line">inline void </span><br><span class="line">objc_object::initIsa(Class cls, bool indexed, bool hasCxxDtor) </span><br><span class="line">&#123; </span><br><span class="line">    if (!indexed) &#123;</span><br><span class="line">        isa.cls = cls;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        isa.bits = ISA_MAGIC_VALUE;</span><br><span class="line">        isa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        isa.shiftcls = (uintptr_t)cls &gt;&gt; 3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjtfw8i3f00148monp4wgpkcd" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjx3yrlsl001b18on5jamrblb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/isa/">isa</a></li></ul>
@@ -121,6 +128,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2019/03/22/深入理解msg_send()/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          深入理解msg_send
+        
+      </div>
+    </a>
   
   
     <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" id="article-nav-older" class="article-nav-link-wrap">
@@ -141,7 +157,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/汇编/">汇编</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
     </div>
   </div>
 
@@ -151,7 +167,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -161,7 +177,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/Swift/" style="font-size: 10px;">Swift</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -170,7 +186,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
     </div>
   </div>
 
@@ -183,23 +199,23 @@
       <ul>
         
           <li>
-            <a href="/2019/03/15/深入理解isa指针/">深入理解isa指针</a>
+            <a href="/2019/06/17/深入理解计算机系统/">深入理解计算机系统</a>
           </li>
         
           <li>
-            <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）</a>
+            <a href="/2019/05/04/swift学习笔记/">swift学习笔记</a>
           </li>
         
           <li>
-            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+            <a href="/2019/04/01/汇编入门学习/">汇编入门学习</a>
           </li>
         
           <li>
-            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+            <a href="/2019/03/27/iOS中的链接器/">iOS中的链接器</a>
           </li>
         
           <li>
-            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
+            <a href="/2019/03/24/<<程序员的自我修养>>之链接/">&lt;&lt;程序员的自我修养&gt;&gt;之链接</a>
           </li>
         
       </ul>

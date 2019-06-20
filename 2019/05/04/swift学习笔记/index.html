@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>swift学习笔记 | larbraryy的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="集合类型数组  (Arrays)创建一个空数组1var someInts = [Int]() 创建一个带有默认值的数组12var test = Array(repeating: &amp;quot;test&amp;quot;, count: 3);//test是一个[String]数组，等价于[&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;] 通过数组相加创">
+<meta name="keywords" content="Swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="swift学习笔记">
+<meta property="og:url" content="https://hexoman.github.io/2019/05/04/swift学习笔记/index.html">
+<meta property="og:site_name" content="larbraryy的博客">
+<meta property="og:description" content="集合类型数组  (Arrays)创建一个空数组1var someInts = [Int]() 创建一个带有默认值的数组12var test = Array(repeating: &amp;quot;test&amp;quot;, count: 3);//test是一个[String]数组，等价于[&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;] 通过数组相加创">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://hexoman.github.io/2019/05/images/swiftSet.png">
+<meta property="og:updated_time" content="2019-06-11T13:04:36.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="swift学习笔记">
+<meta name="twitter:description" content="集合类型数组  (Arrays)创建一个空数组1var someInts = [Int]() 创建一个带有默认值的数组12var test = Array(repeating: &amp;quot;test&amp;quot;, count: 3);//test是一个[String]数组，等价于[&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;,&amp;quot;test&amp;quot;] 通过数组相加创">
+<meta name="twitter:image" content="https://hexoman.github.io/2019/05/images/swiftSet.png">
+  
+    <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">larbraryy的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">专注于技术和生活</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://hexoman.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-swift学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/04/swift学习笔记/" class="article-date">
+  <time datetime="2019-05-03T16:00:00.000Z" itemprop="datePublished">2019-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      swift学习笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h2><h3 id="数组-Arrays"><a href="#数组-Arrays" class="headerlink" title="数组  (Arrays)"></a>数组  (Arrays)</h3><h4 id="创建一个空数组"><a href="#创建一个空数组" class="headerlink" title="创建一个空数组"></a>创建一个空数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var someInts = [Int]()</span><br></pre></td></tr></table></figure>
+<h4 id="创建一个带有默认值的数组"><a href="#创建一个带有默认值的数组" class="headerlink" title="创建一个带有默认值的数组"></a>创建一个带有默认值的数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var test = Array(repeating: &quot;test&quot;, count: 3);</span><br><span class="line">//test是一个[String]数组，等价于[&quot;test&quot;,&quot;test&quot;,&quot;test&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="通过数组相加创建一个数组"><a href="#通过数组相加创建一个数组" class="headerlink" title="通过数组相加创建一个数组"></a>通过数组相加创建一个数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var one = Array(repeating: &quot;test&quot;, count: 3);</span><br><span class="line">var two = Array(repeating: &quot;hh&quot;, count: 3);</span><br><span class="line">var three = one + two;</span><br><span class="line">print(three);</span><br><span class="line">//[&quot;test&quot;, &quot;test&quot;, &quot;test&quot;, &quot;hh&quot;, &quot;hh&quot;, &quot;hh&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="访问和修改数组"><a href="#访问和修改数组" class="headerlink" title="访问和修改数组"></a>访问和修改数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if shoppingList.isEmpty &#123;</span><br><span class="line">    print(&quot;The shopping list is empty.&quot;)</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    print(&quot;The shopping list is not empty.&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">使用isEmpty作为一个缩写形式去检查count属性是否为0</span><br></pre></td></tr></table></figure>
+<p>使用append(_:)增加新元素，也可以使用(+=) 直接在数组后面添加一个或者多个想通过类型的新元素</p>
+<p>利用下标来一次改变一系列数据值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var list = [&quot;one&quot;,&quot;two&quot;,&quot;three&quot;,&quot;four&quot;];</span><br><span class="line">list[2...3] = [&quot;five&quot;,&quot;six&quot;];</span><br><span class="line">print(list);</span><br><span class="line">//[&quot;one&quot;, &quot;two&quot;, &quot;five&quot;, &quot;six&quot;]</span><br></pre></td></tr></table></figure>
+<p>可以使用remove(at:)和removeLast()来删除数组元素</p>
+<h4 id="数组的遍历"><a href="#数组的遍历" class="headerlink" title="数组的遍历"></a>数组的遍历</h4><p>同时需要每个数据项的值和索引值，可以使用 enumerated() 方法来进行数组遍历</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var list = [&quot;one&quot;,&quot;two&quot;,&quot;three&quot;,&quot;four&quot;];</span><br><span class="line">for (index, value) in list.enumerated() &#123;</span><br><span class="line">    print(&quot;Item \(String(index + 1)): \(value)&quot;);</span><br><span class="line">&#125;</span><br><span class="line">//Item 1: one</span><br><span class="line">//Item 2: two</span><br><span class="line">//Item 3: three</span><br><span class="line">//Item 4: four</span><br></pre></td></tr></table></figure>
+<h3 id="集合-Set"><a href="#集合-Set" class="headerlink" title="集合 (Set)"></a>集合 (Set)</h3><h4 id="创建集合"><a href="#创建集合" class="headerlink" title="创建集合"></a>创建集合</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var list: Set&lt;String&gt; = [&quot;Rock&quot;, &quot;Classical&quot;, &quot;Hip hop&quot;]</span><br><span class="line">var list: Set = [&quot;Rock&quot;, &quot;Classical&quot;, &quot;Hip hop&quot;]</span><br></pre></td></tr></table></figure>
+<p>创建一个制定string类型的集合，只能存储String类型。</p>
+<h4 id="访问和修改集合"><a href="#访问和修改集合" class="headerlink" title="访问和修改集合"></a>访问和修改集合</h4><p>和数组一样，使用count属性找出Set元素的数量，isEmpty检查count是否为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.insert(&quot;Jazz&quot;)</span><br></pre></td></tr></table></figure>
+<p>insert(_:) 方法来添加一个新元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.remove(&quot;Jazz&quot;)</span><br></pre></td></tr></table></figure>
+<p>remove(_:) 方法来删除一个新元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if list.contains(&quot;Funk&quot;) &#123;</span><br><span class="line">    print(&quot;I get up on the good foot.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 contains(_:) 方法去检查 Set 中是否包含一个特定的值</p>
+<h4 id="基本集合操作"><a href="#基本集合操作" class="headerlink" title="基本集合操作"></a>基本集合操作</h4><p><img src="../../images/swiftSet.png" alt="avatar"></p>
+<ul>
+<li>使用 intersection(_:) 方法根据两个集合中都包含的值创建的一个新的集合。</li>
+<li>使用 symmetricDifference(_:) 方法根据在一个集合中但不在两个集合中的值创建一个新的集合。</li>
+<li>使用 union(_:) 方法根据两个集合的值创建一个新的集合。</li>
+<li>使用 subtracting(_:) 方法根据不在该集合中的值创建一个新的集合。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let oddDigits: Set = [1, 3, 5, 7, 9]</span><br><span class="line">let evenDigits: Set = [0, 2, 4, 6, 8]</span><br><span class="line">let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]</span><br><span class="line"></span><br><span class="line">oddDigits.union(evenDigits).sorted()</span><br><span class="line">// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span><br><span class="line">oddDigits.intersection(evenDigits).sorted()</span><br><span class="line">// []</span><br><span class="line">oddDigits.subtracting(singleDigitPrimeNumbers).sorted()</span><br><span class="line">// [1, 9]</span><br><span class="line">oddDigits.symmetricDifference(singleDigitPrimeNumbers).sorted()</span><br><span class="line">// [1, 2, 9]</span><br></pre></td></tr></table></figure>
+<h3 id="字典-Dictionary"><a href="#字典-Dictionary" class="headerlink" title="字典 (Dictionary)"></a>字典 (Dictionary)</h3><h4 id="创建一个空字典"><a href="#创建一个空字典" class="headerlink" title="创建一个空字典"></a>创建一个空字典</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var namesOfIntegers = [Int: String]()</span><br></pre></td></tr></table></figure>
+<h4 id="访问和修改字典"><a href="#访问和修改字典" class="headerlink" title="访问和修改字典"></a>访问和修改字典</h4><p>通过字典的只读属性 count 来获取某个字典的数据项数量。<br>使用布尔属性 isEmpty 作为一个缩写形式去检查 count 属性是否为 0。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var dict = [&quot;key1&quot;:&quot;value1&quot;, &quot;key2&quot;:&quot;value2&quot;]</span><br><span class="line">if let oldValue = dict.updateValue(&quot;v3&quot;, forKey: &quot;key3&quot;) &#123;</span><br><span class="line">    print(&quot;The old value for key3 was \(oldValue).&quot;)</span><br><span class="line">&#125;</span><br><span class="line">print(dict)</span><br><span class="line">//[&quot;key2&quot;: &quot;value2&quot;, &quot;key3&quot;: &quot;v3&quot;, &quot;key1&quot;: &quot;value1&quot;]</span><br></pre></td></tr></table></figure>
+<p>updateValue可以设置或者更新特性键对应的值，在key不存在的时候设置新值或者在已经存在key的情况下更新value。</p>
+<p>removeValue(forKey:) 方法也可以用来在字典中移除键值对.</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><h4 id="简单闭包格式"><a href="#简单闭包格式" class="headerlink" title="简单闭包格式"></a>简单闭包格式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let names = [&quot;Chris&quot;, &quot;Alex&quot;, &quot;Ewa&quot;, &quot;Barry&quot;, &quot;Daniella&quot;]</span><br><span class="line">var reversedNames = names.sorted(by: &#123;(s1: String, s2: String) -&gt; Bool in</span><br><span class="line">    return s1 &gt; s2</span><br><span class="line">&#125;)</span><br><span class="line">print(reversedNames)</span><br><span class="line">//[&quot;Ewa&quot;, &quot;Daniella&quot;, &quot;Chris&quot;, &quot;Barry&quot;, &quot;Alex&quot;]</span><br></pre></td></tr></table></figure>
+<p>上面用闭包实现数组的排序。</p>
+<p>也可以这么简写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123; s1, s2 in return s1 &gt; s2 &#125; )</span><br></pre></td></tr></table></figure>
+<p>单表达式闭包的隐式返回</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123; s1, s2 in s1 &gt; s2 &#125; )</span><br></pre></td></tr></table></figure>
+<p>swift自动为内联闭包提供参数名称缩写，可以直接这么缩写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123;$0 &gt; $1&#125; )</span><br></pre></td></tr></table></figure></p>
+<h4 id="尾随闭包"><a href="#尾随闭包" class="headerlink" title="尾随闭包"></a>尾随闭包</h4><p>函数支持将其作为最后一个参数调用。在使用尾随闭包时，不用写出它的参数标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 以下是不使用尾随闭包进行函数调用</span><br><span class="line">someFunctionThatTakesAClosure(closure: &#123;</span><br><span class="line">    // 闭包主体部分</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 以下是使用尾随闭包进行函数调用</span><br><span class="line">someFunctionThatTakesAClosure() &#123;</span><br><span class="line">    // 闭包主体部分</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="逃匿闭包"><a href="#逃匿闭包" class="headerlink" title="逃匿闭包"></a>逃匿闭包</h4><p>当一个闭包作为参数传到一个函数中，但是这个闭包在函数返回之后才被执行，我们称该闭包从函数中逃逸。当定义接受闭包作为参数的函数时，你可以在参数名之前标注 @escaping，用来指明这个闭包是允许“逃逸”出这个函数的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var customersInLine = [&quot;Chris&quot;, &quot;Alex&quot;]</span><br><span class="line">var customerProviders: [() -&gt; String] = []</span><br><span class="line">func collectCustomerProviders(_ customerProvider: @autoclosure @escaping () -&gt; String) &#123;</span><br><span class="line">    customerProviders.append(customerProvider)</span><br><span class="line">&#125;</span><br><span class="line">collectCustomerProviders(customersInLine.remove(at: 0))</span><br><span class="line">collectCustomerProviders(customersInLine.remove(at: 0))</span><br><span class="line"></span><br><span class="line">print(&quot;Collected \(customerProviders.count) closures.&quot;)</span><br><span class="line">// 打印“Collected 2 closures.”</span><br><span class="line">for customerProvider in customerProviders &#123;</span><br><span class="line">    print(&quot;Now serving \(customerProvider())!&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><h4 id="枚举成员的遍历"><a href="#枚举成员的遍历" class="headerlink" title="枚举成员的遍历"></a>枚举成员的遍历</h4><p>枚举的遍历需要遵循CaseIterable协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum Planet:CaseIterable &#123;</span><br><span class="line">    case mercury, venus, earth, mars</span><br><span class="line">&#125;</span><br><span class="line">var directionToHead = Planet.allCases.count</span><br><span class="line">print(&quot;\(numberOfChoices) beverages available&quot;)</span><br><span class="line">// 打印“3 beverages available”</span><br></pre></td></tr></table></figure>
+<p>通过allCases来遍历枚举中的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum Planet:CaseIterable &#123;</span><br><span class="line">    case mercury, venus, earth, mars</span><br><span class="line">&#125;</span><br><span class="line">for beverage in Planet.allCases &#123;</span><br><span class="line">    print(beverage)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="隐式赋值"><a href="#隐式赋值" class="headerlink" title="隐式赋值"></a>隐式赋值</h4><p>枚举定义为Int或者String时，不需要显式地为每一个枚举成员设置原始值，swift自动赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">enum Planet: Int &#123;</span><br><span class="line">    case mercury = 1, venus, earth, mars, jupiter, saturn, uranus, neptune</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum CompassPoint: String &#123;</span><br><span class="line">    case north, south, east, west</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let earthsOrder = Planet.earth.rawValue</span><br><span class="line">// earthsOrder 值为 3</span><br><span class="line"></span><br><span class="line">let sunsetDirection = CompassPoint.west.rawValue</span><br><span class="line">// sunsetDirection 值为 &quot;west&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="下标"><a href="#下标" class="headerlink" title="下标"></a>下标</h2><p>下标允许通过在实例名称后面的方括号中传入一个或者多个索引值来对实例进行存取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct TimesTable &#123;</span><br><span class="line">    let multiplier: Int</span><br><span class="line">    subscript(index: Int) -&gt; Int &#123;</span><br><span class="line">        return multiplier * index</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">let threeTimesTable = TimesTable(multiplier: 3)</span><br><span class="line">print(&quot;six times three is \(threeTimesTable[6])&quot;)</span><br><span class="line">// 打印“six times three is 18”</span><br></pre></td></tr></table></figure>
+<h2 id="open-public-internal-fileprivate-private的区别"><a href="#open-public-internal-fileprivate-private的区别" class="headerlink" title="open/public/internal/fileprivate/private的区别"></a>open/public/internal/fileprivate/private的区别</h2><ul>
+<li>open 任意地方访问、继承和重写</li>
+<li>public 可以在任意的地方被访问、在其他module内不能被继承和重写</li>
+<li>internal 默认访问级别，整个模块都能被访问</li>
+<li>fileprivate修饰的属性可以在同一个文件被访问、继承和重写（同一个文件可以多个类，这点和private有区别)</li>
+<li>private只能在本类访问和使用，不包括扩展类</li>
+</ul>
+<p>ps: module内和module外的区别。 module内是指不需要使用import引用文件，就可以创建对象，表示module内，而module外是指需要使用import文件才能创建对象才能使用。</p>
+<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><h3 id="异变方法要求-（mutating）"><a href="#异变方法要求-（mutating）" class="headerlink" title="异变方法要求 （mutating）"></a>异变方法要求 （mutating）</h3><p>有时需要在方法中改变方法所属的实例，则可以在值类型（结构体和枚举）的实例方法中，将 mutating 关键字作为方法的前缀</p>
+<h3 id="require"><a href="#require" class="headerlink" title="require"></a>require</h3><p>require 可以在实现协议的类中添加构造器，使用required 修饰符可以确保所有子类也必须提供此构造器实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">protocol SomeProtocol &#123;</span><br><span class="line">    init(someParameter: Int)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SomeClass: SomeProtocol &#123;</span><br><span class="line">    required init(someParameter: Int) &#123;</span><br><span class="line">        // 这里是构造器的实现部分</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SomeSubClass:SomeClass  &#123;</span><br><span class="line">    func test() &#123;</span><br><span class="line">        print(&quot;test&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    //SomeSubClass作为SomeClass的子类，如果在父类中用required修饰构造函数，那么子类也必须实现构造函数，否则将报错</span><br><span class="line">    required init(someParameter: Int) &#123;</span><br><span class="line">        super.init(someParameter: someParameter)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let sub = SomeSubClass(someParameter: 123)</span><br><span class="line">sub.test()</span><br></pre></td></tr></table></figure>
+<h3 id="协议的一些特点"><a href="#协议的一些特点" class="headerlink" title="协议的一些特点"></a>协议的一些特点</h3><ul>
+<li>可以当作类型传参，可以作为数组、字典的元素类型</li>
+<li>可以扩展</li>
+<li>在扩展里声明采纳协议</li>
+<li>可以继承</li>
+<li>可以通过 is as? as!来检查协议的类型</li>
+<li>协议可以合成</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">protocol Named &#123;</span><br><span class="line">    var name: String &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line">protocol Aged &#123;</span><br><span class="line">    var age: Int &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line">struct Person: Named, Aged &#123;</span><br><span class="line">    var name: String</span><br><span class="line">    var age: Int</span><br><span class="line">&#125;</span><br><span class="line">func wishHappyBirthday(to celebrator: Named &amp; Aged) &#123;</span><br><span class="line">    print(&quot;Happy birthday, \(celebrator.name), you&apos;re \(celebrator.age)!&quot;)</span><br><span class="line">&#125;</span><br><span class="line">let birthdayPerson = Person(name: &quot;Malcolm&quot;, age: 21)</span><br><span class="line">wishHappyBirthday(to: birthdayPerson)</span><br></pre></td></tr></table></figure>
+<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">struct Stack&lt;Element&gt; &#123;</span><br><span class="line">    var items = [Element]()</span><br><span class="line">    mutating func push(_ item: Element) &#123;</span><br><span class="line">        items.append(item)</span><br><span class="line">    &#125;</span><br><span class="line">    mutating func pop() -&gt; Element &#123;</span><br><span class="line">        return items.removeLast()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var stackOfStrings = Stack&lt;String&gt;()</span><br><span class="line">stackOfStrings.push(&quot;uno&quot;)</span><br><span class="line">stackOfStrings.push(&quot;dos&quot;)</span><br><span class="line">stackOfStrings.push(&quot;tres&quot;)</span><br><span class="line">stackOfStrings.push(&quot;cuatro&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//泛型可以扩展</span><br><span class="line">extension Stack &#123;</span><br><span class="line">    var topItem: Element? &#123;</span><br><span class="line">        return items.isEmpty ? nil : items[items.count - 1]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stackOfStrings.pop()</span><br><span class="line">if let topItem = stackOfStrings.topItem &#123;</span><br><span class="line">    print(&quot;The top item on the stack is \(topItem).&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><h3 id="默认构造"><a href="#默认构造" class="headerlink" title="默认构造"></a>默认构造</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">struct Celsius &#123;</span><br><span class="line">    var response : String?</span><br><span class="line">    var text : String?</span><br><span class="line">    func ask() &#123;</span><br><span class="line">        print(text ?? &quot;unknow&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//默认构造</span><br><span class="line">let cheeseQuestion = Celsius()  </span><br><span class="line"></span><br><span class="line">//结构体的逐一成员构造器，class不支持</span><br><span class="line">let cheeseQuestion = Celsius(response: &quot;t&quot;,text: &quot;Test&quot;)</span><br></pre></td></tr></table></figure>
+<h3 id="自定义构造过程"><a href="#自定义构造过程" class="headerlink" title="自定义构造过程"></a>自定义构造过程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//结构体和class都支持自定义构造</span><br><span class="line">struct Celsius &#123;</span><br><span class="line">    var response : String?</span><br><span class="line">    var text : String?</span><br><span class="line">    init(text: String, response: String) &#123;</span><br><span class="line">        self.text = text</span><br><span class="line">        self.response = response</span><br><span class="line">    &#125;</span><br><span class="line">    func ask() &#123;</span><br><span class="line">        print(text ?? &quot;unknow&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let cheeseQuestion = Celsius(text: &quot;test&quot;,response: &quot;t&quot;)</span><br></pre></td></tr></table></figure>
+<h2 id="swift的关键字"><a href="#swift的关键字" class="headerlink" title="swift的关键字"></a>swift的关键字</h2><ul>
+<li>typealias  用来为已经存在的类型重新定义名字。1.可以定义闭包，类似OC中的typedef。2.将多个protocol组合成一个然后重新命名。</li>
+<li>defer block 里的代码会在函数 return 之前执行，无论函数是从哪个分支 return 的，还是有 throw，还是自然而然走到最后一行</li>
+<li>discardableResult 忽略一个方法返回值没有使用的警告</li>
+<li></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/05/04/swift学习笔记/" data-id="cjx3yrltk003418onrhnr9dkq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/17/深入理解计算机系统/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          深入理解计算机系统
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/01/汇编入门学习/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">汇编入门学习</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/汇编/">汇编</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/Swift/" style="font-size: 10px;">Swift</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/17/深入理解计算机系统/">深入理解计算机系统</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/04/swift学习笔记/">swift学习笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/04/01/汇编入门学习/">汇编入门学习</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/27/iOS中的链接器/">iOS中的链接器</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/24/<<程序员的自我修养>>之链接/">&lt;&lt;程序员的自我修养&gt;&gt;之链接</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 zw<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

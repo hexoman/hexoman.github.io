@@ -70,6 +70,414 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-深入理解计算机系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/17/深入理解计算机系统/" class="article-date">
+  <time datetime="2019-06-16T16:00:00.000Z" itemprop="datePublished">2019-06-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/17/深入理解计算机系统/">深入理解计算机系统</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="冯-·-诺依曼体系"><a href="#冯-·-诺依曼体系" class="headerlink" title="冯 · 诺依曼体系"></a>冯 · 诺依曼体系</h2><p>几乎所有计算机程序都有一个经典的架构基础：冯 · 诺依曼体系。<br>包含运算器、控制器、存储器、输入和输出设备。</p>
+<p><img src="../../images/冯诺依曼.png" alt="avatar"></p>
+<h4 id="CPU主频和性能"><a href="#CPU主频和性能" class="headerlink" title="CPU主频和性能"></a>CPU主频和性能</h4><p>计算机常说的性能主要体现在两个指标。</p>
+<ul>
+<li>第一个是响应时间，或者说执行时间。响应时间越快越好，性能越好。</li>
+<li>第二个是吞吐率，可以理解为相同时间内运行的更多。</li>
+</ul>
+<p>CPU的主频代表的就是时钟周期时间。比如2.8gGHZ，粗浅的认为CPU在一秒内执行简单指令的数量是 2.8G条。<br>这个时钟走的越快处理的事情就越多，性能就越好呢？其实不然，时钟跑的越快，付出的代价也越大，散热和功耗的压力也就越大，超过CPU承受范围就崩溃了。</p>
+<p>CPU执行时间的公式：程序的CPU执行时间 = CPU时钟周期数 * 时钟周期时间</p>
+<p>对于CPU时钟周期数，我们可以再做一个分解，把它变成“指令数 * 每条指令执行的平均时间周期数（CPI）”,不同的指令对应的CPI不同，乘法的CPI就比加法多。</p>
+<h4 id="CPU的瓶颈"><a href="#CPU的瓶颈" class="headerlink" title="CPU的瓶颈"></a>CPU的瓶颈</h4><p>CPU其实是一个超大规模集成电路，由许多晶体管组合而成。CPU的计算，实际就是晶体管的开闭来进行的。<br>要想计算的快，有两方面的改善。一是增加晶体管密度，二是提升主频，即开闭的速度更快，但都会带来耗电和散热问题。</p>
+<h4 id="优化性能可行的三个方向"><a href="#优化性能可行的三个方向" class="headerlink" title="优化性能可行的三个方向"></a>优化性能可行的三个方向</h4><ul>
+<li>计算机主频，提升硬件性能。</li>
+<li>CPU通过流水线技术，让每条指令的执行时间尽可能减少</li>
+<li>控制指令的条数，主要优化在编译器层面</li>
+<li>加速大概率事件。例如用GPU代替CPU计算来解决90%以上事件的速度提升</li>
+<li>通过预测提高性能。在预测未来的情况下，提前进行相应的操作，来提升性能。</li>
+</ul>
+<h2 id="计算机指令执行的过程"><a href="#计算机指令执行的过程" class="headerlink" title="计算机指令执行的过程"></a>计算机指令执行的过程</h2><p>CPU就是执行各种计算机指令的大脑，CPU能识别的语言叫机器语言。<br>高级语言通过编译成为汇编代码，再用汇编器翻译成机器语言。常见的指令分为五大类。</p>
+<ul>
+<li>算术类指令。例如加减乘除</li>
+<li>数据传输类指令。给变量赋值，在内存中读写数据</li>
+<li>逻辑类指令。逻辑上的与和非</li>
+<li>条件分支指令。if/else</li>
+<li>无条件指令。函数调用</li>
+</ul>
+<h4 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h4><p>一个CPU种有很多不同功能的寄存器，有三种比较特殊。</p>
+<ul>
+<li>PC寄存器（指令地址寄存器）存放下一条需要执行的计算机指令的内存地址</li>
+<li>指令寄存器。存放当前执行的指令</li>
+<li>条件码寄存器。里面用一个flag,存放CPU进行算术或者逻辑算计的结果</li>
+</ul>
+<p>一个程序执行时，CPU会根据PC寄存器里的地址，从内存中把需要执行的指令读取到指令寄存器执行，然后根据指令长度自增，开始读取下一条指令。</p>
+<h4 id="Stack-Overflow"><a href="#Stack-Overflow" class="headerlink" title="Stack Overflow"></a>Stack Overflow</h4><p>当指令在原来顺序执行的过程中，执行了一个内存地址的跳转指令，让指令从原来顺序执行的过程中跳开，从新的跳转后位置执行。<br>但是还有一个场景：需要指令跳走其他指令执行完还能继续在当前位置执行。方法是在内存里开辟一个空间，用栈后进先出数据结构来关系指令的执行。</p>
+<p>举个例子，在A中调用B，那么会在汇编中call指令发生时，将A压栈，此时栈顶是A。并在B函数第一行，通过push rbp压栈，栈顶是B。当B执行完，通过pop rbp出栈B。</p>
+<p><img src="../../images/栈帧.png" alt="avatar"></p>
+<p>栈里压入它存不下的内容，程序在执行的过程中就会遇到栈溢出的错误，即Stack Overflow。</p>
+<h2 id="编译、链接、装载"><a href="#编译、链接、装载" class="headerlink" title="编译、链接、装载"></a>编译、链接、装载</h2><p>高级语言-&gt;汇编代码-&gt;机器码其实分为两部分。</p>
+<ul>
+<li>由编译、汇编、链接三个阶段组成。在这个阶段完成之后，就生成一个可执行文件</li>
+<li>通过装载器把可执行文件装载到内存中，CPU从内存中读取指令和数据，来开始真正执行程序</li>
+</ul>
+<p>可执行文件一般包含如下几个Section:</p>
+<ul>
+<li>.text。也叫代码段或者指令段，用来保存程序的代码和指令</li>
+<li>.data。也叫数据段，用来保存程序里面设置好的初始化数据信息</li>
+<li>重定位表relocation Table。刚开始并不知道跳转地址的信息存储在重定位表中。</li>
+<li>符号表（Symbol Table)。保留所说的当前文件里面定义的函数名称和对应地址的表</li>
+</ul>
+<h4 id="静态链接"><a href="#静态链接" class="headerlink" title="静态链接"></a>静态链接</h4><p>链接器扫描所有的输入文件，然后把符号表信息收集起来，构成一个全局的符号表，然后根据重定位表，把所有不确定要跳转的代码，根据符号表里面存储的地址进行一次修正。最后把所有的目标文件的对应段进行一次合并，变成最终的可执行代码。</p>
+<h4 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h4><p>在动态链接对应的共享库，我们在共享库的 data section里面保存了一张全局偏移表（GOT，Global Offset Table)。所有需要引用当前共享库外部的地址的指令，都会查询 GOT，来找到当前运行程序的虚拟内存里的对应位置。Got表里面的数据，则是在加载一个个共享库的时候写进去的。</p>
+<p><img src="../../images/动态链接.png" alt="avatar"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/06/17/深入理解计算机系统/" data-id="cjx3yrlso001i18oniwds8ktv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-swift学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/04/swift学习笔记/" class="article-date">
+  <time datetime="2019-05-03T16:00:00.000Z" itemprop="datePublished">2019-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/04/swift学习笔记/">swift学习笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h2><h3 id="数组-Arrays"><a href="#数组-Arrays" class="headerlink" title="数组  (Arrays)"></a>数组  (Arrays)</h3><h4 id="创建一个空数组"><a href="#创建一个空数组" class="headerlink" title="创建一个空数组"></a>创建一个空数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var someInts = [Int]()</span><br></pre></td></tr></table></figure>
+<h4 id="创建一个带有默认值的数组"><a href="#创建一个带有默认值的数组" class="headerlink" title="创建一个带有默认值的数组"></a>创建一个带有默认值的数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var test = Array(repeating: &quot;test&quot;, count: 3);</span><br><span class="line">//test是一个[String]数组，等价于[&quot;test&quot;,&quot;test&quot;,&quot;test&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="通过数组相加创建一个数组"><a href="#通过数组相加创建一个数组" class="headerlink" title="通过数组相加创建一个数组"></a>通过数组相加创建一个数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var one = Array(repeating: &quot;test&quot;, count: 3);</span><br><span class="line">var two = Array(repeating: &quot;hh&quot;, count: 3);</span><br><span class="line">var three = one + two;</span><br><span class="line">print(three);</span><br><span class="line">//[&quot;test&quot;, &quot;test&quot;, &quot;test&quot;, &quot;hh&quot;, &quot;hh&quot;, &quot;hh&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="访问和修改数组"><a href="#访问和修改数组" class="headerlink" title="访问和修改数组"></a>访问和修改数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if shoppingList.isEmpty &#123;</span><br><span class="line">    print(&quot;The shopping list is empty.&quot;)</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    print(&quot;The shopping list is not empty.&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">使用isEmpty作为一个缩写形式去检查count属性是否为0</span><br></pre></td></tr></table></figure>
+<p>使用append(_:)增加新元素，也可以使用(+=) 直接在数组后面添加一个或者多个想通过类型的新元素</p>
+<p>利用下标来一次改变一系列数据值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var list = [&quot;one&quot;,&quot;two&quot;,&quot;three&quot;,&quot;four&quot;];</span><br><span class="line">list[2...3] = [&quot;five&quot;,&quot;six&quot;];</span><br><span class="line">print(list);</span><br><span class="line">//[&quot;one&quot;, &quot;two&quot;, &quot;five&quot;, &quot;six&quot;]</span><br></pre></td></tr></table></figure>
+<p>可以使用remove(at:)和removeLast()来删除数组元素</p>
+<h4 id="数组的遍历"><a href="#数组的遍历" class="headerlink" title="数组的遍历"></a>数组的遍历</h4><p>同时需要每个数据项的值和索引值，可以使用 enumerated() 方法来进行数组遍历</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var list = [&quot;one&quot;,&quot;two&quot;,&quot;three&quot;,&quot;four&quot;];</span><br><span class="line">for (index, value) in list.enumerated() &#123;</span><br><span class="line">    print(&quot;Item \(String(index + 1)): \(value)&quot;);</span><br><span class="line">&#125;</span><br><span class="line">//Item 1: one</span><br><span class="line">//Item 2: two</span><br><span class="line">//Item 3: three</span><br><span class="line">//Item 4: four</span><br></pre></td></tr></table></figure>
+<h3 id="集合-Set"><a href="#集合-Set" class="headerlink" title="集合 (Set)"></a>集合 (Set)</h3><h4 id="创建集合"><a href="#创建集合" class="headerlink" title="创建集合"></a>创建集合</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var list: Set&lt;String&gt; = [&quot;Rock&quot;, &quot;Classical&quot;, &quot;Hip hop&quot;]</span><br><span class="line">var list: Set = [&quot;Rock&quot;, &quot;Classical&quot;, &quot;Hip hop&quot;]</span><br></pre></td></tr></table></figure>
+<p>创建一个制定string类型的集合，只能存储String类型。</p>
+<h4 id="访问和修改集合"><a href="#访问和修改集合" class="headerlink" title="访问和修改集合"></a>访问和修改集合</h4><p>和数组一样，使用count属性找出Set元素的数量，isEmpty检查count是否为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.insert(&quot;Jazz&quot;)</span><br></pre></td></tr></table></figure>
+<p>insert(_:) 方法来添加一个新元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.remove(&quot;Jazz&quot;)</span><br></pre></td></tr></table></figure>
+<p>remove(_:) 方法来删除一个新元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if list.contains(&quot;Funk&quot;) &#123;</span><br><span class="line">    print(&quot;I get up on the good foot.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 contains(_:) 方法去检查 Set 中是否包含一个特定的值</p>
+<h4 id="基本集合操作"><a href="#基本集合操作" class="headerlink" title="基本集合操作"></a>基本集合操作</h4><p><img src="../../images/swiftSet.png" alt="avatar"></p>
+<ul>
+<li>使用 intersection(_:) 方法根据两个集合中都包含的值创建的一个新的集合。</li>
+<li>使用 symmetricDifference(_:) 方法根据在一个集合中但不在两个集合中的值创建一个新的集合。</li>
+<li>使用 union(_:) 方法根据两个集合的值创建一个新的集合。</li>
+<li>使用 subtracting(_:) 方法根据不在该集合中的值创建一个新的集合。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let oddDigits: Set = [1, 3, 5, 7, 9]</span><br><span class="line">let evenDigits: Set = [0, 2, 4, 6, 8]</span><br><span class="line">let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]</span><br><span class="line"></span><br><span class="line">oddDigits.union(evenDigits).sorted()</span><br><span class="line">// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span><br><span class="line">oddDigits.intersection(evenDigits).sorted()</span><br><span class="line">// []</span><br><span class="line">oddDigits.subtracting(singleDigitPrimeNumbers).sorted()</span><br><span class="line">// [1, 9]</span><br><span class="line">oddDigits.symmetricDifference(singleDigitPrimeNumbers).sorted()</span><br><span class="line">// [1, 2, 9]</span><br></pre></td></tr></table></figure>
+<h3 id="字典-Dictionary"><a href="#字典-Dictionary" class="headerlink" title="字典 (Dictionary)"></a>字典 (Dictionary)</h3><h4 id="创建一个空字典"><a href="#创建一个空字典" class="headerlink" title="创建一个空字典"></a>创建一个空字典</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var namesOfIntegers = [Int: String]()</span><br></pre></td></tr></table></figure>
+<h4 id="访问和修改字典"><a href="#访问和修改字典" class="headerlink" title="访问和修改字典"></a>访问和修改字典</h4><p>通过字典的只读属性 count 来获取某个字典的数据项数量。<br>使用布尔属性 isEmpty 作为一个缩写形式去检查 count 属性是否为 0。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var dict = [&quot;key1&quot;:&quot;value1&quot;, &quot;key2&quot;:&quot;value2&quot;]</span><br><span class="line">if let oldValue = dict.updateValue(&quot;v3&quot;, forKey: &quot;key3&quot;) &#123;</span><br><span class="line">    print(&quot;The old value for key3 was \(oldValue).&quot;)</span><br><span class="line">&#125;</span><br><span class="line">print(dict)</span><br><span class="line">//[&quot;key2&quot;: &quot;value2&quot;, &quot;key3&quot;: &quot;v3&quot;, &quot;key1&quot;: &quot;value1&quot;]</span><br></pre></td></tr></table></figure>
+<p>updateValue可以设置或者更新特性键对应的值，在key不存在的时候设置新值或者在已经存在key的情况下更新value。</p>
+<p>removeValue(forKey:) 方法也可以用来在字典中移除键值对.</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><h4 id="简单闭包格式"><a href="#简单闭包格式" class="headerlink" title="简单闭包格式"></a>简单闭包格式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let names = [&quot;Chris&quot;, &quot;Alex&quot;, &quot;Ewa&quot;, &quot;Barry&quot;, &quot;Daniella&quot;]</span><br><span class="line">var reversedNames = names.sorted(by: &#123;(s1: String, s2: String) -&gt; Bool in</span><br><span class="line">    return s1 &gt; s2</span><br><span class="line">&#125;)</span><br><span class="line">print(reversedNames)</span><br><span class="line">//[&quot;Ewa&quot;, &quot;Daniella&quot;, &quot;Chris&quot;, &quot;Barry&quot;, &quot;Alex&quot;]</span><br></pre></td></tr></table></figure>
+<p>上面用闭包实现数组的排序。</p>
+<p>也可以这么简写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123; s1, s2 in return s1 &gt; s2 &#125; )</span><br></pre></td></tr></table></figure>
+<p>单表达式闭包的隐式返回</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123; s1, s2 in s1 &gt; s2 &#125; )</span><br></pre></td></tr></table></figure>
+<p>swift自动为内联闭包提供参数名称缩写，可以直接这么缩写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversedNames = names.sorted(by: &#123;$0 &gt; $1&#125; )</span><br></pre></td></tr></table></figure></p>
+<h4 id="尾随闭包"><a href="#尾随闭包" class="headerlink" title="尾随闭包"></a>尾随闭包</h4><p>函数支持将其作为最后一个参数调用。在使用尾随闭包时，不用写出它的参数标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 以下是不使用尾随闭包进行函数调用</span><br><span class="line">someFunctionThatTakesAClosure(closure: &#123;</span><br><span class="line">    // 闭包主体部分</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 以下是使用尾随闭包进行函数调用</span><br><span class="line">someFunctionThatTakesAClosure() &#123;</span><br><span class="line">    // 闭包主体部分</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="逃匿闭包"><a href="#逃匿闭包" class="headerlink" title="逃匿闭包"></a>逃匿闭包</h4><p>当一个闭包作为参数传到一个函数中，但是这个闭包在函数返回之后才被执行，我们称该闭包从函数中逃逸。当定义接受闭包作为参数的函数时，你可以在参数名之前标注 @escaping，用来指明这个闭包是允许“逃逸”出这个函数的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var customersInLine = [&quot;Chris&quot;, &quot;Alex&quot;]</span><br><span class="line">var customerProviders: [() -&gt; String] = []</span><br><span class="line">func collectCustomerProviders(_ customerProvider: @autoclosure @escaping () -&gt; String) &#123;</span><br><span class="line">    customerProviders.append(customerProvider)</span><br><span class="line">&#125;</span><br><span class="line">collectCustomerProviders(customersInLine.remove(at: 0))</span><br><span class="line">collectCustomerProviders(customersInLine.remove(at: 0))</span><br><span class="line"></span><br><span class="line">print(&quot;Collected \(customerProviders.count) closures.&quot;)</span><br><span class="line">// 打印“Collected 2 closures.”</span><br><span class="line">for customerProvider in customerProviders &#123;</span><br><span class="line">    print(&quot;Now serving \(customerProvider())!&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><h4 id="枚举成员的遍历"><a href="#枚举成员的遍历" class="headerlink" title="枚举成员的遍历"></a>枚举成员的遍历</h4><p>枚举的遍历需要遵循CaseIterable协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum Planet:CaseIterable &#123;</span><br><span class="line">    case mercury, venus, earth, mars</span><br><span class="line">&#125;</span><br><span class="line">var directionToHead = Planet.allCases.count</span><br><span class="line">print(&quot;\(numberOfChoices) beverages available&quot;)</span><br><span class="line">// 打印“3 beverages available”</span><br></pre></td></tr></table></figure>
+<p>通过allCases来遍历枚举中的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum Planet:CaseIterable &#123;</span><br><span class="line">    case mercury, venus, earth, mars</span><br><span class="line">&#125;</span><br><span class="line">for beverage in Planet.allCases &#123;</span><br><span class="line">    print(beverage)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="隐式赋值"><a href="#隐式赋值" class="headerlink" title="隐式赋值"></a>隐式赋值</h4><p>枚举定义为Int或者String时，不需要显式地为每一个枚举成员设置原始值，swift自动赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">enum Planet: Int &#123;</span><br><span class="line">    case mercury = 1, venus, earth, mars, jupiter, saturn, uranus, neptune</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum CompassPoint: String &#123;</span><br><span class="line">    case north, south, east, west</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let earthsOrder = Planet.earth.rawValue</span><br><span class="line">// earthsOrder 值为 3</span><br><span class="line"></span><br><span class="line">let sunsetDirection = CompassPoint.west.rawValue</span><br><span class="line">// sunsetDirection 值为 &quot;west&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="下标"><a href="#下标" class="headerlink" title="下标"></a>下标</h2><p>下标允许通过在实例名称后面的方括号中传入一个或者多个索引值来对实例进行存取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct TimesTable &#123;</span><br><span class="line">    let multiplier: Int</span><br><span class="line">    subscript(index: Int) -&gt; Int &#123;</span><br><span class="line">        return multiplier * index</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">let threeTimesTable = TimesTable(multiplier: 3)</span><br><span class="line">print(&quot;six times three is \(threeTimesTable[6])&quot;)</span><br><span class="line">// 打印“six times three is 18”</span><br></pre></td></tr></table></figure>
+<h2 id="open-public-internal-fileprivate-private的区别"><a href="#open-public-internal-fileprivate-private的区别" class="headerlink" title="open/public/internal/fileprivate/private的区别"></a>open/public/internal/fileprivate/private的区别</h2><ul>
+<li>open 任意地方访问、继承和重写</li>
+<li>public 可以在任意的地方被访问、在其他module内不能被继承和重写</li>
+<li>internal 默认访问级别，整个模块都能被访问</li>
+<li>fileprivate修饰的属性可以在同一个文件被访问、继承和重写（同一个文件可以多个类，这点和private有区别)</li>
+<li>private只能在本类访问和使用，不包括扩展类</li>
+</ul>
+<p>ps: module内和module外的区别。 module内是指不需要使用import引用文件，就可以创建对象，表示module内，而module外是指需要使用import文件才能创建对象才能使用。</p>
+<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><h3 id="异变方法要求-（mutating）"><a href="#异变方法要求-（mutating）" class="headerlink" title="异变方法要求 （mutating）"></a>异变方法要求 （mutating）</h3><p>有时需要在方法中改变方法所属的实例，则可以在值类型（结构体和枚举）的实例方法中，将 mutating 关键字作为方法的前缀</p>
+<h3 id="require"><a href="#require" class="headerlink" title="require"></a>require</h3><p>require 可以在实现协议的类中添加构造器，使用required 修饰符可以确保所有子类也必须提供此构造器实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">protocol SomeProtocol &#123;</span><br><span class="line">    init(someParameter: Int)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SomeClass: SomeProtocol &#123;</span><br><span class="line">    required init(someParameter: Int) &#123;</span><br><span class="line">        // 这里是构造器的实现部分</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SomeSubClass:SomeClass  &#123;</span><br><span class="line">    func test() &#123;</span><br><span class="line">        print(&quot;test&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    //SomeSubClass作为SomeClass的子类，如果在父类中用required修饰构造函数，那么子类也必须实现构造函数，否则将报错</span><br><span class="line">    required init(someParameter: Int) &#123;</span><br><span class="line">        super.init(someParameter: someParameter)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let sub = SomeSubClass(someParameter: 123)</span><br><span class="line">sub.test()</span><br></pre></td></tr></table></figure>
+<h3 id="协议的一些特点"><a href="#协议的一些特点" class="headerlink" title="协议的一些特点"></a>协议的一些特点</h3><ul>
+<li>可以当作类型传参，可以作为数组、字典的元素类型</li>
+<li>可以扩展</li>
+<li>在扩展里声明采纳协议</li>
+<li>可以继承</li>
+<li>可以通过 is as? as!来检查协议的类型</li>
+<li>协议可以合成</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">protocol Named &#123;</span><br><span class="line">    var name: String &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line">protocol Aged &#123;</span><br><span class="line">    var age: Int &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line">struct Person: Named, Aged &#123;</span><br><span class="line">    var name: String</span><br><span class="line">    var age: Int</span><br><span class="line">&#125;</span><br><span class="line">func wishHappyBirthday(to celebrator: Named &amp; Aged) &#123;</span><br><span class="line">    print(&quot;Happy birthday, \(celebrator.name), you&apos;re \(celebrator.age)!&quot;)</span><br><span class="line">&#125;</span><br><span class="line">let birthdayPerson = Person(name: &quot;Malcolm&quot;, age: 21)</span><br><span class="line">wishHappyBirthday(to: birthdayPerson)</span><br></pre></td></tr></table></figure>
+<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">struct Stack&lt;Element&gt; &#123;</span><br><span class="line">    var items = [Element]()</span><br><span class="line">    mutating func push(_ item: Element) &#123;</span><br><span class="line">        items.append(item)</span><br><span class="line">    &#125;</span><br><span class="line">    mutating func pop() -&gt; Element &#123;</span><br><span class="line">        return items.removeLast()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var stackOfStrings = Stack&lt;String&gt;()</span><br><span class="line">stackOfStrings.push(&quot;uno&quot;)</span><br><span class="line">stackOfStrings.push(&quot;dos&quot;)</span><br><span class="line">stackOfStrings.push(&quot;tres&quot;)</span><br><span class="line">stackOfStrings.push(&quot;cuatro&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//泛型可以扩展</span><br><span class="line">extension Stack &#123;</span><br><span class="line">    var topItem: Element? &#123;</span><br><span class="line">        return items.isEmpty ? nil : items[items.count - 1]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stackOfStrings.pop()</span><br><span class="line">if let topItem = stackOfStrings.topItem &#123;</span><br><span class="line">    print(&quot;The top item on the stack is \(topItem).&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><h3 id="默认构造"><a href="#默认构造" class="headerlink" title="默认构造"></a>默认构造</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">struct Celsius &#123;</span><br><span class="line">    var response : String?</span><br><span class="line">    var text : String?</span><br><span class="line">    func ask() &#123;</span><br><span class="line">        print(text ?? &quot;unknow&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//默认构造</span><br><span class="line">let cheeseQuestion = Celsius()  </span><br><span class="line"></span><br><span class="line">//结构体的逐一成员构造器，class不支持</span><br><span class="line">let cheeseQuestion = Celsius(response: &quot;t&quot;,text: &quot;Test&quot;)</span><br></pre></td></tr></table></figure>
+<h3 id="自定义构造过程"><a href="#自定义构造过程" class="headerlink" title="自定义构造过程"></a>自定义构造过程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//结构体和class都支持自定义构造</span><br><span class="line">struct Celsius &#123;</span><br><span class="line">    var response : String?</span><br><span class="line">    var text : String?</span><br><span class="line">    init(text: String, response: String) &#123;</span><br><span class="line">        self.text = text</span><br><span class="line">        self.response = response</span><br><span class="line">    &#125;</span><br><span class="line">    func ask() &#123;</span><br><span class="line">        print(text ?? &quot;unknow&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let cheeseQuestion = Celsius(text: &quot;test&quot;,response: &quot;t&quot;)</span><br></pre></td></tr></table></figure>
+<h2 id="swift的关键字"><a href="#swift的关键字" class="headerlink" title="swift的关键字"></a>swift的关键字</h2><ul>
+<li>typealias  用来为已经存在的类型重新定义名字。1.可以定义闭包，类似OC中的typedef。2.将多个protocol组合成一个然后重新命名。</li>
+<li>defer block 里的代码会在函数 return 之前执行，无论函数是从哪个分支 return 的，还是有 throw，还是自然而然走到最后一行</li>
+<li>discardableResult 忽略一个方法返回值没有使用的警告</li>
+<li></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/05/04/swift学习笔记/" data-id="cjx3yrltk003418onrhnr9dkq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-汇编入门学习" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/01/汇编入门学习/" class="article-date">
+  <time datetime="2019-03-31T16:00:00.000Z" itemprop="datePublished">2019-04-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/汇编/">汇编</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/01/汇编入门学习/">汇编入门学习</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/04/01/汇编入门学习/" data-id="cjx3yrlsk001918onwr0h4vwl" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-iOS中的链接器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/27/iOS中的链接器/" class="article-date">
+  <time datetime="2019-03-26T16:00:00.000Z" itemprop="datePublished">2019-03-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/27/iOS中的链接器/">iOS中的链接器</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>新建一个Person类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@interface Person : NSObject</span><br><span class="line">- (void)say;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line">- (void)say &#123;</span><br><span class="line">   NSLog(@&quot;test&quot;);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+<p>在main中引用Person</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Cocoa/Cocoa.h&gt;</span><br><span class="line">#import &quot;Person.h&quot;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    Person *person = [[Person alloc] init];</span><br><span class="line">    [person say];</span><br><span class="line">    return NSApplicationMain(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xcrun clang -c Person.m</span><br><span class="line">xcrun clang -c main.m</span><br></pre></td></tr></table></figure>
+<p>将多个编译好的文件链接起来，生成.out可执行文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcrun clang Person.o main.o -Wl,`xcrun --show-sdk-path`/System/Library/Frameworks/Foundation.framework/Foundation</span><br></pre></td></tr></table></figure>
+<p>nm工具查看Person.o文件的符号  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcrun nm -nm Person.o</span><br></pre></td></tr></table></figure>
+<p>打印内容如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(undefined) external _NSLog</span><br><span class="line">(undefined) external _OBJC_CLASS_$_NSObject</span><br><span class="line">(undefined) external _OBJC_METACLASS_$_NSObject</span><br><span class="line">(undefined) external ___CFConstantStringClassReference</span><br><span class="line">(undefined) external __objc_empty_cache</span><br><span class="line">0000000000000000 (__TEXT,__text) non-external -[Person say]</span><br><span class="line">0000000000000058 (__DATA,__objc_const) non-external l_OBJC_METACLASS_RO_$_Person</span><br><span class="line">00000000000000a0 (__DATA,__objc_const) non-external l_OBJC_$_INSTANCE_METHODS_Person</span><br><span class="line">00000000000000c0 (__DATA,__objc_const) non-external l_OBJC_CLASS_RO_$_Person</span><br><span class="line">0000000000000108 (__DATA,__objc_data) external _OBJC_METACLASS_$_Person</span><br><span class="line">0000000000000130 (__DATA,__objc_data) external _OBJC_CLASS_$_Person</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(undefined) external 表示未实现非私有，私有就是non-external</li>
+<li>undefined符号表示该文件未定义，在目标文件和Fundation动态库做链接时，链接器会尝试解析所有undefined符号。</li>
+</ul>
+<p>查看.out符号表 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcrun nm -nm a.out</span><br></pre></td></tr></table></figure>
+<p>打印如下,可以看到会记录每个符号是哪个动态库解析的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(undefined) external _NSLog (from Foundation)</span><br><span class="line">(undefined) external _OBJC_CLASS_$_NSObject (from libobjc)</span><br><span class="line">(undefined) external _OBJC_METACLASS_$_NSObject (from libobjc)</span><br><span class="line">(undefined) external ___CFConstantStringClassReference (from CoreFoundation)</span><br><span class="line">(undefined) external __objc_empty_cache (from libobjc)</span><br><span class="line">(undefined) external _objc_msgSend (from libobjc)</span><br><span class="line">(undefined) external dyld_stub_binder (from libSystem)</span><br><span class="line">0000000100000000 (__TEXT,__text) [referenced dynamically] external __mh_execute_header</span><br><span class="line">0000000100000ee0 (__TEXT,__text) non-external -[Person say]</span><br><span class="line">0000000100000f10 (__TEXT,__text) external _main</span><br><span class="line">0000000100001120 (__DATA,__objc_data) external _OBJC_METACLASS_$_Person</span><br><span class="line">0000000100001148 (__DATA,__objc_data) external _OBJC_CLASS_$_Person</span><br></pre></td></tr></table></figure>
+<p>可以通过otool工具来查看所需的库在哪</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dst56466:TestRuntime zw$ xcrun otool -L a.out</span><br><span class="line">a.out:</span><br><span class="line">/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation (compatibility version 300.0.0, current version 1560.12.0)</span><br><span class="line">/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.200.5)</span><br><span class="line">/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 1560.12.0)</span><br><span class="line">/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/27/iOS中的链接器/" data-id="cjx3yrlrn000118onpujfoful" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-&lt;&lt;程序员的自我修养&gt;&gt;之链接" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/24/<<程序员的自我修养>>之链接/" class="article-date">
+  <time datetime="2019-03-23T16:00:00.000Z" itemprop="datePublished">2019-03-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/读书/">读书</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/24/<<程序员的自我修养>>之链接/">&lt;&lt;程序员的自我修养&gt;&gt;之链接</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="链接做了什么"><a href="#链接做了什么" class="headerlink" title="链接做了什么"></a>链接做了什么</h2><p>程序设计的模块化是开发者一直追求的目标，当一个系统十分复杂时，每个源代码块都独立的编译，然后组装起来，这个组装的过程就是链接。链接的作用就是把各个模块之间的相互引用处理好，使得各个模块之间能够正确的衔接。链接的过程包括了地址和空间分配、符号决议、重定位等步骤。<br>举个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">A文件中包含宇哥全局变量var,B文件需要访问这个var。mov S0x21, var</span><br><span class="line">在编译B文件时，编译器并不知道 var的目标地址，所以编译器在没有确定地址的情况下，将mov指令的目标地址置为0，等待链接器将AB链接以来以后再修正。var地址被修正的过程叫重定位。</span><br></pre></td></tr></table></figure>
+<h2 id="目标文件"><a href="#目标文件" class="headerlink" title="目标文件"></a>目标文件</h2><p>编译器编译源代码后生成的文件叫做目标文件。包含机器指令代码、数据，以及链接时需要的符号表、调试信息、字符串。</p>
+<p><img src="../../images/linked.png" alt="avatar"></p>
+<p>以EFL为例，目标文件开头是一个头文件File Header，包含文件是否可以执行、是静态链接还是动态链接及入口地址、目标硬件和目标操作系统等信息。还包含一个段表，描述了各个段再文件中的偏移位置和属性。</p>
+<h2 id="静态链接"><a href="#静态链接" class="headerlink" title="静态链接"></a>静态链接</h2><p>讲两个或者多个目标文件链接起来形成一个可执行文件的过程叫做静态链接。<br>为了更好的节省空间，静态链接采用的是相似段合并（两步链接）。</p>
+<p>第一步，<strong>空间和地址分配</strong> 扫描所有目标文件，获取它们各个段的长度、属性和位置，并且将目标文件中的符号表中的所有符号定义和符号引用收集起来，放到一个统一的全局符号表中。这一步，链接器获取到所有的段长度，并将它们合并，计算出文件中各个段合并之后的长度和位置，并建立映射关系。</p>
+<p>第二步，<strong>符号解析和重定位</strong> 读取上步收集到的信息（段的数据、重定位信息）并且进行符号解析和重定位、调整代码中的地址。</p>
+<h2 id="装载的方式"><a href="#装载的方式" class="headerlink" title="装载的方式"></a>装载的方式</h2><p>动态装载的基本原理就是将程序中常用的部分驻留在内存中，将一些不常用的数据放入磁盘里面。</p>
+<ul>
+<li>页映射：虚拟存储机制的一部分。</li>
+</ul>
+<h2 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h2><p>基本思路是等到运行时才对目标程序进行链接。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/24/<<程序员的自我修养>>之链接/" data-id="cjx3yrlri000018ont2a1rlky" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-深入理解msg_send()" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/22/深入理解msg_send()/" class="article-date">
+  <time datetime="2019-03-21T16:00:00.000Z" itemprop="datePublished">2019-03-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/22/深入理解msg_send()/">深入理解msg_send</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="AutoreleasePool源码解析"><a href="#AutoreleasePool源码解析" class="headerlink" title="AutoreleasePool源码解析"></a>AutoreleasePool源码解析</h2><h3 id="AutoreleasePool结构"><a href="#AutoreleasePool结构" class="headerlink" title="AutoreleasePool结构"></a>AutoreleasePool结构</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://hexoman.github.io/2019/03/22/深入理解msg_send()/" data-id="cjx3yrlsn001f18on5i9fyawf" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-深入理解isa指针" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/15/深入理解isa指针/" class="article-date">
@@ -102,15 +510,22 @@
 <p>举个例子</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString *str = @&quot;Hello World&quot;;</span><br></pre></td></tr></table></figure>
 <p>str的本质是一个objc_object，isa指针则指向NSString这个类对象</p>
-<h3 id="类对象-class-object"><a href="#类对象-class-object" class="headerlink" title="类对象 class object"></a>类对象 class object</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY; </span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class      //父类                          OBJC2_UNAVAILABLE;                  </span><br><span class="line">    const char * _Nonnull name       //类的名字                          OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                     //版本                        OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size               //实例大小                           OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars   //实例变量列表                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;                            //方法列表    </span><br><span class="line">    struct objc_cache * _Nonnull cache        //缓存                  OBJC2_UNAVAILABLE;    </span><br><span class="line">    struct objc_protocol_list * _Nullable protocols    //协议      OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<h3 id="类对象-class-object"><a href="#类对象-class-object" class="headerlink" title="类对象 class object"></a>类对象 class object</h3><p>2.0之前的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY; </span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class      //父类                          OBJC2_UNAVAILABLE;                  </span><br><span class="line">    const char * _Nonnull name       //类的名字                          OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                     //版本                        OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size               //实例大小                           OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars   //实例变量列表                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;                            //方法列表    </span><br><span class="line">    struct objc_cache * _Nonnull cache        //缓存                  OBJC2_UNAVAILABLE;    </span><br><span class="line">    struct objc_protocol_list * _Nullable protocols    //协议      OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
 <p>类对象结构如上，主要是objc_class结构体。第一个元素也是一个isa指针，类对象的isa指向元类（metaClass), 元类中保存了创建类对象和类方法的所有信息。<br>如下这张图很好的解释了，实例和类对象、元类以及它们父类之间的关系。<br><img src="../../images/class_object.png" alt="avatar"></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OBJC_EXPORT Class _Nullable</span><br><span class="line">object_getClass(id _Nullable obj) </span><br><span class="line">    OBJC_AVAILABLE(10.5, 2.0, 9.0, 1.0, 2.0);</span><br></pre></td></tr></table></figure>
 <p>object_getClasss用来获取isa指针的指向。</p>
-
+<p>2.0之后的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class;</span><br><span class="line">typedef struct objc_object *id;</span><br><span class="line"> </span><br><span class="line">@interface Object &#123; </span><br><span class="line">    Class isa; </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">@interface NSObject &lt;NSObject&gt; &#123;</span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">struct objc_object &#123;</span><br><span class="line">private:</span><br><span class="line">    isa_t isa;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">struct objc_class : objc_object &#123;</span><br><span class="line">    // Class ISA;</span><br><span class="line">    Class superclass;</span><br><span class="line">    cache_t cache;             // formerly cache pointer and vtable</span><br><span class="line">    class_data_bits_t bits;    // class_rw_t * plus custom rr/alloc flags</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">union isa_t </span><br><span class="line">&#123;</span><br><span class="line">    isa_t() &#123; &#125;</span><br><span class="line">    isa_t(uintptr_t value) : bits(value) &#123; &#125;</span><br><span class="line">    Class cls;</span><br><span class="line">    uintptr_t bits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来可以关注下 isa_t里的内容,isa_t是一个union类型的的结构体，union内的变量共享一段内存。并且union占用内存的大小等于其内占用内存最大的变量大小。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">union isa_t </span><br><span class="line">&#123;</span><br><span class="line">    isa_t() &#123; &#125;</span><br><span class="line">    isa_t(uintptr_t value) : bits(value) &#123; &#125;</span><br><span class="line"></span><br><span class="line">    Class cls;</span><br><span class="line">    uintptr_t bits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>isa的初始化</p>
+<p>当我们对一个 ObjC 对象分配内存时，其方法调用栈中包含了上述的两个方法，这里关注的重点是 initIsa 方法。访问对象的 isa 会直接返回一个指向 cls 的指针，magic 的值为 0x3b 用于调试器判断当前对象是真的对象还是没有初始化的空间.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">inline void </span><br><span class="line">objc_object::initInstanceIsa(Class cls, bool hasCxxDtor)</span><br><span class="line">&#123;</span><br><span class="line">    initIsa(cls, true, hasCxxDtor);</span><br><span class="line">&#125;</span><br><span class="line">inline void </span><br><span class="line">objc_object::initIsa(Class cls, bool indexed, bool hasCxxDtor) </span><br><span class="line">&#123; </span><br><span class="line">    if (!indexed) &#123;</span><br><span class="line">        isa.cls = cls;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        isa.bits = ISA_MAGIC_VALUE;</span><br><span class="line">        isa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        isa.shiftcls = (uintptr_t)cls &gt;&gt; 3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjtfw8i3f00148monp4wgpkcd" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjx3yrlsl001b18on5jamrblb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/isa/">isa</a></li></ul>
@@ -185,11 +600,15 @@
 <p>——————————————————</p>
 <p>此处未完待续。。。</p>
 <p>——————————————————</p>
-<h2 id="内核内存分配器-1"><a href="#内核内存分配器-1" class="headerlink" title="内核内存分配器"></a>内核内存分配器</h2>
+<h2 id="BSD层"><a href="#BSD层" class="headerlink" title="BSD层"></a>BSD层</h2><h3 id="BSD-内存管理和Jetsam"><a href="#BSD-内存管理和Jetsam" class="headerlink" title="BSD 内存管理和Jetsam"></a>BSD 内存管理和Jetsam</h3><p>虚拟内存管理是在Mach层进行的，Mach控制了分页器，并且向用户态导出各种消息接口。而用户态的开发者大部分只关注标准的POSIX调用，因此需要对这些Mach调用封装。</p>
+<p>jetsam是一个低内存情形的处理机制。类似Linux的oom,最初的通途就是杀掉消耗太多内存的进程。</p>
+<p><img src="../../images/jetsam.png" alt="avatar"></p>
+<p>jetsam维护了两个列表：</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjtfw8i45002j8moni5iwf4ok" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjx3yrlsw001y18onoqumxhkd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -260,7 +679,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjtfw8i47002l8mon0jm935u7" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjx3yrlss001s18on50aog39i" class="article-share-link">Share</a>
       
       
     </footer>
@@ -317,403 +736,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjtfw8i49002n8monmnv65z3i" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;(一)" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" class="article-date">
-  <time datetime="2019-03-11T16:00:00.000Z" itemprop="datePublished">2019-03-12</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/读书/">读书</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>   由于这本书的篇幅巨大，会分多篇文章来分述，每篇涵盖2-3个章节。这篇的主要内容包括Darwin的一些特性和组成、进程已经可执行文件Mach-O的结构。</p>
-<h2 id="一、达尔文主义"><a href="#一、达尔文主义" class="headerlink" title="一、达尔文主义"></a>一、达尔文主义</h2><h3 id="1-1-OS-X和Darwin的区别"><a href="#1-1-OS-X和Darwin的区别" class="headerlink" title="1.1 OS X和Darwin的区别"></a>1.1 OS X和Darwin的区别</h3><p>   大家可能会混淆OS X和Darwin的定义和关系。OS X是整个操作系统的一个集体名称，Darwin是其中一个组件。Darwin是操作系统的类UNIX核心，本身由内核（kernel）、XNU和运行时组成。<br>查看drawin和xnu版本的命令行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
-<p>打印如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Darwin Kernel Version 17.7.0: Wed Oct 10 23:06:14 PDT 2018; root:xnu-4570.71.13~1/RELEASE_X86_64 x86_64</span><br></pre></td></tr></table></figure>
-<h2 id="一、OS-X和iOS的架构"><a href="#一、OS-X和iOS的架构" class="headerlink" title="一、OS X和iOS的架构"></a>一、OS X和iOS的架构</h2><h3 id="1-1-UNIX的系统目录"><a href="#1-1-UNIX的系统目录" class="headerlink" title="1.1 UNIX的系统目录"></a>1.1 UNIX的系统目录</h3><p>OS X是一个符合UNIX标准的系统。</p>
-<ul>
-<li>/bin:UNIX二进制程序，常用UNIX命令（ls、mv）所在的目录</li>
-<li>/sbin: 系统程序，用于系统管理，例如文件系统管理和网络配置</li>
-<li>/usr: 第三方软件可以安装在这里</li>
-<li>/etc: 其他文件。包含大部分系统的配置文件，例如密码文件（/etc/password)</li>
-<li>/dev: BSD设备文件，这些特殊文件表示了系统中存在的设备（字符设备和块设备）</li>
-<li>/tmp: 临时目录。唯一一个所有人都能读写的目录</li>
-<li>/var: 各种杂项文件。日志文件、邮件存储等</li>
-</ul>
-<h3 id="1-2-XNU的概述"><a href="#1-2-XNU的概述" class="headerlink" title="1.2 XNU的概述"></a>1.2 XNU的概述</h3><p>内核XNU是Darwin的核心，也是整个OSX的核心，由如下几个组件组成：</p>
-<ul>
-<li>1.Mach微内核</li>
-<li>2.BSD层</li>
-<li>3.libKern</li>
-<li>4.I/O Kit</li>
-</ul>
-<p><strong><em>mach</em></strong> 是XNU的核心和基础，提供进程和线程的抽象、虚拟内存管理、任务调度、进程间通信和消息传递。</p>
-<p><strong><em>BSD</em></strong>建立在Mach之上，也是XNU中不可分割的部分。这是一个可靠更加现代的API，提供更高层次的抽象，包括：</p>
-<ul>
-<li>UNIX进程模型</li>
-<li>POSIX线程模型和同步原语</li>
-<li>UNIX用户和组</li>
-<li>网络协议栈（BSD Socket API)</li>
-<li>文件系统访问</li>
-<li>设备访问</li>
-</ul>
-<p><strong><em>libKern</em></strong> 内建的、自包含的C++库。</p>
-<p><strong><em>I/O Kit</em></strong> 内核中完整的、自包含执行环境，让开发者可以快速创建稳定优雅的设备驱动程序。</p>
-<h2 id="二、OS-X和iOS使用的技术"><a href="#二、OS-X和iOS使用的技术" class="headerlink" title="二、OS X和iOS使用的技术"></a>二、OS X和iOS使用的技术</h2><h3 id="2-1-BSD相关的特性"><a href="#2-1-BSD相关的特性" class="headerlink" title="2.1 BSD相关的特性"></a>2.1 BSD相关的特性</h3><p>XNU向用户态展现出来的主要接口是BSD接口</p>
-<h4 id="2-1-1-sysctl"><a href="#2-1-1-sysctl" class="headerlink" title="2.1.1 sysctl"></a>2.1.1 sysctl</h4><p>访问内核内部状态的标准方法，通过使用这条命令，系统管理员可以直接查询内核变量的值，获得重要的运行时诊断信息。</p>
-<h4 id="2-1-2-kqueue"><a href="#2-1-2-kqueue" class="headerlink" title="2.1.2 kqueue"></a>2.1.2 kqueue</h4><p>BSD中使用的内核事件通知机制。一个kqueue指的是一个描述符，这个描述符会一直阻塞等待直到一个特定类型的事件发生。kqueue和kevet构成了内核异步I/O的基础.</p>
-<p><img src="../../images/kqueue.png" alt="avatar"></p>
-<h4 id="2-1-3-强制访问控制-MAC（Mandatory-Access-Control"><a href="#2-1-3-强制访问控制-MAC（Mandatory-Access-Control" class="headerlink" title="2.1.3 强制访问控制 MAC（Mandatory Access Control)"></a>2.1.3 强制访问控制 MAC（Mandatory Access Control)</h4><p>允许更为精细的访问模型，添加了对象级别的安全性。比如通过这种方式，可以控制一个给定的应用程序不允许访问用户的私有数据和网站。<br>MAC是一个框架，提供一个稳固的基础，可以添加组件，并不要求是内核的一部分。可以通过插件的方式对系统的安全性进行控制，可以在MAC中注册内核的扩展，让这总内核扩展负责实施某一个安全策略。从内核的角度来看，在各种系统调用实现中插入对MAC的调用，每一个系统调用必须通过MAC的验证，然后才能真正处理来自用户态请求。<br>MAC是OS X的沙盒机制和IOS的entitlement机制的基础</p>
-<h3 id="2-2-OSX和IOS的安全机制"><a href="#2-2-OSX和IOS的安全机制" class="headerlink" title="2.2 OSX和IOS的安全机制"></a>2.2 OSX和IOS的安全机制</h3><h4 id="2-2-1-代码签名"><a href="#2-2-1-代码签名" class="headerlink" title="2.2.1 代码签名"></a>2.2.1 代码签名</h4><p>在确认软件的安全性之前，必须对软件的来源进行验证。使用SSL验证网站的身份，鼓励开发者对自己开发的应用程序进行签名并通过这种方式验证身份。</p>
-<h4 id="2-2-2-沙盒机制"><a href="#2-2-2-沙盒机制" class="headerlink" title="2.2.2 沙盒机制"></a>2.2.2 沙盒机制</h4><ul>
-<li>无法突破应用程序目录之外的位置</li>
-<li>无法访问其他进程</li>
-<li>无法直接使用任何硬件设备，只能通过苹果提供的框架</li>
-<li>无法动态生成代码</li>
-</ul>
-<h4 id="2-2-3-iOS的entitlement"><a href="#2-2-3-iOS的entitlement" class="headerlink" title="2.2.3 iOS的entitlement"></a>2.2.3 iOS的entitlement</h4><p>entitlement plist文件嵌入应用程序的二进制文件中，并由苹果进行数字签名。任务的相关条目允许在底层访问mach任务，mach任务支持BSD进程的底层内核原语。获得任务的端口就相当于拥有了任务，可以访问这个任务的虚拟内存和各种描述符。另一个重要的entitlement就是dynamic-codesigning,允许动态生成代码，据目前了解，只有mobilesafari才有这种entitlement。</p>
-<p>沙盒化进程如下：</p>
-<p><img src="../../images/iOS沙盒.png" alt="avatar"></p>
-<h2 id="二、Mach-O、进程和线程"><a href="#二、Mach-O、进程和线程" class="headerlink" title="二、Mach-O、进程和线程"></a>二、Mach-O、进程和线程</h2><h3 id="2-1-进程的生命周期"><a href="#2-1-进程的生命周期" class="headerlink" title="2.1 进程的生命周期"></a>2.1 进程的生命周期</h3><p>进程的生命周期开始于SIDL状态，表示一个暂时的空闲状态，进程刚被父进程通过fork创建出来就处于这个状态。正在执行时，处于SRUN状态。正在运行的进程的时间片被用完了，或者被一个更高优先级的进程抢占了，那么这个处于正在运行状态的进程就会被踢出CPU并放回运行队列。</p>
-<h3 id="2-2-可执行文件"><a href="#2-2-可执行文件" class="headerlink" title="2.2 可执行文件"></a>2.2 可执行文件</h3><p>  魔数(magic):操作系统内核讲文件读入内存，寻找一个头签名，据此可以确定精确的可执行格式。<br>  通用二进制：基本思想是提供一个能够在任意架构上执行的完全可移植的二进制格式。调用一个二进制文件时，Mach加载器首先解析胖二进制文件头，确定其中可用的架构，只加载最合适的架构的代码。因此不相关的架构的代码不会占用任何内存。</p>
-<p><img src="../../images/胖二进制.png" alt="avatar"></p>
-<p>  Mach-O的二进制文件：包含mach-header、加载命令、Data数据段</p>
-<h4 id="2-2-1-mach-header结构如下"><a href="#2-2-1-mach-header结构如下" class="headerlink" title="2.2.1 mach-header结构如下"></a>2.2.1 mach-header结构如下</h4><p><img src="../../images/mach-header.png" alt="avatar"></p>
-<h4 id="2-2-2-加载命令-Load-Commands"><a href="#2-2-2-加载命令-Load-Commands" class="headerlink" title="2.2.2 加载命令 (Load Commands)"></a>2.2.2 加载命令 (Load Commands)</h4><p>   这些指令详细的指导如何设置和加载二进制数据。部分是内核加载器直接使用，部分是动态链接器使用。加载过程在内核的部分负责新进程的基本设置——分配虚拟地址、创建主线程，代码签名/加密工作。对于动态链接的可执行过文件，真正的库加载和符号解析是通过LC_LOAD_DYLINKER命令指定的动态链接器在用户态完成。</p>
-<ul>
-<li>LC_SEGMENT：最主要的加载命令。指导内核如何设置新运行的进程的内存空间。对于每一个段，将文件中相应的内容加载到内存中：从偏移量为fileoff处加载filesize字节到虚拟内存地址vmaddr处的vmsize字节。每一个段的页面都根据initprot进行初始化，initprot指定如何通过读/写/执行位初始化页面的保护级别。段的保护设置可以动态改变。</li>
-<li>LC_UNIXTHREAD：当所有库都完成加载之后，LC_UNIXTHREAD负责启动二进制程序的主线程。罗列所有初始化寄存器的状态，大部分寄存器会初始化为0，其中指令或者程序计数器是例外，这些寄存器保存了程序入口的地址。</li>
-<li>LC_MAIN 代替了LC_UNIXTHREAD，设置程序主线程的入口地址和栈大小。</li>
-<li>LC_CODE_SIGNATURE 包含了Mach-O二进制文件的代码签名，如果这个签名和代码本身不匹配，那么内核会给进程发送一个SIGKILL信号杀死进程。</li>
-</ul>
-<h4 id="2-2-3-动态库"><a href="#2-2-3-动态库" class="headerlink" title="2.2.3 动态库"></a>2.2.3 动态库</h4><p>  符号绑定（binding），mach-O镜像中有很多空间预留给了对外部的库和符号的引用，需要在程序启动时填充，这个过程由动态链接器来完成。<br>  链接的过程，内核执行LC_DYLINKER命令来启动动态链接器。链接器扫描Mach-O文件头，找到相关加载命令。如果二进制文件中使用外部定义的函数和符号，在文本段中会有一个__stubs的区，是本地未定义符号的占位符。编译器在生成代码时会创建对符号桩区的调用，链接器会在运行时解决对桩的调用。链接器解决方法是在被调用的地址处放置一个JMP指令，JMP指令将控制权交给真实的函数体。<br>  LC_LOAD_DYLIB命令告诉链接器寻找到符号的位置。链接器加载每一个指定库，并搜寻匹配的符号。被链接的库有一个符号表，符号表将</p>
-<h3 id="2-3-进程地址空间"><a href="#2-3-进程地址空间" class="headerlink" title="2.3 进程地址空间"></a>2.3 进程地址空间</h3><p>  用户态的一个优点在于虚拟内存的隔离。进程独享一个私有的地址空间，在iOS范围是2-3GB，在32位OS X是4GB，64位OSX则是16EB。</p>
-<h4 id="2-3-1-地址空间布局随机化（ASLR）"><a href="#2-3-1-地址空间布局随机化（ASLR）" class="headerlink" title="2.3.1 地址空间布局随机化（ASLR）"></a>2.3.1 地址空间布局随机化（ASLR）</h4><p>  进程每一次的启动，地址空间都会被简单的随机化，是为了防止黑客攻击的一种安全手段。由于ASLR的作用，进程的地址空间变得流动性非常大，但是尽管具体的地址会随机”滑动“某个小的偏移量，但是整体布局保持不变。</p>
-<h4 id="2-3-2-内存空间的分布"><a href="#2-3-2-内存空间的分布" class="headerlink" title="2.3.2 内存空间的分布"></a>2.3.2 内存空间的分布</h4><ul>
-<li>_PAGEZERO：32位中，单独的一个页面(4kb),64位中，这个段对应一个完整的32位地址空间（4GB）。这个段有助于捕捉空指针引用。</li>
-<li>_TEXT 存放程序代码。文本段设置为读且可执行，这样可以防止二进制代码在内存被修改，还可以通过共享这个只读段优化内存的使用。通过这种方式，同一个程序的多个实例可以使用一份_TEXT副本。</li>
-<li>_LINKEDIT: dyld使用。包含了字符串表、符号表及其他数据</li>
-<li>_IMPORT: 用于i386的二进制文件导入</li>
-<li>_DATA: 用于可读/可写的数据</li>
-<li>_MALLOC_TINY: 用于小于一个页面大小的内存分配。</li>
-<li>_MALLOC_SMALL: 用于几个页面大小的内存分配。</li>
-<li>_MALLOC_LARGE: 用于1MB以上大小的内存分配。</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/" data-id="cjtfw8i4o002y8mon3u2ijisu" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-深入理解runtime源码之alloc" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/10/深入理解runtime源码之alloc/" class="article-date">
-  <time datetime="2019-03-09T16:00:00.000Z" itemprop="datePublished">2019-03-10</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/10/深入理解runtime源码之alloc/">深入理解runtime源码之alloc</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文是探究rumtime源码的第一篇，当一个NSObject 对象初始化的时候到底发生了什么呢，来看看源码的实现吧</p>
-<h3 id="alloc函数"><a href="#alloc函数" class="headerlink" title="alloc函数"></a>alloc函数</h3><p>入口函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (id)alloc &#123;</span><br><span class="line">    return _objc_rootAlloc(self);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>继续查看_objc_rootAllo函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">_objc_rootAlloc(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    return callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">callAlloc(Class cls, bool checkNil, bool allocWithZone=false)</span><br><span class="line">&#123;</span><br><span class="line">    if (slowpath(checkNil &amp;&amp; !cls)) return nil;</span><br><span class="line"></span><br><span class="line">#if __OBJC2__  </span><br><span class="line">    if (fastpath(!cls-&gt;ISA()-&gt;hasCustomAWZ())) &#123;</span><br><span class="line">        //查看下类是否能否快速分配内存</span><br><span class="line">        if (fastpath(cls-&gt;canAllocFast())) &#123;</span><br><span class="line">            //是否包含析构函数</span><br><span class="line">            bool dtor = cls-&gt;hasCxxDtor();</span><br><span class="line">            //内存分配</span><br><span class="line">            id obj = (id)calloc(1, cls-&gt;bits.fastInstanceSize());</span><br><span class="line">            //失败调用异常处理</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            //初始化obj的isa</span><br><span class="line">            obj-&gt;initInstanceIsa(cls, dtor);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            id obj = class_createInstance(cls, 0);</span><br><span class="line">            if (slowpath(!obj)) return callBadAllocHandler(cls);</span><br><span class="line">            return obj;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">#endif</span><br><span class="line">    //如果allocWithZone 为true，则实现allocWithZone 方法</span><br><span class="line">    if (allocWithZone) return [cls allocWithZone:nil];</span><br><span class="line">    return [cls alloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>if <strong>OBJC2</strong>用来判断OC版本，目前使用的基本上都是2.0了。<br>这里要提到两个有意思的宏定义slowpath和fastpath,内部实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define fastpath(x) (__builtin_expect(bool(x), 1))</span><br><span class="line">#define slowpath(x) (__builtin_expect(bool(x), 0))</span><br></pre></td></tr></table></figure>
-<p>那么__builtin_expect到底是什么意义呢？这个指令的作用其实是让调用者告诉编译器执行的概率，fastpath的含义就是执行的概率大，slowpath执行的概率低，实现这个的作用是为了编译器做优化。</p>
-<p>下面分析下initInstanceIsa的过程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">objc_object::initIsa(Class cls, bool nonpointer, bool hasCxxDtor) </span><br><span class="line">&#123; </span><br><span class="line">    assert(!isTaggedPointer()); </span><br><span class="line">    </span><br><span class="line">    if (!nonpointer) &#123;</span><br><span class="line">        isa.cls = cls;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        assert(!DisableNonpointerIsa);</span><br><span class="line">        assert(!cls-&gt;instancesRequireRawIsa());</span><br><span class="line">        //创建isa对象</span><br><span class="line">        isa_t newisa(0);</span><br><span class="line">         </span><br><span class="line">#if SUPPORT_INDEXED_ISA</span><br><span class="line">        assert(cls-&gt;classArrayIndex() &gt; 0);</span><br><span class="line">        //设置占位bits</span><br><span class="line">        newisa.bits = ISA_INDEX_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.indexcls = (uintptr_t)cls-&gt;classArrayIndex();</span><br><span class="line">#else</span><br><span class="line">        newisa.bits = ISA_MAGIC_VALUE;</span><br><span class="line">        // isa.magic is part of ISA_MAGIC_VALUE</span><br><span class="line">        // isa.nonpointer is part of ISA_MAGIC_VALUE</span><br><span class="line">        newisa.has_cxx_dtor = hasCxxDtor;</span><br><span class="line">        newisa.shiftcls = (uintptr_t)cls &gt;&gt; 3;</span><br><span class="line">#endif</span><br><span class="line">        isa = newisa;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="init函数"><a href="#init函数" class="headerlink" title="init函数"></a>init函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (id)init &#123;</span><br><span class="line">    return _objc_rootInit(self);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">id</span><br><span class="line">_objc_rootInit(id obj)</span><br><span class="line">&#123;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>init函数作用就是返回已经alloc出来的对象</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/10/深入理解runtime源码之alloc/" data-id="cjtfw8i3g00188monhs9sbt67" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/runtime/">runtime</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-深入理解weak源码" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/06/深入理解weak源码/" class="article-date">
-  <time datetime="2019-03-05T16:00:00.000Z" itemprop="datePublished">2019-03-06</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/06/深入理解weak源码/">深入理解weak源码</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="weak源码解析"><a href="#weak源码解析" class="headerlink" title="weak源码解析"></a>weak源码解析</h2><h3 id="weak原理概括"><a href="#weak原理概括" class="headerlink" title="weak原理概括"></a>weak原理概括</h3><p>runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。key是这个对象的地址，value是weak指针的地址数组。</p>
-<h3 id="objc-initWeak"><a href="#objc-initWeak" class="headerlink" title="objc_initWeak"></a>objc_initWeak</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">objc_initWeak(id *location, id newObj)</span><br><span class="line">&#123;</span><br><span class="line">    //实例对象是否有效，无效则释放指针</span><br><span class="line">    if (!newObj) &#123;</span><br><span class="line">        *location = nil;</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">//用template传递三个bool</span><br><span class="line">return storeWeak&lt;DontHaveOld, DoHaveNew, DoCrashIfDeallocating&gt;</span><br><span class="line">    (location, (objc_object*)newObj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>初始化时，调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址，判断实例对象是否有效，无效则释放指针，有效则继续往下调用storeWeak</p>
-<h3 id="storeWeak"><a href="#storeWeak" class="headerlink" title="storeWeak"></a>storeWeak</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">//更新指针指向</span><br><span class="line">//HaveOld = true,说明这个对象有值，需要被清理，可能为nil</span><br><span class="line">//HaveNew = true,说明有个新的值需要更新到当前对象，可能为nil</span><br><span class="line">//CrashIfDeallocating = true,newObj被释放或者不支持弱引用，进程会暂停</span><br><span class="line">//CrashIfDeallocating = false,用 nil 替代存储</span><br><span class="line">template &lt;HaveOld haveOld, HaveNew haveNew,</span><br><span class="line">          CrashIfDeallocating crashIfDeallocating&gt;</span><br><span class="line">static id </span><br><span class="line">storeWeak(id *location, objc_object *newObj)</span><br><span class="line">&#123;</span><br><span class="line">    assert(haveOld  ||  haveNew);</span><br><span class="line">    if (!haveNew) assert(newObj == nil);</span><br><span class="line"></span><br><span class="line">    Class previouslyInitializedClass = nil;</span><br><span class="line">    id oldObj;</span><br><span class="line">    //创建新旧两个SideTable结构体</span><br><span class="line">    SideTable *oldTable;</span><br><span class="line">    SideTable *newTable;</span><br><span class="line"></span><br><span class="line">    // Acquire locks for old and new values.</span><br><span class="line">    // Order by lock address to prevent lock ordering problems. </span><br><span class="line">    // Retry if the old value changes underneath us.</span><br><span class="line"> retry:</span><br><span class="line">    if (haveOld) &#123;</span><br><span class="line">       //有旧值，获得以oldObj为索引存储的值地址</span><br><span class="line">        oldObj = *location;</span><br><span class="line">        oldTable = &amp;SideTables()[oldObj];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        oldTable = nil;</span><br><span class="line">    &#125;</span><br><span class="line">    if (haveNew) &#123;</span><br><span class="line">        //获得以newObj为索引存储的值地址</span><br><span class="line">        newTable = &amp;SideTables()[newObj];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        newTable = nil;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //加锁</span><br><span class="line">    SideTable::lockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line"></span><br><span class="line">    if (haveOld  &amp;&amp;  *location != oldObj) &#123;</span><br><span class="line">        //location和oldObj不同，说明已经处理过</span><br><span class="line">        SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line">        goto retry;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //使用previouslyInitializedClass和Initialize来保护线程</span><br><span class="line">    if (haveNew  &amp;&amp;  newObj) &#123;</span><br><span class="line">        //获取新对象的isa指针</span><br><span class="line">        Class cls = newObj-&gt;getIsa();</span><br><span class="line">        //</span><br><span class="line">        if (cls != previouslyInitializedClass  &amp;&amp;  </span><br><span class="line">            !((objc_class *)cls)-&gt;isInitialized()) </span><br><span class="line">        &#123;</span><br><span class="line">            // 解锁</span><br><span class="line">            SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line">            //初始化isa指针</span><br><span class="line">            _class_initialize(_class_getNonMetaClass(cls, (id)newObj));</span><br><span class="line"></span><br><span class="line">            //把cls赋给previouslyInitializedClass，是为了标记之后做多线程保护</span><br><span class="line">            previouslyInitializedClass = cls;</span><br><span class="line">            //重试</span><br><span class="line">            goto retry;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //清楚旧值</span><br><span class="line">    if (haveOld) &#123;</span><br><span class="line">        weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //替换新值</span><br><span class="line">    if (haveNew) &#123;</span><br><span class="line">        newObj = (objc_object *)</span><br><span class="line">            weak_register_no_lock(&amp;newTable-&gt;weak_table, (id)newObj, location, </span><br><span class="line">                                  crashIfDeallocating);</span><br><span class="line"></span><br><span class="line">        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) &#123;</span><br><span class="line">            newObj-&gt;setWeaklyReferenced_nolock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //改变指针指向</span><br><span class="line">        *location = (id)newObj;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        //没有新值</span><br><span class="line">    &#125;</span><br><span class="line">    //解锁</span><br><span class="line">    SideTable::unlockTwo&lt;haveOld, haveNew&gt;(oldTable, newTable);</span><br><span class="line"></span><br><span class="line">    return (id)newObj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>总的来说，storeWeak就是一直更新指针并创建弱引用表的过程。继续来看下SideTable结构和weak_table_t</p>
-<h3 id="SideTable"><a href="#SideTable" class="headerlink" title="SideTable"></a>SideTable</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">struct SideTable &#123;</span><br><span class="line">    //自旋锁</span><br><span class="line">    spinlock_t slock;</span><br><span class="line">    //引用计数表</span><br><span class="line">    RefcountMap refcnts;</span><br><span class="line">    //weak引用表</span><br><span class="line">    weak_table_t weak_table;</span><br><span class="line"></span><br><span class="line">    //构造方法</span><br><span class="line">    SideTable() &#123;</span><br><span class="line">        memset(&amp;weak_table, 0, sizeof(weak_table));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //析构函数</span><br><span class="line">    ~SideTable() &#123;</span><br><span class="line">        _objc_fatal(&quot;Do not delete SideTable.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //加锁</span><br><span class="line">    void lock() &#123; slock.lock(); &#125;</span><br><span class="line">    //解锁</span><br><span class="line">    void unlock() &#123; slock.unlock(); &#125;</span><br><span class="line">    void forceReset() &#123; slock.forceReset(); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>SideTable是用来管理引用计数和weak表，使用spinlock_lock自旋锁来防止操作表结构的时候可能的竞争。</p>
-<h3 id="weak-table-t"><a href="#weak-table-t" class="headerlink" title="weak_table_t"></a>weak_table_t</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct weak_table_t &#123;</span><br><span class="line">    weak_entry_t *weak_entries; //保存所有指向对象的指针</span><br><span class="line">    size_t    num_entries;  //空间大小</span><br><span class="line">    uintptr_t mask;</span><br><span class="line">    uintptr_t max_hash_displacement;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="weak-entry-t"><a href="#weak-entry-t" class="headerlink" title="weak_entry_t"></a>weak_entry_t</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct weak_entry_t &#123;</span><br><span class="line">    DisguisedPtr&lt;objc_object&gt; referent; // 封装 objc_object 指针，即 weak 修饰的变量指向的对象</span><br><span class="line">    union &#123;</span><br><span class="line">        struct &#123;</span><br><span class="line">            weak_referrer_t *referrers; //弱引用指针</span><br><span class="line">            uintptr_t        out_of_line_ness : 2;</span><br><span class="line">            uintptr_t        num_refs : PTR_MINUS_2;/ 引用数值，这里记录弱引用表中引用有效数字，即里面元素的数量</span><br><span class="line">            uintptr_t        mask;</span><br><span class="line">            uintptr_t        max_hash_displacement;// hash 元素上限阀值</span><br><span class="line">        &#125;;</span><br><span class="line">        struct &#123;</span><br><span class="line">            // out_of_line_ness field is low bits of inline_referrers[1]</span><br><span class="line">            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>weak_entry_t负责维护和存储指向一个对象的所有弱引用hash表。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/06/深入理解weak源码/" data-id="cjtfw8i3i001b8monnb98gpf6" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weak/">weak</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-python学习笔记之基础语法" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/02/python学习笔记之基础语法/" class="article-date">
-  <time datetime="2019-03-01T16:00:00.000Z" itemprop="datePublished">2019-03-02</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/python/">python</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/02/python学习笔记之基础语法/">python学习笔记之基础语法</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="字符"><a href="#字符" class="headerlink" title="字符"></a>字符</h3><p>可以用’或者“表示。如果字符带’可以用””表示，如果字符带”可以用’表示,例如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print &quot;I&apos;m a developer&quot;</span><br><span class="line">print &apos;I like &quot;python&quot;&apos;</span><br></pre></td></tr></table></figure>
-<p>如果既包括‘又包含“,则需要使用\转义，例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print &apos;I say \&quot;I\&apos;m OK\&quot;&apos;</span><br></pre></td></tr></table></figure>
-<p>可以在字符串前面加一个r, 表示这是一个raw字符串，里面的字符就不需要转义了。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print r&apos;\(~_~)/ \(~_~)/&apos;</span><br></pre></td></tr></table></figure>
-<h3 id="List和Tuple"><a href="#List和Tuple" class="headerlink" title="List和Tuple"></a>List和Tuple</h3><p>按照索引访问list</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">list = [&apos;a&apos;,&apos;b&apos;,&apos;c&apos;]</span><br><span class="line">print list [2]</span><br></pre></td></tr></table></figure>
-<p>添加新元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">list = [&apos;a&apos;,&apos;b&apos;,&apos;c&apos;]</span><br><span class="line">list.append(&apos;d&apos;)</span><br><span class="line">list.insert(0,&apos;d&apos;)</span><br></pre></td></tr></table></figure>
-<p>删除元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">list = [&apos;a&apos;,&apos;b&apos;,&apos;c&apos;]</span><br><span class="line">list.pop() #删除最后一个元素</span><br><span class="line">list.pop(1) #删除index为1的元素</span><br></pre></td></tr></table></figure>
-<p>list的切片</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">l = [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;,&apos;d&apos;]</span><br><span class="line">print l[0:2]  #取出从0开始的两位元素</span><br><span class="line">print l[::2]  #每隔2取一个元素</span><br></pre></td></tr></table></figure>
-<p>Typle是一种有序列表（元组），一旦创建完毕，不能修改。用()来表示</p>
-<p>创建typle</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t=(1,&apos;b&apos;,[1,&apos;cm&apos;]) #因为用()定义单元素的tuple有歧义，所以 Python 规定，单元素 tuple 要多加一个逗号“,”，这样就避免了歧义</span><br><span class="line">print t</span><br></pre></td></tr></table></figure>
-<h3 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h3><p>循环语句和基本的高级语言类似：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a=[1,&apos;b&apos;,[1,&apos;cm&apos;]] </span><br><span class="line">for n in a:</span><br><span class="line">    print n</span><br></pre></td></tr></table></figure>
-<h3 id="Dict和Set"><a href="#Dict和Set" class="headerlink" title="Dict和Set"></a>Dict和Set</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">d = &#123;</span><br><span class="line">    &apos;Adam&apos;: 95,</span><br><span class="line">    &apos;Lisa&apos;: 85,</span><br><span class="line">    &apos;Bart&apos;: 59</span><br><span class="line">&#125;</span><br><span class="line">if &apos;Adam&apos; in d:     #判断字典中包含元素，并取出该key对应的value</span><br><span class="line">    print d[&apos;Adam&apos;]</span><br><span class="line">for key in d:       #遍历字典元素</span><br><span class="line">    print key</span><br></pre></td></tr></table></figure>
-<p>set和list的区别是set存储的数据是唯一不重复的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = set([1,2,3])  #创建</span><br><span class="line">s.add(4) #添加</span><br><span class="line">s.remove(1) #删除</span><br></pre></td></tr></table></figure>
-<h3 id="列表生成式"><a href="#列表生成式" class="headerlink" title="列表生成式"></a>列表生成式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">l = range(1, 11)  #生成list [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span><br><span class="line">print l</span><br><span class="line"></span><br><span class="line">n = [x * x for x in range(1, 11)] #生成[1x1, 2x2, 3x3, ..., 10x10]</span><br><span class="line">print n</span><br><span class="line"></span><br><span class="line">m = [x * x for x in range(1, 11) if x % 2 == 0] #列表生成式的 for 循环后面还可以加上 if 判断</span><br><span class="line">print m</span><br><span class="line"></span><br><span class="line">t =  [m + n for m in &apos;ABC&apos; for n in &apos;123&apos;] </span><br><span class="line">print t</span><br><span class="line"></span><br><span class="line">#翻译成循环代码就像下面这样：</span><br><span class="line"></span><br><span class="line">L = []</span><br><span class="line">for m in &apos;ABC&apos;:</span><br><span class="line">    for n in &apos;123&apos;:</span><br><span class="line">        L.append(m + n)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/python学习笔记之基础语法/" data-id="cjtfw8i2q00068mon7qmxgow8" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-深入理解AutoreleasePool源码" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/02/深入理解AutoreleasePool源码/" class="article-date">
-  <time datetime="2019-03-01T16:00:00.000Z" itemprop="datePublished">2019-03-02</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/02/深入理解AutoreleasePool源码/">深入理解AutoreleasePool源码</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="AutoreleasePool源码解析"><a href="#AutoreleasePool源码解析" class="headerlink" title="AutoreleasePool源码解析"></a>AutoreleasePool源码解析</h2><h3 id="AutoreleasePool结构"><a href="#AutoreleasePool结构" class="headerlink" title="AutoreleasePool结构"></a>AutoreleasePool结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class AutoreleasePoolPage </span><br><span class="line">&#123;</span><br><span class="line">	    static pthread_key_t const key = AUTORELEASE_POOL_KEY;//在线程局部存储TLS中的key</span><br><span class="line">	    static uint8_t const SCRIBBLE = 0xA3; </span><br><span class="line">	    static size_t const SIZE = PAGE_MAX_SIZE;//AutoreleasePoolPage的大小，4096个字节</span><br><span class="line">	    static size_t const COUNT = SIZE / sizeof(id);</span><br><span class="line">	    magic_t const magic;//完整性检校</span><br><span class="line">	    id *next;//next指向栈顶的最新autoreleasepool对象的下一个位置</span><br><span class="line">	    pthread_t const thread;//当前所在线程</span><br><span class="line">	    AutoreleasePoolPage * const parent;//前一个page指针</span><br><span class="line">	    AutoreleasePoolPage *child;//后一个page指针</span><br><span class="line">	    uint32_t const depth;//深度</span><br><span class="line">	    uint32_t hiwat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>大致看下AutoreleasePoolPage的结构可以知道：这个AutoreleasePool是一个以AutoreleasePoolPage为节点的双向链表。每一个AutoreleasePoolPage节点大小是4096字节，并对应一个线程。</p>
-<h3 id="AutoreleasePool构造函数和方法"><a href="#AutoreleasePool构造函数和方法" class="headerlink" title="AutoreleasePool构造函数和方法"></a>AutoreleasePool构造函数和方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line">//构造函数</span><br><span class="line">AutoreleasePoolPage(AutoreleasePoolPage *newParent) </span><br><span class="line">        : magic(), next(begin()), thread(pthread_self()),</span><br><span class="line">          parent(newParent), child(nil), </span><br><span class="line">          depth(parent ? 1+parent-&gt;depth : 0), </span><br><span class="line">          hiwat(parent ? parent-&gt;hiwat : 0)</span><br><span class="line">    &#123; </span><br><span class="line">        if (parent) &#123;</span><br><span class="line">            parent-&gt;check();</span><br><span class="line">            assert(!parent-&gt;child);</span><br><span class="line">            parent-&gt;unprotect();</span><br><span class="line">            parent-&gt;child = this;</span><br><span class="line">            parent-&gt;protect();</span><br><span class="line">        &#125;</span><br><span class="line">        protect();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //碎片化检查</span><br><span class="line">    void busted(bool die = true) </span><br><span class="line">    &#123;</span><br><span class="line">        magic_t right;</span><br><span class="line">        (die ? _objc_fatal : _objc_inform)</span><br><span class="line">            (&quot;autorelease pool page %p corrupted\n&quot;</span><br><span class="line">             &quot;  magic     0x%08x 0x%08x 0x%08x 0x%08x\n&quot;</span><br><span class="line">             &quot;  should be 0x%08x 0x%08x 0x%08x 0x%08x\n&quot;</span><br><span class="line">             &quot;  pthread   %p\n&quot;</span><br><span class="line">             &quot;  should be %p\n&quot;, </span><br><span class="line">             this, </span><br><span class="line">             magic.m[0], magic.m[1], magic.m[2], magic.m[3], </span><br><span class="line">             right.m[0], right.m[1], right.m[2], right.m[3], </span><br><span class="line">             this-&gt;thread, pthread_self());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //检验完整性</span><br><span class="line">    void check(bool die = true) </span><br><span class="line">    &#123;</span><br><span class="line">        if (!magic.check() || !pthread_equal(thread, pthread_self()))    &#123;</span><br><span class="line">            busted(die);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    void fastcheck(bool die = true) </span><br><span class="line">    &#123;</span><br><span class="line">#if CHECK_AUTORELEASEPOOL</span><br><span class="line">        check(die);</span><br><span class="line">#else</span><br><span class="line">        if (! magic.fastcheck()) &#123;</span><br><span class="line">            busted(die);</span><br><span class="line">        &#125;</span><br><span class="line">#endif</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //节点开始位置</span><br><span class="line">    id * begin() &#123;</span><br><span class="line">        return (id *) ((uint8_t *)this+sizeof(*this));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //节点最大结束位置</span><br><span class="line">    id * end() &#123;</span><br><span class="line">        return (id *) ((uint8_t *)this+SIZE);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //是否为空</span><br><span class="line">    bool empty() &#123;</span><br><span class="line">        return next == begin();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //是否满了</span><br><span class="line">    bool full() &#123; </span><br><span class="line">        return next == end();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //是否一半容量</span><br><span class="line">    bool lessThanHalfFull() &#123;</span><br><span class="line">        return (next - begin() &lt; (end() - begin()) / 2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //添加一个autorelease对象</span><br><span class="line">    id *add(id obj)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(!full());</span><br><span class="line">        unprotect();</span><br><span class="line">        id *ret = next;  // faster than `return next-1` because of aliasing</span><br><span class="line">        *next++ = obj;</span><br><span class="line">        protect();</span><br><span class="line">        return ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //释放</span><br><span class="line">    static void tls_dealloc(void *p) </span><br><span class="line">    &#123;</span><br><span class="line">        if (p == (void*)EMPTY_POOL_PLACEHOLDER) &#123;</span><br><span class="line">            //已经没有可释放对象或者pool</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        setHotPage((AutoreleasePoolPage *)p);</span><br><span class="line"></span><br><span class="line">        if (AutoreleasePoolPage *page = coldPage()) &#123;</span><br><span class="line">            if (!page-&gt;empty()) pop(page-&gt;begin()); </span><br><span class="line">            if (DebugMissingPools || DebugPoolAllocation) &#123;</span><br><span class="line">                // pop() killed the pages already</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                page-&gt;kill(); </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        setHotPage(nil);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>说明：判断节点是否为空，其实就是判断当前next是否指向的起始位置（begin())。判断节点是否满了，那么next是否指向page最大位置（end())。</p>
-<h3 id="hotPage"><a href="#hotPage" class="headerlink" title="hotPage"></a>hotPage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">static inline AutoreleasePoolPage *hotPage() </span><br><span class="line">    &#123;</span><br><span class="line">        AutoreleasePoolPage *result = (AutoreleasePoolPage *)</span><br><span class="line">            tls_get_direct(key);</span><br><span class="line">        if ((id *)result == EMPTY_POOL_PLACEHOLDER) return nil;</span><br><span class="line">        if (result) result-&gt;fastcheck();</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">static inline void setHotPage(AutoreleasePoolPage *page) </span><br><span class="line">&#123;</span><br><span class="line">    if (page) page-&gt;fastcheck();</span><br><span class="line">    tls_set_direct(key, (void *)page);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>hotPage表示当前的autoreleasePoolPage,是存在TLS里面的。这里不得不提到一个概念TLS（线程局部存储, Thread Local Storage）。</p>
-<hr>
-<p>  线程局部存储为了避免多个线程同时访存同一全局变量或者静态变量时所导致的冲突，尤其是多个线程同时需要修改这一变量时。为了解决这个问题，我们可以通过TLS机制，为每一个使用该全局变量的线程都提供一个变量值的副本，每一个线程均可以独立地改变自己的副本，而不会和其它线程的副本冲突。从线程的角度看，就好像每一个线程都完全拥有该变量。而从全局变量的角度上来看，就好像一个全局变量被克隆成了多份副本，而每一份副本都可以被一个线程独立地改变。</p>
-<hr>
-<h3 id="AutoreleasePoolPage-push"><a href="#AutoreleasePoolPage-push" class="headerlink" title="AutoreleasePoolPage::push()"></a>AutoreleasePoolPage::push()</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">static inline void *push() </span><br><span class="line">    &#123;</span><br><span class="line">        id *dest;</span><br><span class="line">        if (DebugPoolAllocation) &#123;</span><br><span class="line">            // Each autorelease pool starts on a new pool page.</span><br><span class="line">            dest = autoreleaseNewPage(POOL_BOUNDARY);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            dest = autoreleaseFast(POOL_BOUNDARY);</span><br><span class="line">        &#125;</span><br><span class="line">        assert(dest == EMPTY_POOL_PLACEHOLDER || *dest == POOL_BOUNDARY);</span><br><span class="line">        return dest;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>push执行的时候先判断是否需要每个pool都生成一个新的page（DebugPoolAllocation）,<br>是则执行autoreleaseNewPage方法，否则执行autoreleaseFast方法。传入哨兵标记POOL_BOUNDARY，这是一个边界标记。</p>
-<h3 id="autoreleaseNewPage"><a href="#autoreleaseNewPage" class="headerlink" title="autoreleaseNewPage"></a>autoreleaseNewPage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">id *autoreleaseNewPage(id obj)</span><br><span class="line">    &#123;</span><br><span class="line">        AutoreleasePoolPage *page = hotPage();</span><br><span class="line">        if (page) return autoreleaseFullPage(obj, page);</span><br><span class="line">        else return autoreleaseNoPage(obj);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>如果当前页存在，执行autoreleaseFullPage，否则执行autoreleaseNoPage。</p>
-<h3 id="autoreleaseFullPage"><a href="#autoreleaseFullPage" class="headerlink" title="autoreleaseFullPage"></a>autoreleaseFullPage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">id *autoreleaseFullPage(id obj, AutoreleasePoolPage *page)</span><br><span class="line">   &#123;</span><br><span class="line">       //page已经满了，遍历链表寻找下一个不满的节点，否则重新创建一个新的节点</span><br><span class="line">       assert(page == hotPage());</span><br><span class="line">       assert(page-&gt;full()  ||  DebugPoolAllocation);</span><br><span class="line"></span><br><span class="line">       do &#123;</span><br><span class="line">           if (page-&gt;child) page = page-&gt;child;</span><br><span class="line">           else page = new AutoreleasePoolPage(page);</span><br><span class="line">       &#125; while (page-&gt;full());</span><br><span class="line"></span><br><span class="line">       setHotPage(page);</span><br><span class="line">       return page-&gt;add(obj);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-<p>autoreleaseFullPage方法会在链表中找到下一个容量不满的page,否则创建一个新的节点</p>
-<h3 id="autoreleaseNoPage"><a href="#autoreleaseNoPage" class="headerlink" title="autoreleaseNoPage"></a>autoreleaseNoPage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">id *autoreleaseNoPage(id obj)</span><br><span class="line">&#123;</span><br><span class="line">    assert(!hotPage());</span><br><span class="line"></span><br><span class="line">    bool pushExtraBoundary = false;</span><br><span class="line">    if (haveEmptyPoolPlaceholder()) &#123;</span><br><span class="line">        //如果TLS中含有占位的空池子，则push</span><br><span class="line">        pushExtraBoundary = true;</span><br><span class="line">    &#125;</span><br><span class="line">    else if (obj != POOL_BOUNDARY  &amp;&amp;  DebugMissingPools) &#123;</span><br><span class="line">        //没有找到pool</span><br><span class="line">        _objc_inform(&quot;MISSING POOLS: (%p) Object %p of class %s &quot;</span><br><span class="line">                     &quot;autoreleased with no pool in place - &quot;</span><br><span class="line">                     &quot;just leaking - break on &quot;</span><br><span class="line">                     &quot;objc_autoreleaseNoPool() to debug&quot;, </span><br><span class="line">                     pthread_self(), (void*)obj, object_getClassName(obj));</span><br><span class="line">        objc_autoreleaseNoPool(obj);</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">    else if (obj == POOL_BOUNDARY  &amp;&amp;  !DebugPoolAllocation) &#123;</span><br><span class="line">        //没有池子被push</span><br><span class="line">        return setEmptyPoolPlaceholder();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //创建一个新的page,并设置为当前page</span><br><span class="line">    AutoreleasePoolPage *page = new AutoreleasePoolPage(nil);</span><br><span class="line">    setHotPage(page);</span><br><span class="line">    </span><br><span class="line">    if (pushExtraBoundary) &#123;</span><br><span class="line">       //添加哨兵标记</span><br><span class="line">        page-&gt;add(POOL_BOUNDARY);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return page-&gt;add(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>autoreleaseNoPage先去TLS中寻找空的占位page,没有则创建新的page,插入哨兵标记并把</p>
-<h3 id="autorelease"><a href="#autorelease" class="headerlink" title="autorelease"></a>autorelease</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> static inline id autorelease(id obj)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(obj);</span><br><span class="line">        assert(!obj-&gt;isTaggedPointer());</span><br><span class="line">        id *dest __unused = autoreleaseFast(obj);</span><br><span class="line">        assert(!dest  ||  dest == EMPTY_POOL_PLACEHOLDER  ||  *dest == obj);</span><br><span class="line">        return obj;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">static inline id *autoreleaseFast(id obj)</span><br><span class="line">    &#123;</span><br><span class="line">        AutoreleasePoolPage *page = hotPage();</span><br><span class="line">        if (page &amp;&amp; !page-&gt;full()) &#123;</span><br><span class="line">        //当前页没有满，则将relase duiobjc对象添加到page</span><br><span class="line">            return page-&gt;add(obj);</span><br><span class="line">        &#125; else if (page) &#123;</span><br><span class="line">         //当前页满了，执行autoreleaseFullPage</span><br><span class="line">            return autoreleaseFullPage(obj, page);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">         //否则执行autoreleaseNoPage</span><br><span class="line">            return autoreleaseNoPage(obj);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="AutoreleasePoolPage-pop"><a href="#AutoreleasePoolPage-pop" class="headerlink" title="AutoreleasePoolPage::pop"></a>AutoreleasePoolPage::pop</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">static inline void pop(void *token) </span><br><span class="line">    &#123;</span><br><span class="line">        AutoreleasePoolPage *page;</span><br><span class="line">        id *stop;</span><br><span class="line"></span><br><span class="line">        if (token == (void*)EMPTY_POOL_PLACEHOLDER) &#123;</span><br><span class="line">            if (hotPage()) &#123;</span><br><span class="line">                //找到起始位置，开始正常的出栈</span><br><span class="line">                pop(coldPage()-&gt;begin());</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                //没有当前页，置空hotPage</span><br><span class="line">                setHotPage(nil);</span><br><span class="line">            &#125;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        page = pageForPointer(token);</span><br><span class="line">        stop = (id *)token;</span><br><span class="line">        if (*stop != POOL_BOUNDARY) &#123;</span><br><span class="line">            if (stop == page-&gt;begin()  &amp;&amp;  !page-&gt;parent) &#123;</span><br><span class="line">            //针对没有autorelasepool的对象，直至找到链表中的POOL_BOUNDARY哨兵标记</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                // Error</span><br><span class="line">                return badPop(token);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (PrintPoolHiwat) printHiwat();</span><br><span class="line"></span><br><span class="line">        //stop为哨兵标记，开始释放对象直到标记所在处</span><br><span class="line">        page-&gt;releaseUntil(stop);</span><br><span class="line"></span><br><span class="line">        //删除空的page</span><br><span class="line">        if (DebugPoolAllocation  &amp;&amp;  page-&gt;empty()) &#123;</span><br><span class="line">            AutoreleasePoolPage *parent = page-&gt;parent;</span><br><span class="line">            page-&gt;kill();</span><br><span class="line">            setHotPage(parent);</span><br><span class="line">        &#125; else if (DebugMissingPools  &amp;&amp;  page-&gt;empty()  &amp;&amp;  !page-&gt;parent) &#123;</span><br><span class="line">            page-&gt;kill();</span><br><span class="line">            setHotPage(nil);</span><br><span class="line">        &#125; </span><br><span class="line">        else if (page-&gt;child) &#123;</span><br><span class="line">            if (page-&gt;lessThanHalfFull()) &#123;</span><br><span class="line">                page-&gt;child-&gt;kill();</span><br><span class="line">            &#125;</span><br><span class="line">            else if (page-&gt;child-&gt;child) &#123;</span><br><span class="line">                page-&gt;child-&gt;child-&gt;kill();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="releaseUntil"><a href="#releaseUntil" class="headerlink" title="releaseUntil"></a>releaseUntil</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">void releaseUntil(id *stop) </span><br><span class="line">    &#123;        </span><br><span class="line">        while (this-&gt;next != stop) &#123;</span><br><span class="line">            AutoreleasePoolPage *page = hotPage();</span><br><span class="line"></span><br><span class="line">            while (page-&gt;empty()) &#123;</span><br><span class="line">                page = page-&gt;parent;</span><br><span class="line">                setHotPage(page);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            page-&gt;unprotect();</span><br><span class="line">            id obj = *--page-&gt;next;</span><br><span class="line">            memset((void*)page-&gt;next, SCRIBBLE, sizeof(*page-&gt;next));</span><br><span class="line">            page-&gt;protect();</span><br><span class="line"></span><br><span class="line">            if (obj != POOL_BOUNDARY) &#123;</span><br><span class="line">                objc_release(obj);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        setHotPage(this);</span><br><span class="line"></span><br><span class="line">#if DEBUG</span><br><span class="line">        for (AutoreleasePoolPage *page = child; page; page = page-&gt;child) &#123;</span><br><span class="line">            assert(page-&gt;empty());</span><br><span class="line">        &#125;</span><br><span class="line">#endif</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>从hotPage()开始， 一个个调用objc_release释放对象，直至到达哨兵对象的位置所在处。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/02/深入理解AutoreleasePool源码/" data-id="cjtfw8i4n002x8mon5a3x00b6" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-python爬虫之链家房价篇" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/02/19/python爬虫之链家房价篇/" class="article-date">
-  <time datetime="2019-02-18T16:00:00.000Z" itemprop="datePublished">2019-02-19</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/python/">python</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/19/python爬虫之链家房价篇/">Python爬虫之链家房价篇</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="前景回顾"><a href="#前景回顾" class="headerlink" title="前景回顾"></a>前景回顾</h3><p>   最近看房价飞涨就想是不是写个脚本分析下所关注的城市房价数据，爬虫语言的选有多种：Python、javaScript、Java等。因为python最近大热，有盖过Java的趋势，所以初步学习了下python，语法都是现学现用的（发现python语法真的是很飘逸)。</p>
-<h3 id="爬虫实现"><a href="#爬虫实现" class="headerlink" title="爬虫实现"></a>爬虫实现</h3><p>   采用的是最简单的静态爬取链家网页。说白了就是获取到网页html,格式化之后，采用正则或者xpath(<a href="https://www.cnblogs.com/lei0213/p/7506130.html" target="_blank" rel="noopener">xpath用法</a>)获取到文本信息，然后用一个超好用的图表库pyecharts，生成可视化图表。</p>
-<p>完整代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: UTF-8 -*-</span><br><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br><span class="line">import requests</span><br><span class="line">import urllib2</span><br><span class="line">from lxml import html</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pyecharts</span><br><span class="line">from pyecharts import Pie</span><br><span class="line">from pyecharts import Bar</span><br><span class="line">import numpy as np</span><br><span class="line">from docx import Document</span><br><span class="line">from docx.shared import Inches</span><br><span class="line">from PIL import Image</span><br><span class="line"></span><br><span class="line">CITY = &apos;&apos;</span><br><span class="line">DATACOUNT = 0</span><br><span class="line">TotalPage = 330</span><br><span class="line">fiveDownLevel = &apos;5k以下&apos;</span><br><span class="line">fiveKLevel = &apos;5k-1w&apos;</span><br><span class="line">OneOneLevel = &apos;1w-1.5w&apos;</span><br><span class="line">OneTwoLevel = &apos;1.5w-2w&apos;</span><br><span class="line">TwoOneLevel = &apos;2w-2.5w&apos;</span><br><span class="line">TwoTwoLevel = &apos;2.5w-3w&apos;</span><br><span class="line">ThreeAboveLevel = &apos;3w以上&apos;</span><br><span class="line">addressDict = &#123;&#125;</span><br><span class="line">priceDict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">def crow(i):</span><br><span class="line">    print(&apos;正在爬取第&#123;&#125;页,还剩&#123;&#125;页&apos;.format(i,TotalPage-i))</span><br><span class="line">    # 拼装第i页的网址</span><br><span class="line">    url = &apos;https://sh.lianjia.com/ershoufang/pg%s/&apos; % str(i)</span><br><span class="line"></span><br><span class="line">    # 构造模拟请求的客户端信息</span><br><span class="line">    headers = &#123;&apos;User-Agent&apos;:&apos;Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36&apos;&#125;</span><br><span class="line">    req = urllib2.Request(url=url,headers=headers)#这里要注意，必须使用url=url，headers=headers的格式，否则回报错，无法连接字符</span><br><span class="line">    response = urllib2.urlopen(req)#注意，这里要用req，不然就被添加userag</span><br><span class="line">    rst = response.read().decode(&quot;utf-8&quot;)</span><br><span class="line">    rst=html.fromstring(rst)</span><br><span class="line">    path = &apos;/html/body/div[4]/div[1]/ul/li&apos;</span><br><span class="line">    parseHtml(path, rst)</span><br><span class="line">    global CITY</span><br><span class="line">    st = rst.xpath(&apos;/html/body/div[2]/div[1]/div[1]/ul/li[1]/a/@title&apos;)[0].strip()</span><br><span class="line">    CITY = st[0:st.find(u&apos;在售二手房&apos;)]</span><br><span class="line"></span><br><span class="line">#解析网址</span><br><span class="line">def parseHtml(path, rst):</span><br><span class="line">    datas = rst.xpath(path)</span><br><span class="line">    global DATACOUNT </span><br><span class="line">    DATACOUNT += len(datas)</span><br><span class="line">    for data in datas:</span><br><span class="line">        title=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[1]/a/text()&apos;)</span><br><span class="line">        area=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[3]/div/a/text()&apos;)</span><br><span class="line">        houseInfo=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[2]/div/text()&apos;)</span><br><span class="line">        flood=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[3]/div/text()&apos;)</span><br><span class="line">        followInfo=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[4]/text()&apos;)</span><br><span class="line">        totalPrice=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[6]/div[1]/span/text()&apos;)</span><br><span class="line">        unitPrice=data.xpath(&apos;/html/body/div[4]/div[1]/ul/li[1]/div[1]/div[6]/div[2]/span/text()&apos;)</span><br><span class="line">        bulidDatas(area,totalPrice,unitPrice)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#组装分析的数据</span><br><span class="line">def bulidDatas(area,totalPrice,unitPrice): </span><br><span class="line">    #区域</span><br><span class="line">    ar = area[0].strip()</span><br><span class="line">    if ar in addressDict:</span><br><span class="line">       addressDict[ar].append(1)</span><br><span class="line">    else:</span><br><span class="line">       addressDict[ar] = [1] </span><br><span class="line">    </span><br><span class="line">    #均价 这里可以根据自己需求划分不同的价格范围</span><br><span class="line">    p = unitPrice[0].strip()</span><br><span class="line">    sp = p.find(&apos;单价&apos;)</span><br><span class="line">    kp = p.find(&apos;元&apos;)</span><br><span class="line">    startP = int(p[2:kp])   </span><br><span class="line">    if startP &lt; 5000:</span><br><span class="line">        p = fiveDownLevel</span><br><span class="line">    elif startP &gt;= 5000 and startP &lt; 10000:</span><br><span class="line">        p = fiveKLevel</span><br><span class="line">    elif startP &gt;= 10000 and startP &lt; 15000:</span><br><span class="line">        p = OneOneLevel</span><br><span class="line">    elif startP &gt;= 15000 and startP &lt; 20000:</span><br><span class="line">        p = OneTwoLevel      </span><br><span class="line">    elif startP &gt;= 20000 and startP &lt; 25000:</span><br><span class="line">        p = TwoOneLevel</span><br><span class="line">    elif startP &gt;= 25000 and startP &lt; 30000:</span><br><span class="line">        p = TwoTwoLevel</span><br><span class="line">    elif startP &gt;= 30000:</span><br><span class="line">        p = ThreeAboveLevel </span><br><span class="line">    if p in priceDict:</span><br><span class="line">       priceDict[p].append(1)</span><br><span class="line">    else:</span><br><span class="line">       priceDict[p] = [1] </span><br><span class="line"></span><br><span class="line">#绘制地址分布图表</span><br><span class="line">def drawAddressSheet():</span><br><span class="line">    labels = []</span><br><span class="line">    sizes = []</span><br><span class="line">    for key in addressDict:</span><br><span class="line">        labels.append(key)</span><br><span class="line">        vList = addressDict[key]</span><br><span class="line">        sizes.append(len(vList))</span><br><span class="line">    drawBarGraph(sizes,labels,&apos;%s区域范围分布图&apos;%CITY,&apos;机会数量&apos;,&apos;区域范围分布图&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#绘制薪资分布图表</span><br><span class="line">def drawPriceLevelSheet():</span><br><span class="line">    labels = []</span><br><span class="line">    sizes = []</span><br><span class="line">    for key in priceDict:</span><br><span class="line">        labels.append(key)</span><br><span class="line">        vList = priceDict[key]</span><br><span class="line">        sizes.append(len(vList))</span><br><span class="line">    drawBarGraph(sizes,labels,&apos;%s均价分布饼状图&apos;%CITY,&apos;薪资范围&apos;,&apos;均价分布柱形图&apos;)    </span><br><span class="line"></span><br><span class="line">def drawBarGraph(sizes,labels,title,category,imgName):</span><br><span class="line">    #饼状图</span><br><span class="line">    pie = Pie(title,title_pos=&apos;center&apos;)</span><br><span class="line">    # pie.add(category,labels,sizes,is_lable_show=True)</span><br><span class="line">    pie.add(category, labels, sizes, radius=[40, 75],</span><br><span class="line">        label_text_color=None,  #标签字体的颜色</span><br><span class="line">        is_label_show=True,</span><br><span class="line">        legend_orient=&apos;vertical&apos;,</span><br><span class="line">        legend_pos=&apos;left&apos;)</span><br><span class="line">    pie.render(path=&apos;./%s.png&apos; % imgName)</span><br><span class="line"></span><br><span class="line">    #柱形图</span><br><span class="line">    # bar = Bar(title,&apos;Theme&apos;,width=1100)</span><br><span class="line">    # bar.use_theme(&apos;dark&apos;)</span><br><span class="line">    # bar.add(category,labels,sizes)</span><br><span class="line">    # bar.render(path=&apos;./%s.png&apos; % imgName)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def saveToWord():</span><br><span class="line">    doc = Document()</span><br><span class="line">    doc.add_paragraph(u&apos;%s二手房行业分析报告&apos;%CITY + &apos;\n&apos;*2) </span><br><span class="line">    doc.add_picture(u&apos;%s区域范围分布图.png&apos;%CITY, width=Inches(8))</span><br><span class="line">    doc.add_paragraph(&apos;\n&apos;*2) </span><br><span class="line">    doc.add_picture(u&apos;%s均价分布饼状图.png&apos;%CITY, width=Inches(8))</span><br><span class="line">    doc.add_paragraph(&apos;\n&apos;*2) </span><br><span class="line">    doc.save(u&apos;行业分析报告.docx&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#开始抓取数据</span><br><span class="line">def startScraper():</span><br><span class="line">   for i in range(TotalPage):</span><br><span class="line">       print(&apos;爬取数据中...&apos;)</span><br><span class="line">       crow(i)</span><br><span class="line">   print(&apos;绘制中...&apos;)</span><br><span class="line">   drawAddressSheet()</span><br><span class="line">   drawPriceLevelSheet()</span><br><span class="line">   print(&apos;绘制完成&apos;)</span><br><span class="line">   print(&apos;总共爬取&#123;&#125;&#123;&#125;条数据&apos;.format(CITY,str(DATACOUNT)))</span><br><span class="line">   print(&apos;生成报告文档...&apos;)</span><br><span class="line">   saveToWord()</span><br><span class="line">   print(&apos;生成成功&apos;)</span><br><span class="line">startScraper()</span><br></pre></td></tr></table></figure>
-<p>生成图表如下(以无锡为例)：</p>
-<p><img src="../../images/均价分布柱形图.png" alt="avatar"></p>
-<p><img src="../../images/区域范围分布图.png" alt="avatar"></p>
-<hr>
-<hr>
-<h4 id="以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。"><a href="#以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。" class="headerlink" title="以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。"></a>以上只是简单实现了静态网页爬取，也没考虑多线程和效率，只是当作入门参考。</h4>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/02/19/python爬虫之链家房价篇/" data-id="cjtfw8i2y000g8monotce3i0e" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjx3yrlsu001v18onjyg3s5r1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -727,7 +750,7 @@
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
   </nav>
 
 </section>
@@ -738,7 +761,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/汇编/">汇编</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机系统/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书/">读书</a></li></ul>
     </div>
   </div>
 
@@ -748,7 +771,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoreleasePool/">AutoreleasePool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/block/">block</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/callAlloc/">callAlloc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/category/">category</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/isa/">isa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weak/">weak</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二分法/">二分法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存/">内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布/">分布</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/回溯/">回溯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/图片优化/">图片优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/快排，冒泡/">快排，冒泡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/排序/">排序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理/">编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/链表/">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/队列、栈/">队列、栈</a></li></ul>
     </div>
   </div>
 
@@ -758,7 +781,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
+      <a href="/tags/AutoreleasePool/" style="font-size: 10px;">AutoreleasePool</a> <a href="/tags/Swift/" style="font-size: 10px;">Swift</a> <a href="/tags/block/" style="font-size: 10px;">block</a> <a href="/tags/callAlloc/" style="font-size: 10px;">callAlloc</a> <a href="/tags/category/" style="font-size: 10px;">category</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/isa/" style="font-size: 10px;">isa</a> <a href="/tags/runtime/" style="font-size: 10px;">runtime</a> <a href="/tags/weak/" style="font-size: 10px;">weak</a> <a href="/tags/二分法/" style="font-size: 10px;">二分法</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/内存/" style="font-size: 10px;">内存</a> <a href="/tags/分布/" style="font-size: 10px;">分布</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/回溯/" style="font-size: 10px;">回溯</a> <a href="/tags/图片优化/" style="font-size: 10px;">图片优化</a> <a href="/tags/快排，冒泡/" style="font-size: 10px;">快排，冒泡</a> <a href="/tags/排序/" style="font-size: 20px;">排序</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/链表/" style="font-size: 20px;">链表</a> <a href="/tags/队列、栈/" style="font-size: 10px;">队列、栈</a>
     </div>
   </div>
 
@@ -767,7 +790,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li></ul>
     </div>
   </div>
 
@@ -780,23 +803,23 @@
       <ul>
         
           <li>
-            <a href="/2019/03/15/深入理解isa指针/">深入理解isa指针</a>
+            <a href="/2019/06/17/深入理解计算机系统/">深入理解计算机系统</a>
           </li>
         
           <li>
-            <a href="/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（四）</a>
+            <a href="/2019/05/04/swift学习笔记/">swift学习笔记</a>
           </li>
         
           <li>
-            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（三）</a>
+            <a href="/2019/04/01/汇编入门学习/">汇编入门学习</a>
           </li>
         
           <li>
-            <a href="/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（二）</a>
+            <a href="/2019/03/27/iOS中的链接器/">iOS中的链接器</a>
           </li>
         
           <li>
-            <a href="/2019/03/12/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(一)/">读书笔记之&lt;&lt;深入解析MAC OS X &amp; iOS操作系统&gt;&gt;（一）</a>
+            <a href="/2019/03/24/<<程序员的自我修养>>之链接/">&lt;&lt;程序员的自我修养&gt;&gt;之链接</a>
           </li>
         
       </ul>
