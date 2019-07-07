@@ -148,11 +148,69 @@
 <h4 id="静态链接"><a href="#静态链接" class="headerlink" title="静态链接"></a>静态链接</h4><p>链接器扫描所有的输入文件，然后把符号表信息收集起来，构成一个全局的符号表，然后根据重定位表，把所有不确定要跳转的代码，根据符号表里面存储的地址进行一次修正。最后把所有的目标文件的对应段进行一次合并，变成最终的可执行代码。</p>
 <h4 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h4><p>在动态链接对应的共享库，我们在共享库的 data section里面保存了一张全局偏移表（GOT，Global Offset Table)。所有需要引用当前共享库外部的地址的指令，都会查询 GOT，来找到当前运行程序的虚拟内存里的对应位置。Got表里面的数据，则是在加载一个个共享库的时候写进去的。</p>
 <p><img src="../../images/动态链接.png" alt="avatar"></p>
+<h2 id="计算机指令的执行"><a href="#计算机指令的执行" class="headerlink" title="计算机指令的执行"></a>计算机指令的执行</h2><h3 id="指令的分类"><a href="#指令的分类" class="headerlink" title="指令的分类"></a>指令的分类</h3><ul>
+<li>算术类指令。加减乘除</li>
+<li>数据传输类指令。给变量赋值，在内存里读写数据</li>
+<li>逻辑类指令。逻辑上的与或非</li>
+<li>条件分支类指令。if/else</li>
+<li>无条件跳转指令。函数调用</li>
+</ul>
+<h3 id="指令执行的过程"><a href="#指令执行的过程" class="headerlink" title="指令执行的过程"></a>指令执行的过程</h3><p>指令周期大致分为以下三个部分</p>
+<ul>
+<li>取得指令</li>
+<li>指令译码</li>
+<li>执行指令</li>
+</ul>
+<p>在取指令阶段，指令是存放在存储器里的，通过PC寄存器和指令寄存器取出指令的过程，是由控制器操作的，指令的解码过程，也是控制器进行的。指令的执行，则是由算术逻辑单元操作的（ALU），即运算器。</p>
+<p>一个简易CPU的流程<br><img src="../../images/简单CPU.png" alt="avatar"></p>
+<ul>
+<li>首先，有一个自动计数器，随着时钟主频不断自增来作为PC寄存器</li>
+<li>自动计数器连接上一个译码器，译码器同时连接大量的D触发器组成的内存</li>
+<li>自动计数器不断自增，译码器找到对应的计数器所表示的内存地址，然后读取里面的CPU指令。</li>
+<li>读取出来的CPU指令写入一个由D触发器组成的寄存器，也就是指令寄存器</li>
+<li>在指令寄存器后面链接一个译码器，这个译码器的作用是解析指令为opcode和对应的操作数</li>
+<li>拿到opcode和操作数，对应的输出线路连接ALU，开始计算各种算术和逻辑运算，对应的计算结果，在写入D触发器组成的寄存器或者内存中。</li>
+</ul>
+<h3 id="CPU面向流水线的指令设计"><a href="#CPU面向流水线的指令设计" class="headerlink" title="CPU面向流水线的指令设计"></a>CPU面向流水线的指令设计</h3><p>为了执行效率，现在CPU采用指令流水线设计方式。就是“取指令 - 指令译码 - 执行指令”这样三个部分每个步骤都独立，每个阶段的电路在完成对应的任务后，也不需要等待整个指令的执行完成，可以直接执行下一条指令的对应阶段。<br><img src="../../images/流水线执行.png" alt="avatar"></p>
+<p>然而太深层次的流水线将带来性能瓶颈，所以流水线的层级是性能的一个权衡和取舍</p>
+<h2 id="流水线冒险hazard和预测"><a href="#流水线冒险hazard和预测" class="headerlink" title="流水线冒险hazard和预测"></a>流水线冒险hazard和预测</h2><p>为什么会有流水线hazard ？<br>流水线指令的设计是每个独立的单元并不关心指令是否执行完成，就进行下一个步骤。但是这里一个问题是B指令依赖于A指令，那么冒险就存在了。</p>
+<h3 id="流水线停顿"><a href="#流水线停顿" class="headerlink" title="流水线停顿"></a>流水线停顿</h3><p>对于同一个寄存器或者地址的操作，都有明确强制的顺序要求。发现后面执行的指令，会对前面执行的指令有数据层面的依赖关系，那么会执行等待。</p>
+<h3 id="提高流水线性能的办法"><a href="#提高流水线性能的办法" class="headerlink" title="提高流水线性能的办法"></a>提高流水线性能的办法</h3><ul>
+<li>操作数前推（操作数旁路），在硬件层面制作一条旁路，让上一条指令的计算结果没直接传给下一条指令，省略指令1写回寄存器，指令2再读取寄存器的操作。</li>
+<li>乱序执行。后面不依赖前面数据的指令可以在前指令等待阶段先执行。<br><img src="../../images/CPU乱序执行.png" alt="avatar"></li>
+<li>分支预测。通过对下一分支的预测执行来提高速度，假如一条执行预测执行if，那么会提前去执行if里面的指令，条件语句如果正确，那么继续预测的分支。否则就把后面已经取出指令已经执行的部分丢弃。</li>
+</ul>
+<h3 id="CPU-乱序执行"><a href="#CPU-乱序执行" class="headerlink" title="CPU 乱序执行"></a>CPU 乱序执行</h3><ul>
+<li>在取执行和指令译码阶段，顺序执行</li>
+<li>在指令译码完成之后，进行一次指令分发，把指令分发到保留站（Reservation Stations)</li>
+<li>在保留站，指令不会立刻执行，而要等待它们的依赖的数据，传给它们之后才会执行。</li>
+<li>一旦指令依赖数据到达之后，指令就交给后面的功能单元处理，即ALU。</li>
+<li>指令执行完成之后，把结果存到一个重排序缓冲区（re-order Buffer）ROB</li>
+<li>在ROB，CPU会按照原来取指令的顺序，对指令重新排序。只有排在前面的指令都完成了，才会提交指令，完成整个指令的运算结果。</li>
+<li>实际的指令的计算结果，并不是直接写到内存或者高速缓存，而是写入存储缓冲区（store buffer),最终才会写入高速缓存区。</li>
+</ul>
+<h2 id="GPU的用途"><a href="#GPU的用途" class="headerlink" title="GPU的用途"></a>GPU的用途</h2><p>图像渲染的过程大致分为5个过程，称之为图形流水线 (Graphic Pipeline)</p>
+<ul>
+<li><p>顶点处理 (Vertex Processing)。构成多边形的建模是三维模型，有多个顶点。在二维屏幕视角时，需要把三维顶点坐标做个线性计算，转换到当前视角的坐标的过程。</p>
+</li>
+<li><p>图元处理 (Primitive Processsing)。将转化后的顶点坐标连接起来，剔除和裁剪屏幕内的一部分内容去除。</p>
+</li>
+<li><p>删格化 (Rasterization)。将多边形转换为屏幕的一个个像素点</p>
+</li>
+<li><p>片段处理 (Fragment Processing）。在图形转为像素之后，还需要计算每一个像素的颜色、透明度，给像素点上色。</p>
+</li>
+<li><p>像素操作 (Pixel Operations)。将不同图形的像素点混合，比如前一个半透明，后一个深色，那么混合之后展示一个新的颜色。最终输出到显示设备。</p>
+</li>
+</ul>
+<h4 id="那么为什么不用CPU来做图形渲染呢？"><a href="#那么为什么不用CPU来做图形渲染呢？" class="headerlink" title="那么为什么不用CPU来做图形渲染呢？"></a>那么为什么不用CPU来做图形渲染呢？</h4><p>假如屏幕上有30万像素点需要渲染，按照60帧的FPS，那么要求一秒处理60 * 30 = 1800万次像素点。每个像素点有3个流水线步骤，即便每次步骤只有一个指令，需要5400万条指令，即54m指令。90年代的电脑主频不过100MHZ，以这个性能来处理图形渲染，CPU几乎超负荷运行。</p>
+<p>所以用GPU这种硬件来处理渲染将解放CPU，大大提高性能。</p>
+<h4 id="GPU的结构"><a href="#GPU的结构" class="headerlink" title="GPU的结构"></a>GPU的结构</h4><p>GPU不需要流水线处理，所以可以抽象为三个部分，取指令、指令译码、ALU和执行上下文。GPU中顶点处理和像素渲染都是独立，所以简单添加多核，就可以做到并行加速。<br><img src="../../images/原始GPU架构.png" alt="avatar"></p>
+<h4 id="SIMT（Single-Instruction-Multiple-Threads-技术"><a href="#SIMT（Single-Instruction-Multiple-Threads-技术" class="headerlink" title="SIMT（Single Instruction Multiple Threads)技术"></a>SIMT（Single Instruction Multiple Threads)技术</h4><p>SIMT将多条数据，分给不同线程处理。<br><img src="../../images/GPU中的SIMT.png" alt="avatar"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/06/17/深入理解计算机系统/" data-id="cjx3yrlso001i18oniwds8ktv" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/06/17/深入理解计算机系统/" data-id="cjxspmi6b0037yxon8a29te72" class="article-share-link">Share</a>
       
       
     </footer>
@@ -272,7 +330,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/05/04/swift学习笔记/" data-id="cjx3yrltk003418onrhnr9dkq" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/05/04/swift学习笔记/" data-id="cjxspmi670034yxonrjx5h4y7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -310,11 +368,72 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><ul>
+<li><p>通用寄存器（用来存放一般性数据）</p>
+<ul>
+<li>x0-x30(64位）</li>
+<li>x29又名 fp(用于保存栈底地址）</li>
+<li>x30又名 lr(bl跳转后就把下一条指令写到lr中）</li>
+<li>w0-w30（32位）</li>
+</ul>
+</li>
+<li><p>浮点寄存器 (CPU中专门提供浮点数寄存器来处理浮点数)</p>
+<ul>
+<li>D0-D31(64位)</li>
+<li>S0-S31(32位）</li>
+</ul>
+</li>
+<li><p>向量寄存器（现在的CPU支持向量运算，向量运算在图形处理相关的领域用得非常的多）</p>
+<ul>
+<li>V0 - V31（128位）</li>
+</ul>
+</li>
+<li><p>状态寄存器</p>
+<ul>
+<li>N【负数标志】、Z【0标志】、C【进位标志】、V【溢出标志】均为条件码标志位</li>
+</ul>
+</li>
+<li><p>栈寄存器</p>
+<ul>
+<li>SP（任意时刻保存栈顶的地址）</li>
+<li>FP（保存栈底的地址）</li>
+</ul>
+</li>
+</ul>
+<h3 id="汇编指令"><a href="#汇编指令" class="headerlink" title="汇编指令"></a>汇编指令</h3><ul>
+<li>mov x1, x0; 将寄存器x0的值传送到x1</li>
+<li>add x0, x1, x2; 将寄存器x1和x2值相加后传到x0</li>
+<li>sub x0, x1, x2; 将寄存器x1和x2值相减后传到x0</li>
+<li>and x0, x0, #0xf; x0的值和0xf相与后值传给x0</li>
+<li>or x0, x0, #9; x0的值和0xf相或后值传给x0</li>
+<li>eor x0, x0, #0xf; x0的值和0xf相异或后值传给x0</li>
+</ul>
+<h3 id="堆栈操作"><a href="#堆栈操作" class="headerlink" title="堆栈操作"></a>堆栈操作</h3><ul>
+<li>STR 将数据从寄存器中读取出来，保存到内存中<br>STR X0, [SP, #0x8]; X0寄存器数据传送到SP+0x8地址指向的存储空间</li>
+<li>STP STR的变种指令，可以同时操作两个寄存器<br>STP x29, x30, [sp, #0x10]; 将x29和x30寄存器的数据存入sp+0x10所在栈中</li>
+<li><p>LDR 将数据从内存中读取出来，存到寄存器中<br>LDR x5, [x6, #0x08]; x6寄存器加0x08地址值内的数据传到x5</p>
+</li>
+<li><p>LDP LDR的变种指令，可以同时操作两个寄存器<br>LDP x29, x30, [sp, #0x10] ; 将栈中的值取出存放到x29, x30</p>
+</li>
+</ul>
+<h3 id="跳转操作"><a href="#跳转操作" class="headerlink" title="跳转操作"></a>跳转操作</h3><ul>
+<li>b </li>
+<li>bl 将下一条指令地址放入lr(x30)寄存器</li>
+<li>ret 默认使用lr(x30)寄存器的值，通过底层指令提示CPU此处作为下条指令地址</li>
+<li>cmp 比较指令。<ul>
+<li>b.gt比较结果是大于，执行标号，否则不跳转</li>
+<li>b.ge 比较结果是大于等于，执行标号，否则不跳转</li>
+<li>b.eq 比较结果是等于，执行标号，否则不跳转</li>
+<li>b.hi 比较结果是无符号大于，执行标号，否则不跳转</li>
+</ul>
+</li>
+<li>cbz 如果寄存器的值==0，则跳转到地址，如果不等于0，则继续执行代码</li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/04/01/汇编入门学习/" data-id="cjx3yrlsk001918onwr0h4vwl" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/04/01/汇编入门学习/" data-id="cjxspmi540018yxonv7x76o63" class="article-share-link">Share</a>
       
       
     </footer>
@@ -375,7 +494,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/27/iOS中的链接器/" data-id="cjx3yrlrn000118onpujfoful" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/27/iOS中的链接器/" data-id="cjxspmi4f0004yxond0pxm9cz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -428,7 +547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/24/<<程序员的自我修养>>之链接/" data-id="cjx3yrlri000018ont2a1rlky" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/24/<<程序员的自我修养>>之链接/" data-id="cjxspmi4b0001yxonvs40f50m" class="article-share-link">Share</a>
       
       
     </footer>
@@ -468,7 +587,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/22/深入理解msg_send()/" data-id="cjx3yrlsn001f18on5i9fyawf" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/22/深入理解msg_send()/" data-id="cjxspmi57001gyxonorurf6bu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -525,7 +644,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjx3yrlsl001b18on5jamrblb" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/15/深入理解isa指针/" data-id="cjxspmi56001eyxon721z9381" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/isa/">isa</a></li></ul>
@@ -608,7 +727,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjx3yrlsw001y18onoqumxhkd" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/15/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(四)/" data-id="cjxspmi5e001uyxonh5hy6m8f" class="article-share-link">Share</a>
       
       
     </footer>
@@ -679,7 +798,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjx3yrlss001s18on50aog39i" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(三)/" data-id="cjxspmi5b001oyxon9vpog0cg" class="article-share-link">Share</a>
       
       
     </footer>
@@ -736,7 +855,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjx3yrlsu001v18onjyg3s5r1" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/03/13/读书笔记之<<深入解析MAC OS X & iOS操作系统>>(二)/" data-id="cjxspmi5c001ryxonhqajvsix" class="article-share-link">Share</a>
       
       
     </footer>

@@ -7,18 +7,18 @@
   
   <title>汇编入门学习 | larbraryy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="劳于读书，逸于作文">
+  <meta name="description" content="寄存器 通用寄存器（用来存放一般性数据）  x0-x30(64位） x29又名 fp(用于保存栈底地址） x30又名 lr(bl跳转后就把下一条指令写到lr中） w0-w30（32位）   浮点寄存器 (CPU中专门提供浮点数寄存器来处理浮点数)  D0-D31(64位) S0-S31(32位）   向量寄存器（现在的CPU支持向量运算，向量运算在图形处理相关的领域用得非常的多）  V0 - V3">
 <meta name="keywords" content="ios 架构 读书">
 <meta property="og:type" content="article">
 <meta property="og:title" content="汇编入门学习">
 <meta property="og:url" content="https://hexoman.github.io/2019/04/01/汇编入门学习/index.html">
 <meta property="og:site_name" content="larbraryy的博客">
-<meta property="og:description" content="劳于读书，逸于作文">
+<meta property="og:description" content="寄存器 通用寄存器（用来存放一般性数据）  x0-x30(64位） x29又名 fp(用于保存栈底地址） x30又名 lr(bl跳转后就把下一条指令写到lr中） w0-w30（32位）   浮点寄存器 (CPU中专门提供浮点数寄存器来处理浮点数)  D0-D31(64位) S0-S31(32位）   向量寄存器（现在的CPU支持向量运算，向量运算在图形处理相关的领域用得非常的多）  V0 - V3">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-04-01T12:23:08.149Z">
+<meta property="og:updated_time" content="2019-07-02T11:49:46.388Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="汇编入门学习">
-<meta name="twitter:description" content="劳于读书，逸于作文">
+<meta name="twitter:description" content="寄存器 通用寄存器（用来存放一般性数据）  x0-x30(64位） x29又名 fp(用于保存栈底地址） x30又名 lr(bl跳转后就把下一条指令写到lr中） w0-w30（32位）   浮点寄存器 (CPU中专门提供浮点数寄存器来处理浮点数)  D0-D31(64位) S0-S31(32位）   向量寄存器（现在的CPU支持向量运算，向量运算在图形处理相关的领域用得非常的多）  V0 - V3">
   
     <link rel="alternate" href="/atom.xml" title="larbraryy的博客" type="application/atom+xml">
   
@@ -95,11 +95,72 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><ul>
+<li><p>通用寄存器（用来存放一般性数据）</p>
+<ul>
+<li>x0-x30(64位）</li>
+<li>x29又名 fp(用于保存栈底地址）</li>
+<li>x30又名 lr(bl跳转后就把下一条指令写到lr中）</li>
+<li>w0-w30（32位）</li>
+</ul>
+</li>
+<li><p>浮点寄存器 (CPU中专门提供浮点数寄存器来处理浮点数)</p>
+<ul>
+<li>D0-D31(64位)</li>
+<li>S0-S31(32位）</li>
+</ul>
+</li>
+<li><p>向量寄存器（现在的CPU支持向量运算，向量运算在图形处理相关的领域用得非常的多）</p>
+<ul>
+<li>V0 - V31（128位）</li>
+</ul>
+</li>
+<li><p>状态寄存器</p>
+<ul>
+<li>N【负数标志】、Z【0标志】、C【进位标志】、V【溢出标志】均为条件码标志位</li>
+</ul>
+</li>
+<li><p>栈寄存器</p>
+<ul>
+<li>SP（任意时刻保存栈顶的地址）</li>
+<li>FP（保存栈底的地址）</li>
+</ul>
+</li>
+</ul>
+<h3 id="汇编指令"><a href="#汇编指令" class="headerlink" title="汇编指令"></a>汇编指令</h3><ul>
+<li>mov x1, x0; 将寄存器x0的值传送到x1</li>
+<li>add x0, x1, x2; 将寄存器x1和x2值相加后传到x0</li>
+<li>sub x0, x1, x2; 将寄存器x1和x2值相减后传到x0</li>
+<li>and x0, x0, #0xf; x0的值和0xf相与后值传给x0</li>
+<li>or x0, x0, #9; x0的值和0xf相或后值传给x0</li>
+<li>eor x0, x0, #0xf; x0的值和0xf相异或后值传给x0</li>
+</ul>
+<h3 id="堆栈操作"><a href="#堆栈操作" class="headerlink" title="堆栈操作"></a>堆栈操作</h3><ul>
+<li>STR 将数据从寄存器中读取出来，保存到内存中<br>STR X0, [SP, #0x8]; X0寄存器数据传送到SP+0x8地址指向的存储空间</li>
+<li>STP STR的变种指令，可以同时操作两个寄存器<br>STP x29, x30, [sp, #0x10]; 将x29和x30寄存器的数据存入sp+0x10所在栈中</li>
+<li><p>LDR 将数据从内存中读取出来，存到寄存器中<br>LDR x5, [x6, #0x08]; x6寄存器加0x08地址值内的数据传到x5</p>
+</li>
+<li><p>LDP LDR的变种指令，可以同时操作两个寄存器<br>LDP x29, x30, [sp, #0x10] ; 将栈中的值取出存放到x29, x30</p>
+</li>
+</ul>
+<h3 id="跳转操作"><a href="#跳转操作" class="headerlink" title="跳转操作"></a>跳转操作</h3><ul>
+<li>b </li>
+<li>bl 将下一条指令地址放入lr(x30)寄存器</li>
+<li>ret 默认使用lr(x30)寄存器的值，通过底层指令提示CPU此处作为下条指令地址</li>
+<li>cmp 比较指令。<ul>
+<li>b.gt比较结果是大于，执行标号，否则不跳转</li>
+<li>b.ge 比较结果是大于等于，执行标号，否则不跳转</li>
+<li>b.eq 比较结果是等于，执行标号，否则不跳转</li>
+<li>b.hi 比较结果是无符号大于，执行标号，否则不跳转</li>
+</ul>
+</li>
+<li>cbz 如果寄存器的值==0，则跳转到地址，如果不等于0，则继续执行代码</li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hexoman.github.io/2019/04/01/汇编入门学习/" data-id="cjx3yrlsk001918onwr0h4vwl" class="article-share-link">Share</a>
+      <a data-url="https://hexoman.github.io/2019/04/01/汇编入门学习/" data-id="cjxspmi540018yxonv7x76o63" class="article-share-link">Share</a>
       
       
     </footer>
